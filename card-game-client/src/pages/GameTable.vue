@@ -5,12 +5,16 @@
 
             </div>
             <div class="my-card-area">
-
+                {{count}}
             </div>
         </div>
 
         <div class="my-card">
+            <button @click="add">+1</button>
+        </div>
 
+        <div class="match-dialog-container" v-show="matchDialogShow">
+            正在匹配，请等待
         </div>
     </div>
 </template>
@@ -22,16 +26,36 @@ export default {
     name: "GameTable",
     data() {
         return {
-            message: ""
+            matchDialogShow: false,
+            count: 0,
+            userId: new Date().getTime()
         };
     },
     mounted() {
         this.socket = io.connect("http://localhost:4001");
-        this.socket.emit("hello");
 
-        this.socket.on("world", args => {
-            this.message = args.message;
+        this.socket.emit("CONNECT", {
+            userId: this.userId
         });
+        this.socket.on("WAITE", () => {
+            this.matchDialogShow = true;
+        });
+
+        this.socket.on("START", args => {
+            this.count = args.start;
+            this.matchDialogShow = false;
+        });
+
+        this.socket.on("UPDATE", args => {
+            this.count = args.count;
+        });
+    },
+    methods: {
+        add() {
+            this.socket.emit("ADD", {
+                userId: this.userId
+            });
+        }
     }
 };
 </script>
@@ -81,5 +105,19 @@ export default {
         box-sizing: border-box;
         flex-wrap: wrap;
         background-color: #00f;
+    }
+
+    .match-dialog-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
     }
 </style>
