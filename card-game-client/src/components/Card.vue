@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card" @mousedown="mouseDown($event)">
         <div class="card-name">{{name}}</div>
         <div class="card-cost">{{cost}}</div>
 
@@ -27,6 +27,13 @@ export default {
             content: "测试卡片",
             attack: 10,
             life: 10
+        }
+    },
+    methods: {
+        mouseDown(e) {
+            this.$emit('onAttackStart', {
+                startX: e.pageX, startY: e.pageY
+            })
         }
     }
 }

@@ -5,7 +5,9 @@
                 <Card />
             </div>
             <div class="my-card-area">
-                <Card />
+                <Card 
+                    @onAttackStart="onAttackStart"
+                />
             </div>
         </div>
 
@@ -33,7 +35,7 @@ export default {
             matchDialogShow: false,
             count: 0,
             userId: new Date().getTime(),
-            showCanvas: true,
+            showCanvas: false,
 
             windowWidth: 1920,
             windowHeight: 1080
@@ -76,12 +78,6 @@ export default {
 
         registerOutCardEvent() {
             this.canvasContext = document.querySelector("#animationCanvas").getContext("2d");
-
-            window.onmousedown = (e) => {
-                window.isAttackDrag = true;
-                this.attackStartX = e.pageX;
-                this.attackStartY = e.pageY;
-            }
 
             window.onmousemove = (e) => {
                 if (window.isAttackDrag) {
@@ -128,9 +124,16 @@ export default {
             window.onmouseup = () => {
                 if (window.isAttackDrag) {
                     window.isAttackDrag = false;
+                    this.showCanvas = false;
                     this.canvasContext.clearRect(0, 0, this.windowWidth, this.windowHeight)
                 }
             }
+        },
+        onAttackStart({startX, startY}) {
+            this.showCanvas = true;
+            window.isAttackDrag = true;
+            this.attackStartX = startX;
+            this.attackStartY = startY;
         }
     }
 };
