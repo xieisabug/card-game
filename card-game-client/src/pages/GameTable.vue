@@ -2,10 +2,10 @@
     <div class="app">
         <div class="table">
             <div class="other-card-area">
-
+                <Card />
             </div>
             <div class="my-card-area">
-                {{count}}
+                <Card />
             </div>
         </div>
 
@@ -16,19 +16,27 @@
         <div class="match-dialog-container" v-show="matchDialogShow">
             正在匹配，请等待
         </div>
+
+        <canvas id="animationCanvas" v-show="showCanvas" :width="windowWidth" :height="windowHeight"></canvas>
     </div>
 </template>
 
 <script>
 import * as io from "socket.io-client";
+import Card from "../components/Card"
 
 export default {
     name: "GameTable",
+    components: {Card},
     data() {
         return {
             matchDialogShow: false,
             count: 0,
-            userId: new Date().getTime()
+            userId: new Date().getTime(),
+            showCanvas: true,
+
+            windowWidth: 1920,
+            windowHeight: 1080
         };
     },
     mounted() {
@@ -49,12 +57,80 @@ export default {
         this.socket.on("UPDATE", args => {
             this.count = args.count;
         });
+
+        this.windowWidth = window.innerWidth;
+        this.windowHeight = window.innerHeight;
+
+        window.onresize = () => {
+            this.windowWidth = window.innerWidth;
+            this.windowHeight = window.innerHeight;
+        }
+        this.registerOutCardEvent();
     },
     methods: {
         add() {
             this.socket.emit("ADD", {
                 userId: this.userId
             });
+        },
+
+        registerOutCardEvent() {
+            this.canvasContext = document.querySelector("#animationCanvas").getContext("2d");
+
+            window.onmousedown = (e) => {
+                window.isAttackDrag = true;
+                this.attackStartX = e.pageX;
+                this.attackStartY = e.pageY;
+            }
+
+            window.onmousemove = (e) => {
+                if (window.isAttackDrag) {
+                    window.requestAnimationFrame(() => {
+                        // TODO 动态获取宽度高度
+                        this.canvasContext.clearRect(0, 0, this.windowWidth, this.windowHeight);
+                        this.canvasContext.strokeStyle = 'maroon';
+                        this.canvasContext.fillStyle = 'maroon';
+
+
+                        this.canvasContext.save();
+                        this.canvasContext.setLineDash([40, 10]);
+                        this.canvasContext.lineWidth = 30;
+
+                        this.canvasContext.beginPath();
+                        this.canvasContext.moveTo(this.attackStartX, this.attackStartY);
+                        this.canvasContext.lineTo(e.pageX, e.pageY);
+                        this.canvasContext.fill();
+                        this.canvasContext.stroke();
+                        this.canvasContext.restore();
+
+                        this.canvasContext.save();
+                        this.canvasContext.beginPath();
+                        this.canvasContext.lineCap = 'square';
+                        this.canvasContext.translate(e.pageX, e.pageY);
+                        let getLineRadians = () => {
+                            let _a = e.pageX - this.attackStartX;
+                            let _b = e.pageY - this.attackStartY;
+                            let _c = Math.hypot(_a, _b);
+                            return Math.acos(_a / _c) * Math.sign(_b);
+                        };
+                        this.canvasContext.rotate(getLineRadians() - Math.PI /2);
+                        this.canvasContext.moveTo(35, -40);
+                        this.canvasContext.lineTo(0, 25);
+                        this.canvasContext.lineTo(-35, -40);
+                        this.canvasContext.lineTo(35, -40);
+                        this.canvasContext.fill();
+                        this.canvasContext.stroke();
+                        this.canvasContext.restore();
+                    })
+                }
+            }
+
+            window.onmouseup = () => {
+                if (window.isAttackDrag) {
+                    window.isAttackDrag = false;
+                    this.canvasContext.clearRect(0, 0, this.windowWidth, this.windowHeight)
+                }
+            }
         }
     }
 };
@@ -119,5 +195,14 @@ export default {
         font-size: 20px;
         background: rgba(0, 0, 0, 0.5);
         color: white;
+    }
+
+    #animationCanvas {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 999;
     }
 </style>
