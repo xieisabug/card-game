@@ -82,7 +82,7 @@ export default {
             window.onmousemove = (e) => {
                 if (window.isAttackDrag) {
                     window.requestAnimationFrame(() => {
-                        // TODO 动态获取宽度高度
+                        // 绘制攻击箭头开始
                         this.canvasContext.clearRect(0, 0, this.windowWidth, this.windowHeight);
                         this.canvasContext.strokeStyle = 'maroon';
                         this.canvasContext.fillStyle = 'maroon';
@@ -103,7 +103,7 @@ export default {
                         this.canvasContext.beginPath();
                         this.canvasContext.lineCap = 'square';
                         this.canvasContext.translate(e.pageX, e.pageY);
-                        let getLineRadians = () => {
+                        let getLineRadians = () => { // 计算直线当前的角度
                             let _a = e.pageX - this.attackStartX;
                             let _b = e.pageY - this.attackStartY;
                             let _c = Math.hypot(_a, _b);
@@ -117,6 +117,7 @@ export default {
                         this.canvasContext.fill();
                         this.canvasContext.stroke();
                         this.canvasContext.restore();
+                        // 绘制攻击箭头结束
                     })
                 }
             }
