@@ -1,5 +1,5 @@
 <template>
-    <div class="card" @mousedown="mouseDown($event)">
+    <div class="card" @mousedown="mouseDown($event)" :data-index="index">
         <div class="card-name">{{name}}</div>
         <div class="card-cost">{{cost}}</div>
 
@@ -20,6 +20,9 @@
 <script>
 export default {
     name: "Card",
+    props: {
+        index: Number, // 当前卡牌的index
+    },
     data () {
         return {
             name: "测试",
