@@ -1,4 +1,11 @@
+const {
+    Cards
+} = require("./constants");
+
+const {shuffle} = require("./utils");
+
 const uuidv4 = require('uuid/v4');
+const seedrandom = require("seedrandom");
 
 const waitPairQueue = []; // 等待排序的队列
 const memoryData = {}; // 缓存的房间游戏数据，key => 房间号，value => 游戏数据
@@ -31,6 +38,8 @@ function connect(args, socket, socketServer) {
         let waitPlayer = waitPairQueue.splice(0, 1)[0]; // 随便拉个小伙干一架
         let roomNumber = uuidv4(); // 生成房间号码
 
+        let seed = Math.floor(Math.random() * 10000);
+
         // 初始化游戏数据
         waitPlayer.roomNumber = roomNumber; 
         memoryData[roomNumber] = {
@@ -38,7 +47,8 @@ function connect(args, socket, socketServer) {
             "two": {
                 userId, socket, roomNumber
             },
-            count: 0
+            seed, // 随机数种子
+            rand: seedrandom(seed), // 随机方法
         };
         existUserGameRoomMap[userId] = roomNumber;
         existUserGameRoomMap[waitPlayer.userId] = roomNumber;
@@ -49,17 +59,48 @@ function connect(args, socket, socketServer) {
 
         // 游戏初始化完成，发送游戏初始化数据
         waitPlayer.socket.emit("START", {
-            start: 0,
             roomNumber,
             memberId: "one"
         });
         socket.emit("START", {
-            start: 0,
             roomNumber,
             memberId: "two"
         });
+
+        initCard(roomNumber);
     }
 }
+
+function initCard(roomNumber) {
+    let random = memoryData[roomNumber].rand() * 2;
+
+    let first = random >= 1 ? "one" : "two"; // 判断当前是哪个玩家出牌
+    let second = random < 1 ? "one" : "two";
+
+    memoryData[roomNumber]["one"]["remainingCards"] = shuffle(memoryData[roomNumber].rand, Cards.map((c, index) => Object.assign({k : `one-${index}`}, c)));
+    memoryData[roomNumber]["two"]["remainingCards"] = shuffle(memoryData[roomNumber].rand, Cards.map((c, index) => Object.assign({k : `two-${index}`}, c)));
+
+    let firstRemainingCards = memoryData[roomNumber][first]["remainingCards"];
+    let secondRemainingCards = memoryData[roomNumber][second]["remainingCards"];
+
+    Object.assign(memoryData[roomNumber][first], {
+        cards: [
+            getNextCard(firstRemainingCards),
+            getNextCard(firstRemainingCards),
+        ]
+    });
+
+    Object.assign(memoryData[roomNumber][second], {
+        cards: [
+            getNextCard(secondRemainingCards),
+        ]
+    });
+
+    sendCards(roomNumber);
+    
+}
+
+
 
 function attackCard(args, socket) {
     let roomNumber = args.r, myK = args.myK, attackK = args.attackK, card, attackCard;
@@ -78,4 +119,26 @@ function attackCard(args, socket) {
     memoryData[roomNumber][other].socket.emit("ATTACK_CARD", {
         k: attackK
     });
+}
+
+
+function getNextCard(remainingCards) {
+    if (remainingCards.length > 0) {
+        return remainingCards.splice(0, 1)[0]
+    } else {
+        return null
+    }
+}
+
+function sendCards(roomNumber, identity) {
+    if (identity) {
+        let otherIdentity = identity === "one" ? "two" : "one";
+
+        memoryData[roomNumber][identity].socket.emit("SEND_CARD", {
+            myCard: memoryData[roomNumber][identity]["cards"]
+        })
+    } else {
+        sendCards(roomNumber, "one");
+        sendCards(roomNumber, "two");
+    }
 }

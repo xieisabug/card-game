@@ -2,18 +2,18 @@
     <div class="app">
         <div class="table">
             <div class="other-card-area">
-                <Card :index="0" />
             </div>
             <div class="my-card-area">
-                <Card 
-                    @onAttackStart="onAttackStart"
-                    :index="0"
-                />
             </div>
         </div>
 
         <div class="my-card">
-            <button @click="add">+1</button>
+            <Card 
+                :key="c.k"
+                :index="index"
+                :data="c"
+                v-for="(c, index) in gameData.myCard"
+            />
         </div>
 
         <div class="match-dialog-container" v-show="matchDialogShow">
@@ -40,7 +40,11 @@ export default {
             showCanvas: false,
 
             windowWidth: 1920,
-            windowHeight: 1080
+            windowHeight: 1080,
+
+            gameData: {
+                myCard: [], // 手牌
+            },
         };
     },
     mounted() {
@@ -66,6 +70,10 @@ export default {
 
         this.socket.on("ATTACK_CARD", (param) => {
             this.attackAnimate(0, param.k)
+        });
+
+        this.socket.on("SEND_CARD", (param) => {
+            this.gameData = Object.assign({}, this.gameData, param);
         });
 
         this.windowWidth = window.innerWidth;
