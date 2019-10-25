@@ -77,9 +77,20 @@ const CardList = [
         type: [""],
         isFullOfEnergy: true
     }
-]
+];
+
+const AttackType = {
+    ATTACK: 1,
+    BE_ATTACKED: 2
+};
+
+const AttackAnimationType = {
+    NORMAL: 1
+};
 
 module.exports = {
     CardType,
-    Cards: CardList
+    Cards: CardList,
+    AttackType,
+    AttackAnimationType
 }

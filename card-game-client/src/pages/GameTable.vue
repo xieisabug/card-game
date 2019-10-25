@@ -2,8 +2,21 @@
     <div class="app">
         <div class="table">
             <div class="other-card-area">
+                <Card 
+                    :key="c.k"
+                    :index="index"
+                    :data="c"
+                    v-for="(c, index) in gameData.otherTableCard"
+                />
             </div>
             <div class="my-card-area">
+                <Card 
+                    :key="c.k"
+                    :index="index"
+                    :data="c"
+                    @onAttackStart="onAttackStart"
+                    v-for="(c, index) in gameData.myTableCard"
+                />
             </div>
         </div>
 
@@ -27,7 +40,8 @@
 <script>
 import * as io from "socket.io-client";
 import Card from "../components/Card"
-import Velocity from 'velocity-animate'
+import Velocity from 'velocity-animate';
+import {AttackType} from "../utils"
 
 export default {
     name: "GameTable",
@@ -69,7 +83,38 @@ export default {
         });
 
         this.socket.on("ATTACK_CARD", (param) => {
-            this.attackAnimate(0, param.k)
+            if (param.attackType === AttackType.ATTACK) {
+                this.attackAnimate(param.index, param.attackIndex)
+            } else {
+                this.attackAnimate(param.attackIndex, param.index)
+            }
+        });
+
+        this.socket.on("DIE_CARD", (param) => {
+            const {isMine, myKList, otherKList} = param;
+
+            let myCardList, otherCardList;
+            
+            if (isMine) {
+                myCardList = this.gameData.myTableCard;
+                otherCardList = this.gameData.otherTableCard;
+            } else {
+                myCardList = this.gameData.otherTableCard;
+                otherCardList = this.gameData.myTableCard;
+            }
+
+            setTimeout(() => {
+                myKList.forEach((k) => {
+                    let index = myCardList.findIndex(c => c.k === k);
+                    myCardList.splice(index, 1);
+                });
+
+                otherKList.forEach((k) => {
+                    let index = otherCardList.findIndex(c => c.k === k);
+                    otherCardList.splice(index, 1);
+                })
+            }, 920);
+            
         });
 
         this.socket.on("SEND_CARD", (param) => {
@@ -158,9 +203,8 @@ export default {
                             height = cd.offsetHeight;
 
                         if (x > left && x < (left + width) && y > top && y < (top + height)) { // 边缘检测
-                            k = cd.dataset.index;
+                            k = cd.dataset.k;
 
-                            // this.attackAnimate(0, k);
                             this.attackCard(k);
                         }
                     });
@@ -168,18 +212,20 @@ export default {
             }
         },
 
-        onAttackStart({startX, startY}) {
+        onAttackStart({startX, startY, index}) {
             this.showCanvas = true;
             window.isAttackDrag = true;
             this.attackStartX = startX;
             this.attackStartY = startY;
+
+            this.currentTableCardK = this.gameData.myTableCard[index].k; 
         },
 
         attackCard(k) {
             this.socket.emit("COMMAND", {
                 type: "ATTACK_CARD",
                 r: this.roomNumber,
-                myK: 0,
+                myK: this.currentTableCardK,
                 attackK: k
             })
         },

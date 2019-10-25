@@ -1,5 +1,5 @@
 <template>
-    <div class="card" @mousedown="mouseDown($event)" :data-index="index">
+    <div class="card" @mousedown="mouseDown($event)" :data-k="data.k">
         <div :class="isDedicationClassName"></div>
         <div :class="isStrongClassName"></div>
 
@@ -35,6 +35,12 @@ export default {
     props: {
         index: Number, // 当前卡牌的index
         data: Object, // 卡牌的信息
+    },
+    data() {
+        return {
+            hurtNumber: 0,
+            hurtShow: false
+        }
     },
     computed: {
         attackClassName() {
@@ -136,7 +142,7 @@ export default {
     methods: {
         mouseDown(e) {
             this.$emit('onAttackStart', {
-                startX: e.pageX, startY: e.pageY
+                startX: e.pageX, startY: e.pageY, index: this.index
             })
         }
     }

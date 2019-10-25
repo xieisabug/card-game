@@ -1,5 +1,7 @@
 const {
-    Cards
+    Cards,
+    AttackType,
+    AttackAnimationType
 } = require("./constants");
 
 const {shuffle} = require("./utils");
@@ -25,49 +27,61 @@ module.exports = function handleSynchronousClient(args, socket, socketServer) {
 
 function connect(args, socket, socketServer) {
     const {userId} = args;
-
-    socket.emit("WAITE"); // 不管三七二十一，先给老子等起
-
-    if (waitPairQueue.length === 0) {
-        waitPairQueue.push({
-            userId, socket
+    if (existUserGameRoomMap[userId]) { // 如果存在已经加入的对局，则直接进入之前的对战
+        let roomNumber = existUserGameRoomMap[userId];
+        let identity = memoryData[roomNumber]["one"].userId === userId ? "one" : "two";
+        memoryData[roomNumber][identity].socket = socket;
+        memoryData[roomNumber][identity].socket.emit("RECONNECT", {
+            roomNumber: roomNumber,
+            memberId: identity
         });
 
-        socket.emit("WAITE");
+        sendCards(roomNumber, identity); // 把牌发送给玩家
+
     } else {
-        let waitPlayer = waitPairQueue.splice(0, 1)[0]; // 随便拉个小伙干一架
-        let roomNumber = uuidv4(); // 生成房间号码
+        socket.emit("WAITE"); // 不管三七二十一，先给老子等起
 
-        let seed = Math.floor(Math.random() * 10000);
-
-        // 初始化游戏数据
-        waitPlayer.roomNumber = roomNumber; 
-        memoryData[roomNumber] = {
-            "one": waitPlayer,
-            "two": {
-                userId, socket, roomNumber
-            },
-            seed, // 随机数种子
-            rand: seedrandom(seed), // 随机方法
-        };
-        existUserGameRoomMap[userId] = roomNumber;
-        existUserGameRoomMap[waitPlayer.userId] = roomNumber;
-
-        // 进入房间
-        socket.join(roomNumber);
-        waitPlayer.socket.join(roomNumber);
-
-        // 游戏初始化完成，发送游戏初始化数据
-        waitPlayer.socket.emit("START", {
-            roomNumber,
-            memberId: "one"
-        });
-        socket.emit("START", {
-            roomNumber,
-            memberId: "two"
-        });
-
-        initCard(roomNumber);
+        if (waitPairQueue.length === 0) {
+            waitPairQueue.push({
+                userId, socket
+            });
+    
+            socket.emit("WAITE");
+        } else {
+            let waitPlayer = waitPairQueue.splice(0, 1)[0]; // 随便拉个小伙干一架
+            let roomNumber = uuidv4(); // 生成房间号码
+    
+            let seed = Math.floor(Math.random() * 10000);
+    
+            // 初始化游戏数据
+            waitPlayer.roomNumber = roomNumber; 
+            memoryData[roomNumber] = {
+                "one": waitPlayer,
+                "two": {
+                    userId, socket, roomNumber
+                },
+                seed, // 随机数种子
+                rand: seedrandom(seed), // 随机方法
+            };
+            existUserGameRoomMap[userId] = roomNumber;
+            existUserGameRoomMap[waitPlayer.userId] = roomNumber;
+    
+            // 进入房间
+            socket.join(roomNumber);
+            waitPlayer.socket.join(roomNumber);
+    
+            // 游戏初始化完成，发送游戏初始化数据
+            waitPlayer.socket.emit("START", {
+                roomNumber,
+                memberId: "one"
+            });
+            socket.emit("START", {
+                roomNumber,
+                memberId: "two"
+            });
+    
+            initCard(roomNumber);
+        }
     }
 }
 
@@ -84,6 +98,9 @@ function initCard(roomNumber) {
     let secondRemainingCards = memoryData[roomNumber][second]["remainingCards"];
 
     Object.assign(memoryData[roomNumber][first], {
+        tableCards:[
+            getNextCard(firstRemainingCards),
+        ],
         cards: [
             getNextCard(firstRemainingCards),
             getNextCard(firstRemainingCards),
@@ -91,6 +108,9 @@ function initCard(roomNumber) {
     });
 
     Object.assign(memoryData[roomNumber][second], {
+        tableCards:[
+            getNextCard(secondRemainingCards),
+        ],
         cards: [
             getNextCard(secondRemainingCards),
         ]
@@ -112,13 +132,147 @@ function attackCard(args, socket) {
     let belong = memoryData[roomNumber]["one"].socket.id === socket.id ? "one" : "two"; // 判断当前是哪个玩家出牌
     let other = memoryData[roomNumber]["one"].socket.id !== socket.id ? "one" : "two";
 
-    memoryData[roomNumber][belong].socket.emit("ATTACK_CARD", {
-        k: attackK
-    });
+    let index = memoryData[roomNumber][belong]["tableCards"].findIndex(c => c.k === myK);
+    let attackIndex = memoryData[roomNumber][other]["tableCards"].findIndex(c => c.k === attackK);
 
-    memoryData[roomNumber][other].socket.emit("ATTACK_CARD", {
-        k: attackK
-    });
+    if (index !== -1 && attackIndex !== -1 
+        && memoryData[roomNumber][belong]["tableCards"].length > index 
+        && memoryData[roomNumber][other]["tableCards"].length > attackIndex) {
+        card = memoryData[roomNumber][belong]["tableCards"][index];
+        attackCard = memoryData[roomNumber][other]["tableCards"][attackIndex];
+
+        // 奉献处理
+        let hasDedication = memoryData[roomNumber][other]["tableCards"].some(c => c.isDedication);
+
+        if (attackCard.isDedication || !hasDedication) {
+            // 符合奉献的条件
+            if (attackCard.isStrong) { // 强壮
+                attackCard.isStrong = false;
+            } else {
+                attackCard.life -= card.attack;
+            }
+
+            if (card.isStrong) { // 强壮
+                card.isStrong = false;
+            } else {
+                card.life -= attackCard.attack;
+            }
+
+            if (card.onAttack) {
+                card.onAttack({
+                    myGameData: memoryData[roomNumber][belong],
+                    otherGameData: memoryData[roomNumber][other],
+                    thisCard: card,
+                    beAttackCard: attackCard,
+                })
+            }
+
+            if (attackCard.onBeAttacked) {
+                attackCard.onBeAttacked({
+                    myGameData: memoryData[roomNumber][other],
+                    otherGameData: memoryData[roomNumber][belong],
+                    thisCard: attackCard,
+                    beAttackCard: card,
+                })
+            }
+
+            memoryData[roomNumber][belong].socket.emit("ATTACK_CARD", {
+                index,
+                attackIndex,
+                attackType: AttackType.ATTACK,
+                animationType: AttackAnimationType.NORMAL,
+                card,
+                attackCard
+            });
+        
+            memoryData[roomNumber][other].socket.emit("ATTACK_CARD", {
+                index,
+                attackIndex,
+                attackType: AttackType.BE_ATTACKED,
+                animationType: AttackAnimationType.NORMAL,
+                card,
+                attackCard
+            });
+
+            checkCardDieEvent(roomNumber);
+        } else {
+            // error 您必须攻击带有奉献的单位
+        }
+    }
+    
+}
+
+function checkCardDieEvent(roomNumber, level, myKList, otherKList) {
+    if (!level) {
+        level = 1;
+        myKList = [];
+        otherKList = [];
+    }
+
+    if (memoryData[roomNumber]["one"]["tableCards"].some(c => c.life <= 0) || memoryData[roomNumber]["two"]["tableCards"].some(c => c.life <= 0)) {
+        let oneSpecialMethod = getSpecialMethod("one", roomNumber),
+            twoSpecialMethod = getSpecialMethod("two", roomNumber);
+
+        for (let i = memoryData[roomNumber]["one"]["tableCards"].length - 1; i >= 0; i--) {
+            let c = memoryData[roomNumber]["one"]["tableCards"][i];
+    
+            if (c.life <= 0) {
+                if (c.onEnd) { // 亡语
+                    c.onEnd({
+                        myGameData: memoryData[roomNumber]["one"],
+                        otherGameData: memoryData[roomNumber]["two"],
+                        thisCard: card,
+                        specialMethod: oneSpecialMethod
+                    })
+                }
+                myKList.push(c.k);
+                memoryData[roomNumber]["one"]["tableCards"].splice(i, 1);
+            }
+        }
+    
+        for (let i = memoryData[roomNumber]["two"]["tableCards"].length - 1; i >= 0; i--) {
+            let c = memoryData[roomNumber]["two"]["tableCards"][i];
+    
+            if (c.life <= 0) {
+                if (c.onEnd) { // 亡语
+                    c.onEnd({
+                        myGameData: memoryData[roomNumber]["two"],
+                        otherGameData: memoryData[roomNumber]["one"],
+                        thisCard: card,
+                        specialMethod: twoSpecialMethod
+                    })
+                }
+                otherKList.push(c.k);
+                memoryData[roomNumber]["two"]["tableCards"].splice(i, 1);
+            }
+        }
+    
+        checkCardDieEvent(roomNumber, level + 1, myKList, otherKList);
+    }
+    
+    if (level === 1 && (myKList.length !== 0 || otherKList.length !== 0)) {
+        getSpecialMethod("one", roomNumber).dieCardAnimation(true, myKList, otherKList);
+    }
+}
+
+function getSpecialMethod(identity, roomNumber) {
+    let otherIdentity = identity === "one" ? "two": "one";
+
+    return {
+        dieCardAnimation(isMine, myKList, otherKList) {
+            memoryData[roomNumber][identity].socket.emit("DIE_CARD", {
+                isMine,
+                myKList,
+                otherKList
+            });
+
+            memoryData[roomNumber][otherIdentity].socket.emit("DIE_CARD", {
+                isMine: !isMine,
+                myKList,
+                otherKList
+            });
+        }
+    }
 }
 
 
@@ -135,7 +289,9 @@ function sendCards(roomNumber, identity) {
         let otherIdentity = identity === "one" ? "two" : "one";
 
         memoryData[roomNumber][identity].socket.emit("SEND_CARD", {
-            myCard: memoryData[roomNumber][identity]["cards"]
+            myCard: memoryData[roomNumber][identity]["cards"],
+            myTableCard: memoryData[roomNumber][identity]["tableCards"],
+            otherTableCard: memoryData[roomNumber][otherIdentity]["tableCards"],
         })
     } else {
         sendCards(roomNumber, "one");

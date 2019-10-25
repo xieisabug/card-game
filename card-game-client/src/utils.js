@@ -7,3 +7,8 @@ export function buildClassName(obj) {
 
     return className.join(" ");
 }
+
+export const AttackType = {
+    ATTACK: 1,
+    BE_ATTACKED: 2
+};
