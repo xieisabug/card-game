@@ -1,23 +1,39 @@
 <template>
     <div class="app">
         <div class="table">
-            <div class="other-card-area">
+            <transition-group 
+                class="other-card-area"
+                tag="div"
+                :css="false"
+                @enter="enter"
+                @before-enter="beforeEnter"
+                @after-enter="afterEnter"
+            >
                 <Card 
                     :key="c.k"
                     :index="index"
                     :data="c"
                     v-for="(c, index) in gameData.otherTableCard"
                 />
-            </div>
-            <div class="my-card-area">
+            </transition-group >
+            <transition-group 
+                class="my-card-area"
+                tag="div"
+                :css="false"
+                @enter="enter"
+                @before-enter="beforeEnter"
+                @after-enter="afterEnter"
+            >
                 <Card 
                     :key="c.k"
                     :index="index"
                     :data="c"
+                    :isOut="true"
                     @onAttackStart="onAttackStart"
+                    :chooseCard="chooseTableCard"
                     v-for="(c, index) in gameData.myTableCard"
                 />
-            </div>
+            </transition-group >
         </div>
 
         <div class="my-card">
@@ -25,6 +41,8 @@
                 :key="c.k"
                 :index="index"
                 :data="c"
+                :canDrag="true"
+                :chooseCard="chooseHandCard"
                 v-for="(c, index) in gameData.myCard"
             />
         </div>
@@ -59,6 +77,8 @@ export default {
             gameData: {
                 myCard: [], // 手牌
             },
+
+            currentCardIndex: -1
         };
     },
     mounted() {
@@ -121,6 +141,20 @@ export default {
             this.gameData = Object.assign({}, this.gameData, param);
         });
 
+        this.socket.on("OUT_CARD", (param) => {
+            const {index, card, isMine} = param;
+
+            if (isMine) {
+                if (index !== -1) {
+                    this.gameData.myCard.splice(index, 1);
+                }
+
+                this.gameData.myTableCard.push(card)
+            } else {
+                this.gameData.otherTableCard.push(card)
+            }
+        })
+
         this.windowWidth = window.innerWidth;
         this.windowHeight = window.innerHeight;
 
@@ -144,6 +178,11 @@ export default {
             this.canvasContext = document.querySelector("#animationCanvas").getContext("2d");
 
             window.onmousemove = (e) => {
+                if (window.isCardDrag) {
+                    window.cardMoveX = e.pageX;
+                    window.cardMoveY = e.pageY;
+                }
+
                 if (window.isAttackDrag) {
                     window.requestAnimationFrame(() => {
                         // 绘制攻击箭头开始
@@ -187,6 +226,26 @@ export default {
             }
 
             window.onmouseup = (e) => {
+                if (window.isCardDrag && this.currentCardIndex !== -1) {
+                    window.isCardDrag = false;
+
+                    let top = this.myCardAreaDom.offsetTop,
+                        width = this.myCardAreaDom.offsetWidth,
+                        left = this.myCardAreaDom.offsetLeft,
+                        height = this.myCardAreaDom.offsetHeight;
+
+                    let x = e.pageX,
+                        y = e.pageY;
+
+                    if (x > left && x < (left + width) && y > top && y < (top + height)) {
+                        this.socket.emit("COMMAND", {
+                            type: "OUT_CARD",
+                            r: this.roomNumber,
+                            index: this.currentCardIndex
+                        })
+                    }
+                }
+
                 if (window.isAttackDrag) {
                     window.isAttackDrag = false;
                     this.showCanvas = false;
@@ -212,13 +271,11 @@ export default {
             }
         },
 
-        onAttackStart({startX, startY, index}) {
+        onAttackStart({startX, startY}) {
             this.showCanvas = true;
             window.isAttackDrag = true;
             this.attackStartX = startX;
             this.attackStartY = startY;
-
-            this.currentTableCardK = this.gameData.myTableCard[index].k; 
         },
 
         attackCard(k) {
@@ -254,6 +311,31 @@ export default {
             })
         },
 
+        chooseTableCard(index) {
+            this.currentTableCardK = this.gameData.myTableCard[index].k; 
+        },
+
+        chooseHandCard(index) {
+            this.currentCardIndex = index;
+        },
+        beforeEnter(el) {
+            el.style['transition'] = "all 0s";
+            el.style.opacity = 0
+        },
+        enter(el, done) {
+            Velocity(el, {scale: 1.3}, {duration: 10})
+                .then(el => {
+                    return Velocity(el, {opacity: 1}, {duration: 300})
+                })
+                .then(el => {
+                    return Velocity(el, {scale: 1}, {duration: 200, complete() {done()}})
+                })
+        },
+        afterEnter(el) {
+            el.style['transition'] = "all 0.2s";
+            el.style.opacity = 1;
+            el.style.transform = '';
+        }
     }
 };
 </script>

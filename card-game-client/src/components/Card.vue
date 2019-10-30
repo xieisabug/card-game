@@ -1,5 +1,5 @@
 <template>
-    <div class="card" @mousedown="mouseDown($event)" :data-k="data.k">
+    <div ref="cardDom" class="card" @mousedown="mouseDown($event)" :data-k="data.k">
         <div :class="isDedicationClassName"></div>
         <div :class="isStrongClassName"></div>
 
@@ -35,6 +35,9 @@ export default {
     props: {
         index: Number, // 当前卡牌的index
         data: Object, // 卡牌的信息
+        canDrag: Boolean, // 是否可拖拽
+        isOut: Boolean, // 是否打出
+        chooseCard: Function, // 选择卡牌的回调
     },
     data() {
         return {
@@ -139,11 +142,41 @@ export default {
             }
         }
     },
+    mounted() {
+        this.cardDom = this.$refs['cardDom'];
+    },
     methods: {
         mouseDown(e) {
-            this.$emit('onAttackStart', {
-                startX: e.pageX, startY: e.pageY, index: this.index
-            })
+            if (this.canDrag) {
+                this.isDrag = true;
+                window.isCardDrag = true;
+
+                this.cardDom.style['transition'] = 'all 0s';
+
+                this.startX = e.pageX;
+                this.startY = e.pageY;
+                window.cardMoveX = this.startX;
+                window.cardMoveY = this.startY;
+
+                this.outCardLoop();
+            } else if (this.isOut) {
+                this.$emit('onAttackStart', {
+                    startX: e.pageX, startY: e.pageY
+                })
+            }
+            
+            if (this.chooseCard) {
+                this.chooseCard(this.index, e);
+            }
+        },
+        outCardLoop() {
+            if (this.isDrag) {
+                requestAnimationFrame(this.outCardLoop);
+
+                this.cardDom.style['transform'] = `translate(${window.cardMoveX - this.startX}px, ${window.cardMoveY - this.startY}px) scale(1.1)`;
+            } else {
+                this.cardDom.style['transform'] = '';
+            }
         }
     }
 }
