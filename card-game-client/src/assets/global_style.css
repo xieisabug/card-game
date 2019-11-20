@@ -1,0 +1,42 @@
+.button {
+    border: 0;
+    border-radius: 5px;
+    flex: 0 0 35px;
+    box-shadow: -1px 2px 8px #aaa;
+    font-size: 14px;
+    background: #394950;
+    color: white;
+    min-width: 100px;
+    min-height: 40px;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+    outline: none;
+}
+.button:hover {
+    box-shadow: -2px 4px 8px #aaa;
+}
+.button:disabled {
+    background: #aaa;
+    box-shadow: 0 0 0;
+    cursor: not-allowed;
+}
+
+
+@keyframes fade {
+    0% {
+        opacity: 1;
+    }
+    75% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.hide {
+    display: none !important;
+}
+.show {
+    display: block !important;
+}

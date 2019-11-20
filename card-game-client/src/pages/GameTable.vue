@@ -1,54 +1,133 @@
 <template>
     <div class="app">
         <div class="table">
-            <transition-group 
-                class="other-card-area"
-                tag="div"
-                :css="false"
-                @enter="enter"
-                @before-enter="beforeEnter"
-                @after-enter="afterEnter"
-            >
-                <Card 
-                    :key="c.k"
-                    :index="index"
-                    :data="c"
-                    v-for="(c, index) in gameData.otherTableCard"
-                />
-            </transition-group >
-            <transition-group 
-                class="my-card-area"
-                tag="div"
-                :css="false"
-                @enter="enter"
-                @before-enter="beforeEnter"
-                @after-enter="afterEnter"
-            >
-                <Card 
-                    :key="c.k"
-                    :index="index"
-                    :data="c"
-                    :isOut="true"
-                    @onAttackStart="onAttackStart"
-                    :chooseCard="chooseTableCard"
-                    v-for="(c, index) in gameData.myTableCard"
-                />
-            </transition-group >
+            <div class="game-start">
+                <transition-group
+                    class="other-card-area"
+                    tag="div"
+                    :css="false"
+                    @before-enter="beforeEnter"
+                    @enter="enter"
+                    @after-enter="afterEnter"
+                    @before-leave="beforeLeave"
+                    @leave="leave"
+                >
+                    <Card
+                        :key="c.k"
+                        :data="c"
+                        :index="index"
+                        :isMyTurn="false"
+                        :isOut="true"
+                        @onHoverCard="onHoverCard"
+                        v-for="(c, index) in gameData.otherTableCard"
+                    />
+                </transition-group>
+                <transition-group
+                    class="my-card-area"
+                    tag="div"
+                    :css="false"
+                    @before-enter="beforeEnter"
+                    @enter="enter"
+                    @after-enter="afterEnter"
+                    @before-leave="beforeLeave"
+                    @leave="leave"
+                >
+                    <Card
+                        :key="c.k"
+                        :data="c"
+                        :index="index"
+                        :chooseCard="chooseTableCard"
+                        @onHoverCard="onHoverCard"
+                        :currentCardK="currentTableCardK"
+                        :isMyTurn="isMyTurn"
+                        :isOut="true"
+                        @onAttackStart="onAttackStart"
+                        v-for="(c, index) in gameData.myTableCard"
+                    />
+                </transition-group>
+            </div>
         </div>
 
-        <div class="my-card">
-            <Card 
+        <transition-group
+            class="my-card"
+            tag="div"
+            :css="false"
+            @before-enter="beforeHandCardEnter"
+            @enter="handCardEnter"
+            @after-enter="afterHandCardEnter"
+            @before-leave="beforeHandCardLeave"
+            @leave="handCardLeave"
+        >
+            <Card
                 :key="c.k"
-                :index="index"
                 :data="c"
+                :index="index"
+                :chooseCard="chooseCard"
+                @onHoverCard="onHoverCard"
+                :currentCardIndex="currentCardIndex"
+                :isMyTurn="isMyTurn"
                 :canDrag="true"
-                :chooseCard="chooseHandCard"
+                :isOut="false"
                 v-for="(c, index) in gameData.myCard"
             />
+        </transition-group>
+
+        <div class="my-hero-info" ref="myHeroInfo">
+            <div>{{gameData.myInfo.nickname}}</div>
+            <div>生命：{{gameData.myLife}}</div>
+            <div>费用：{{gameData.myFee}} / {{gameData.myMaxFee}}</div>
         </div>
+        <div class="other-hero-info" ref="otherHeroInfo">
+            <div>{{gameData.otherInfo.nickname}}</div>
+            <div>生命：{{gameData.otherLife}}</div>
+            <div>费用：{{gameData.otherFee}} / {{gameData.otherMaxFee}}</div>
+        </div>
+
+        <EndButton :end-my-turn="endMyTurn" :game-data="gameData" :disabled="!isMyTurn" />
+
+        <ChooseCardFrame
+            :show="chooseDialogShow"
+            :choose-card-list="chooseCardList"
+            :confirm-choose="confirmChoose"
+            :cancel-choose="cancelChoose"
+        />
+
+        <ChooseEffectFrame
+            :show="chooseEffectDialogShow"
+            :choose-effect-list="chooseEffectList"
+            :choose-effect-index="chooseEffectIndex"
+            :confirm-choose-effect="confirmChooseEffect"
+            :cancel-choose-effect="cancelChooseEffect"
+        />
 
         <div class="match-dialog-container" v-show="matchDialogShow">
             正在匹配，请等待
+        </div>
+
+        <TipDialog :show="tipDialogShow" :text="tipText"/>
+        <ErrorDialog :show="errorDialogShow" :text="errorText"/>
+        <WinDialog
+            :show="winDialogShow"
+            :text="winText"
+            :reward="reward"
+            :confirm="onWinConfirm"
+            :confirm-text="getWinConfirmText()"
+            :next="onWinNext"
+            :next-text="getWinNextText()"
+        />
+        <TalkDialog :show="talkDialogShow" :next-talk="nextTalk" :current-talk="currentTalk"/>
+        <LevelUpDialog :show="levelUpDialogShow" :confirm="levelUpDialogConfirm" />
+        <NormalDialog :show="normalDialogShow" :text="normalDialogText" :confirm="normalDialogConfirm" confirmText="确定" />
+
+        <TaskPanel :task-list="taskList" />
+        <CardStatusPanel :hover-card="hoverCard" />
+
+        <div style="position: absolute; left: 0; top: 400px; display: none;" id="effectDialog">
+            <Card
+                key="effect"
+                :data="effectCard"
+                :index="0"
+            />
         </div>
 
         <canvas id="animationCanvas" v-show="showCanvas" :width="windowWidth" :height="windowHeight"></canvas>
@@ -56,288 +135,1204 @@
 </template>
 
 <script>
-import * as io from "socket.io-client";
-import Card from "../components/Card"
-import Velocity from 'velocity-animate';
-import {AttackType} from "../utils"
+    import Card from "../components/Card";
+    import * as io from 'socket.io-client';
+    import {buildClassName, TargetType, AttackType, GameMode} from "../utils";
+    import {mapGetters} from "vuex";
+    import {host, port} from "../config";
+    import ErrorDialog from "../components/ErrorDialog";
+    import WinDialog from "../components/WinDialog";
+    import TipDialog from "../components/TipDialog";
+    import NormalDialog from "../components/NormalDialog";
+    import Velocity from 'velocity-animate'
+    import ChooseCardFrame from "../components/ChooseCardFrame";
+    import ChooseEffectFrame from "../components/ChooseEffectFrame";
+    import EndButton from "../components/EndButton";
+    import TalkDialog from "../components/TalkDialog";
+    import TaskPanel from "../components/TaskPanel";
+    import CardStatusPanel from "../components/CardStatusPanel";
+    import LevelUpDialog from "../components/LevelUpDialog";
+    import animationUtils from "../animationUtils";
 
-export default {
-    name: "GameTable",
-    components: {Card},
-    data() {
-        return {
-            matchDialogShow: false,
-            count: 0,
-            userId: new Date().getTime(),
-            showCanvas: false,
+    export default {
+        name: 'GameTable',
+        components: {
+            LevelUpDialog, CardStatusPanel, TaskPanel, TalkDialog, EndButton, 
+            ChooseEffectFrame, ChooseCardFrame, TipDialog, ErrorDialog, Card, 
+            WinDialog, NormalDialog
+        },
+        data() {
+            return {
+                startGame: false,
+                gameData: {
+                    myCard: [],
+                    myTableCard: [],
+                    otherTableCard: [],
+                    myLife: 0,
+                    myFee: 0,
+                    myMaxFee: 0,
+                    otherLife: 0,
+                    otherFee: 0,
+                    otherMaxFee: 0,
+                    myMaxThinkTimeNumber: 120,
+                    myInfo: {},
+                    otherInfo: {}
+                },
+                myNickname: "",
+                otherNickname: "",
+                roomNumber: -1,
+                isMyTurn: false,
+                currentCardIndex: -1,
+                currentTableCardK: -1,
+                chooseDialogShow: false,
+                chooseEffectDialogShow: false,
+                chooseEffectIndex: 0,
+                chooseCardList: [],
+                chooseEffectList: [],
+                chooseEffectAnswer: [],
+                currentChooseIndex: 0,
+                currentChooseEffectIndex: 0,
+                matchDialogShow: true,
+                tipDialogShow: false,
+                winDialogShow: false,
+                errorDialogShow: false,
+                talkDialogShow: false,
+                levelUpDialogShow: false,
+                normalDialogShow: false,
+                tipText: "",
+                winText: "",
+                errorText: "",
+                normalDialogText: "",
+                reward: null,
+                talkList: [], // 对话列表
+                currentTalk: {}, // 当前对话
+                taskList: [], // 任务列表
+                animationQueue: [], // 动画列表
 
-            windowWidth: 1920,
-            windowHeight: 1080,
+                showCanvas: false,
+                windowWidth: 1000,
+                windowHeight: 1000,
 
-            gameData: {
-                myCard: [], // 手牌
+                effectCard: {},
+
+                hoverCard: null,
+
+                isAnimating: false, // 当前是否有动画在执行
+            }
+        },
+        computed: {
+            ...mapGetters({
+                chooseCardsId: 'chooseCardsId'
+            }),
+        },
+        mounted() {
+            this.isPve = this.$route.path === '/pve';
+
+            if (!this.isPve && this.chooseCardsId === -1) {
+                this.$router.push("/chooseCards");
+                return
+            }
+            this.initCommonValue();
+
+            this.socket = io.connect(`${host}:${port}`);
+
+            this.registerSocketEvent();
+
+            this.connectSocketServer();
+
+            this.registerOutCardEvent();
+        },
+        beforeDestroy() {
+            window.onmousemove = null;
+            window.onmouseup = null;
+            this.socket.disconnect();
+        },
+        methods: {
+
+            /**
+             * 连接服务器
+             */
+            connectSocketServer() {
+                this.socket.emit("COMMAND", {
+                    type: "CONNECT",
+                    r: this.roomNumber,
+                    userId: sessionStorage.getItem("userId"),
+                    cardsId: this.chooseCardsId,
+                    isPve: this.isPve
+                })
             },
 
-            currentCardIndex: -1
-        };
-    },
-    mounted() {
-        this.socket = io.connect("http://localhost:4001");
-
-        this.socket.emit("COMMAND", {
-            type: "CONNECT",
-            userId: this.userId
-        });
-        this.socket.on("WAITE", () => {
-            this.matchDialogShow = true;
-        });
-
-        this.socket.on("START", result => {
-            this.count = result.start;
-            this.matchDialogShow = false;
-            this.roomNumber = result.roomNumber;
-        });
-
-        this.socket.on("UPDATE", args => {
-            this.count = args.count;
-        });
-
-        this.socket.on("ATTACK_CARD", (param) => {
-            if (param.attackType === AttackType.ATTACK) {
-                this.attackAnimate(param.index, param.attackIndex)
-            } else {
-                this.attackAnimate(param.attackIndex, param.index)
-            }
-        });
-
-        this.socket.on("DIE_CARD", (param) => {
-            const {isMine, myKList, otherKList} = param;
-
-            let myCardList, otherCardList;
-            
-            if (isMine) {
-                myCardList = this.gameData.myTableCard;
-                otherCardList = this.gameData.otherTableCard;
-            } else {
-                myCardList = this.gameData.otherTableCard;
-                otherCardList = this.gameData.myTableCard;
-            }
-
-            setTimeout(() => {
-                myKList.forEach((k) => {
-                    let index = myCardList.findIndex(c => c.k === k);
-                    myCardList.splice(index, 1);
-                });
-
-                otherKList.forEach((k) => {
-                    let index = otherCardList.findIndex(c => c.k === k);
-                    otherCardList.splice(index, 1);
-                })
-            }, 920);
-            
-        });
-
-        this.socket.on("SEND_CARD", (param) => {
-            this.gameData = Object.assign({}, this.gameData, param);
-        });
-
-        this.socket.on("OUT_CARD", (param) => {
-            const {index, card, isMine} = param;
-
-            if (isMine) {
-                if (index !== -1) {
-                    this.gameData.myCard.splice(index, 1);
+            /**
+             * 结束回合
+             */
+            endMyTurn() {
+                if (this.gameData.gameMode === GameMode.PVE1) {
+                    this.socket.emit("COMMAND", {
+                        type: "RESTART",
+                        r: this.roomNumber
+                    });
+                } else {
+                    this.socket.emit("COMMAND", {
+                        type: "END_MY_TURN",
+                        r: this.roomNumber
+                    });
                 }
 
-                this.gameData.myTableCard.push(card)
-            } else {
-                this.gameData.otherTableCard.push(card)
-            }
-        })
+                this.isMyTurn = false;
+                clearTimeout(this.thinkTimeOutId);
+                clearTimeout(this.thinkTimeOutErrorId);
+                this.resetAllCurrentCard();
+            },
 
-        this.windowWidth = window.innerWidth;
-        this.windowHeight = window.innerHeight;
-
-        window.onresize = () => {
-            this.windowWidth = window.innerWidth;
-            this.windowHeight = window.innerHeight;
-        }
-        this.registerOutCardEvent();
-
-        this.myCardAreaDom = document.querySelector(".my-card-area");
-        this.otherCardAreaDom = document.querySelector(".other-card-area");
-    },
-    methods: {
-        add() {
-            this.socket.emit("ADD", {
-                userId: this.userId
-            });
-        },
-
-        registerOutCardEvent() {
-            this.canvasContext = document.querySelector("#animationCanvas").getContext("2d");
-
-            window.onmousemove = (e) => {
-                if (window.isCardDrag) {
-                    window.cardMoveX = e.pageX;
-                    window.cardMoveY = e.pageY;
+            /**
+             * 选择卡片
+             * @param index 我手上的卡片
+             */
+            chooseCard(index) {
+                if (this.isMyTurn) {
+                    this.currentCardIndex = index;
                 }
+            },
 
-                if (window.isAttackDrag) {
-                    window.requestAnimationFrame(() => {
-                        // 绘制攻击箭头开始
-                        this.canvasContext.clearRect(0, 0, this.windowWidth, this.windowHeight);
-                        this.canvasContext.strokeStyle = 'maroon';
-                        this.canvasContext.fillStyle = 'maroon';
-
-
-                        this.canvasContext.save();
-                        this.canvasContext.setLineDash([40, 10]);
-                        this.canvasContext.lineWidth = 30;
-
-                        this.canvasContext.beginPath();
-                        this.canvasContext.moveTo(this.attackStartX, this.attackStartY);
-                        this.canvasContext.lineTo(e.pageX, e.pageY);
-                        this.canvasContext.fill();
-                        this.canvasContext.stroke();
-                        this.canvasContext.restore();
-
-                        this.canvasContext.save();
-                        this.canvasContext.beginPath();
-                        this.canvasContext.lineCap = 'square';
-                        this.canvasContext.translate(e.pageX, e.pageY);
-                        let getLineRadians = () => { // 计算直线当前的角度
-                            let _a = e.pageX - this.attackStartX;
-                            let _b = e.pageY - this.attackStartY;
-                            let _c = Math.hypot(_a, _b);
-                            return Math.acos(_a / _c) * Math.sign(_b);
-                        };
-                        this.canvasContext.rotate(getLineRadians() - Math.PI /2);
-                        this.canvasContext.moveTo(35, -40);
-                        this.canvasContext.lineTo(0, 25);
-                        this.canvasContext.lineTo(-35, -40);
-                        this.canvasContext.lineTo(35, -40);
-                        this.canvasContext.fill();
-                        this.canvasContext.stroke();
-                        this.canvasContext.restore();
-                        // 绘制攻击箭头结束
-                    })
+            /**
+             * 选择桌面上我的卡
+             * @param index 我的桌面卡片index
+             * @param event 点击事件
+             */
+            chooseTableCard(index, event) {
+                if (this.isMyTurn && this.gameData.myTableCard[index].isActionable) {
+                    this.currentTableCardK = this.gameData.myTableCard[index].k
                 }
-            }
+                event.preventDefault();
+                event.stopPropagation();
+            },
 
-            window.onmouseup = (e) => {
-                if (window.isCardDrag && this.currentCardIndex !== -1) {
-                    window.isCardDrag = false;
+            /**
+             * 攻击卡牌
+             * @param k 攻击的对方卡片k
+             */
+            attackCard(k) {
+                // TODO 检查k
+                if (this.isMyTurn && this.currentTableCardK !== -1) {
+                    this.socket.emit("COMMAND", {
+                        type: "ATTACK_CARD",
+                        r: this.roomNumber,
+                        myK: this.currentTableCardK,
+                        attackK: k
+                    });
+                    this.resetAllCurrentCard();
+                }
+            },
 
-                    let top = this.myCardAreaDom.offsetTop,
-                        width = this.myCardAreaDom.offsetWidth,
-                        left = this.myCardAreaDom.offsetLeft,
-                        height = this.myCardAreaDom.offsetHeight;
+            /**
+             * 攻击英雄
+             */
+            attackHero() {
+                if (this.isMyTurn && this.currentTableCardK !== -1) {
+                    this.socket.emit("COMMAND", {
+                        type: "ATTACK_HERO",
+                        r: this.roomNumber,
+                        k: this.currentTableCardK
+                    });
+                    this.resetAllCurrentCard();
+                }
+            },
 
-                    let x = e.pageX,
-                        y = e.pageY;
+            /**
+             * 出牌
+             */
+            outCard() {
+                if (this.isMyTurn && this.currentCardIndex !== -1) {
+                    if (this.gameData.myCard[this.currentCardIndex].isTarget) {
+                        let card = this.gameData.myCard[this.currentCardIndex];
+                        if (card.targetType === TargetType.MY_TABLE_CARD) {
+                            this.chooseCardList = this.gameData.myTableCard.slice();
+                        } else if (card.targetType === TargetType.OTHER_TABLE_CARD) {
+                            this.chooseCardList = this.gameData.otherTableCard.slice();
+                        } else if (card.targetType === TargetType.ALL_TABLE_CARD) {
+                            this.chooseCardList =
+                                this.gameData.otherTableCard.slice()
+                                    .concat(this.gameData.myTableCard.slice());
+                        } else if (card.targetType === TargetType.ALL_TABLE_CARD_FILTER_INCLUDE) { // 全桌面卡，过滤条件包含
+                            this.chooseCardList =
+                                this.gameData.otherTableCard
+                                    .slice().filter(i => card.filter.every(t => i.type.indexOf(t) !== -1) && !i.isHide)
+                                    .map(i => Object.assign({}, i, {name: i.name + "(敌方)"}))
+                                    .concat(this.gameData.myTableCard.slice().filter(i => card.filter.every(t => i.type.indexOf(t) !== -1)));
+                        } else if (card.targetType === TargetType.ALL_TABLE_CARD_FILTER_EXCLUDE) {
+                            this.chooseCardList =
+                                this.gameData.otherTableCard
+                                    .slice().filter(i => card.filter.every(t => i.type.indexOf(t) === -1) && !i.isHide)
+                                    .concat(this.gameData.myTableCard
+                                        .slice().filter(i => card.filter.every(t => i.type.indexOf(t) === -1)));
+                        } else if (card.targetType === TargetType.MY_TABLE_CARD_FILTER_INCLUDE) {
+                            this.chooseCardList = this.gameData.myTableCard
+                                .slice().filter(i => card.filter.every(t => i.type.indexOf(t) !== -1));
+                        } else if (card.targetType === TargetType.MY_TABLE_CARD_FILTER_EXCLUDE) {
+                            this.chooseCardList = this.gameData.myTableCard
+                                .slice().filter(i => card.filter.every(t => i.type.indexOf(t) === -1));
+                        } else if (card.targetType === TargetType.OTHER_TABLE_CARD_FILTER_INCLUDE) {
+                            this.chooseCardList = this.gameData.otherTableCard
+                                .slice().filter(i => card.filter.every(t => i.type.indexOf(t) !== -1));
+                        } else if (card.targetType === TargetType.OTHER_TABLE_CARD_FILTER_EXCLUDE) {
+                            this.chooseCardList = this.gameData.otherTableCard
+                                .slice().filter(i => card.filter.every(t => i.type.indexOf(t) === -1));
+                        }
+                        this.chooseDialogShow = true;
 
-                    if (x > left && x < (left + width) && y > top && y < (top + height)) {
+                    } else {
                         this.socket.emit("COMMAND", {
                             type: "OUT_CARD",
                             r: this.roomNumber,
                             index: this.currentCardIndex
-                        })
+                        });
+                        this.resetAllCurrentCard();
                     }
                 }
+            },
 
-                if (window.isAttackDrag) {
-                    window.isAttackDrag = false;
-                    this.showCanvas = false;
-                    this.canvasContext.clearRect(0, 0, this.windowWidth, this.windowHeight);
+            /**
+             * 重置桌面上选择的卡片状态
+             */
+            resetAllCurrentCard() {
+                this.currentTableCardK = -1;
+                this.currentCardIndex = -1;
+            },
 
-                    let x = e.pageX, // 鼠标松开的x
-                        y = e.pageY, // 鼠标松开的y
-                        k = -1; // 用于记录找到的卡牌的index
+            /**
+             * 确定特效卡的选择
+             */
+            confirmChoose(index) {
+                this.currentChooseIndex = index;
 
-                    this.otherCardAreaDom.childNodes.forEach(cd => { // 循环遍历对手的卡牌dom
-                        let top = cd.offsetTop,
-                            width = cd.offsetWidth,
-                            left = cd.offsetLeft,
-                            height = cd.offsetHeight;
+                // 看是否需要选择效果，需要选择效果就显示效果选择框
+                if (this.gameData.myCard[this.currentCardIndex].isNeedToChoose) {
+                    this.chooseEffectList = this.gameData.myCard[this.currentCardIndex].chooseList;
+                    this.chooseEffectIndex = 0;
+                    this.chooseEffectDialogShow = true;
+                    this.chooseDialogShow = false;
+                    this.chooseCardList = [];
+                } else {
+                    this.socket.emit("COMMAND", {
+                        type: "OUT_CARD",
+                        r: this.roomNumber,
+                        index: this.currentCardIndex,
+                        targetIndex: this.currentChooseIndex
+                    });
+                    this.chooseDialogShow = false;
+                    this.chooseCardList = [];
+                    this.currentChooseIndex = 0;
+                    this.resetAllCurrentCard();
+                }
+            },
 
-                        if (x > left && x < (left + width) && y > top && y < (top + height)) { // 边缘检测
-                            k = cd.dataset.k;
+            /**
+             * 取消打出特效卡
+             */
+            cancelChoose() {
+                this.chooseDialogShow = false;
+                this.chooseCardList = [];
+                this.currentChooseIndex = 0;
+                this.resetAllCurrentCard();
+            },
 
-                            this.attackCard(k);
-                        }
+            /**
+             * 确定效果选择
+             */
+            confirmChooseEffect(index) {
+                this.currentChooseEffectIndex = index;
+
+                if (this.chooseEffectIndex === this.chooseEffectList.length - 1) {
+                    this.chooseEffectDialogShow = false;
+                    this.chooseEffectAnswer.push(this.currentChooseEffectIndex);
+                    this.socket.emit("COMMAND", {
+                        type: "OUT_CARD",
+                        r: this.roomNumber,
+                        index: this.currentCardIndex,
+                        targetIndex: this.currentChooseIndex,
+                        effectIndex: this.chooseEffectAnswer
+                    });
+                    this.currentChooseIndex = 0;
+                    this.currentChooseEffectIndex = 0;
+                    this.chooseEffectAnswer = [];
+                    this.chooseEffectIndex = 0;
+                } else {
+                    this.chooseEffectAnswer.push(this.currentChooseEffectIndex);
+                    this.currentChooseEffectIndex = 0;
+                    this.chooseEffectIndex++
+                }
+            },
+
+            /**
+             * 取消效果选择
+             */
+            cancelChooseEffect() {
+                this.currentChooseIndex = 0;
+                this.currentChooseEffectIndex = 0;
+                this.chooseEffectAnswer = [];
+                this.chooseEffectIndex = 0;
+                this.chooseDialogShow = false;
+                this.chooseEffectDialogShow = false;
+                this.chooseCardList = [];
+                this.resetAllCurrentCard();
+            },
+
+            /**
+             * 显示游戏提示
+             * @param text 游戏提示信息
+             */
+            showTip(text) {
+                this.tipDialogShow = true;
+                this.tipText = text;
+                setTimeout(() => {
+                    this.tipDialogShow = false;
+                }, 1000)
+            },
+
+            /**
+             * 显示报错信息
+             * @param text 错误信息
+             */
+            showError(text) {
+                this.errorDialogShow = true;
+                this.errorText = text;
+                setTimeout(() => {
+                    this.errorDialogShow = false;
+                }, 1000)
+            },
+
+            /**
+             * 显示是否获胜的dialog
+             * @param text 是否获胜的信息
+             * @param reward 获胜之后的奖励
+             */
+            showWin(text, reward) {
+                this.winDialogShow = true;
+                this.winText = text;
+                this.reward = reward;
+            },
+
+            /**
+             * 获胜按钮的确定事件
+             */
+            onWinConfirm() {
+                this.$router.push("/chooseCards");
+
+                this.socket.emit("COMMAND", {
+                    type: "WIN_EXIT",
+                    r: this.roomNumber
+                })
+            },
+
+            /**
+             * 获胜按钮确定的文字
+             */
+            getWinConfirmText() {
+                switch (this.gameData.gameMode) {
+                    case GameMode.PVP1:
+                        return "确定";
+                    case GameMode.PVE1:
+                        return "返回主界面"
+                }
+            },
+
+            /**
+             * 获胜对话框中下一步按钮的相对应事件
+             */
+            onWinNext() {
+                if (this.gameData.gameMode === GameMode.PVE1) {
+                    this.socket.emit("COMMAND", {
+                        type: "NEXT_LEVEL",
+                        r: this.roomNumber
                     });
                 }
-            }
-        },
+            },
 
-        onAttackStart({startX, startY}) {
-            this.showCanvas = true;
-            window.isAttackDrag = true;
-            this.attackStartX = startX;
-            this.attackStartY = startY;
-        },
-
-        attackCard(k) {
-            this.socket.emit("COMMAND", {
-                type: "ATTACK_CARD",
-                r: this.roomNumber,
-                myK: this.currentTableCardK,
-                attackK: k
-            })
-        },
-
-        attackAnimate(from, to) {
-            let myDom = this.myCardAreaDom.childNodes[from];
-            let otherDom = this.otherCardAreaDom.childNodes[to];
-
-            let h = otherDom.offsetLeft - myDom.offsetLeft;
-            let v = otherDom.offsetTop + otherDom.offsetHeight - myDom.offsetTop - myDom.parentElement.offsetTop;
-
-            Velocity(myDom, { translateX: h, translateY: v }, {
-                easing: 'ease-in',
-                duration: 200,
-                begin: () => {
-                    myDom.style['transition'] = 'all 0s';
+            /**
+             * 获胜对话框下一步按钮的文字
+             */
+            getWinNextText() {
+                switch (this.gameData.gameMode) {
+                    case GameMode.PVP1:
+                        return "继续匹配";
+                    case GameMode.PVE1:
+                        return "下一关";
                 }
-            }).then(el => {
-                return Velocity(el, { translateX: 0, translateY: 0 }, {
-                    easing: 'ease-out',
-                    duration: 300,
-                    complete: () => {
-                        myDom.style['transition'] = 'all 0.2s';
+            },
+
+            /**
+             * 注册出牌、攻击牌事件
+             */
+            registerOutCardEvent() {
+
+                window.onmousemove = (e) => {
+                    // 出牌时抓起牌移动
+                    if (window.isCardDrag) {
+                        window.cardMoveX = e.pageX;
+                        window.cardMoveY = e.pageY;
                     }
-                })
-            })
-        },
 
-        chooseTableCard(index) {
-            this.currentTableCardK = this.gameData.myTableCard[index].k; 
-        },
+                    if (this.showCanvas) {
+                        // 攻击时绘制箭头
+                        if (window.isAttackDrag) {
+                            window.requestAnimationFrame(() => {
+                                this.canvasContext.clearRect(0, 0, this.windowWidth, this.windowHeight);
+                                this.canvasContext.strokeStyle = 'maroon';
+                                this.canvasContext.fillStyle = 'maroon';
 
-        chooseHandCard(index) {
-            this.currentCardIndex = index;
-        },
-        beforeEnter(el) {
-            el.style['transition'] = "all 0s";
-            el.style.opacity = 0
-        },
-        enter(el, done) {
-            Velocity(el, {scale: 1.3}, {duration: 10})
-                .then(el => {
-                    return Velocity(el, {opacity: 1}, {duration: 300})
+                                // 绘制线
+                                this.canvasContext.save();
+                                this.canvasContext.setLineDash([40, 10]);
+                                this.canvasContext.lineWidth = 30;
+
+                                this.canvasContext.beginPath();
+                                this.canvasContext.moveTo(this.attackStartX, this.attackStartY);
+                                this.canvasContext.lineTo(e.pageX, e.pageY);
+                                this.canvasContext.stroke();
+                                this.canvasContext.restore();
+
+                                // 绘制箭头
+                                this.canvasContext.save();
+                                this.canvasContext.beginPath();
+                                this.canvasContext.lineCap = 'square';
+                                this.canvasContext.translate(e.pageX, e.pageY);
+                                let getLineRadians = () => {
+                                    let _a = e.pageX - this.attackStartX;
+                                    let _b = e.pageY - this.attackStartY;
+                                    let _c = Math.hypot(_a, _b);
+                                    return Math.acos(_a / _c) * Math.sign(_b);
+                                };
+                                this.canvasContext.rotate(getLineRadians() - Math.PI / 2);
+                                this.canvasContext.moveTo(35, -40);
+                                this.canvasContext.lineTo(0, 25);
+                                this.canvasContext.lineTo(-35, -40);
+                                this.canvasContext.lineTo(35, -40);
+                                this.canvasContext.fill();
+                                this.canvasContext.stroke();
+                                this.canvasContext.restore();
+                            });
+                        }
+                    }
+                };
+                window.onmouseup = (e) => {
+                    if (window.isCardDrag && this.isMyTurn && this.currentCardIndex !== -1) {
+                        window.isCardDrag = false;
+
+                        let top = this.myCardAreaDom.offsetTop,
+                            width = this.myCardAreaDom.offsetWidth,
+                            left = this.myCardAreaDom.offsetLeft,
+                            height = this.myCardAreaDom.offsetHeight;
+
+                        let x = e.pageX,
+                            y = e.pageY;
+
+                        if (x > left && x < (left + width) && y > top && y < (top + height)) {
+                            this.outCard()
+                        }
+                    } else if (window.isAttackDrag) {
+                        this.showCanvas = false;
+                        window.isAttackDrag = false;
+                        this.canvasContext.clearRect(0, 0, this.windowWidth, this.windowHeight);
+
+                        let x = e.pageX,
+                            y = e.pageY,
+                            k = -1;
+                        this.otherCardAreaDom.childNodes.forEach((cd) => {
+                            let top = cd.offsetTop,
+                                width = cd.offsetWidth,
+                                left = cd.offsetLeft,
+                                height = cd.offsetHeight;
+
+                            if (x > left && x < (left + width) && y > top && y < (top + height)) {
+                                k = cd.dataset.k;
+                            }
+                        });
+
+                        if (k === -1) {
+                            let top = this.otherHeroInfoDom.offsetTop,
+                                width = this.otherHeroInfoDom.offsetWidth,
+                                left = this.otherHeroInfoDom.offsetLeft,
+                                height = this.otherHeroInfoDom.offsetHeight;
+
+                            if (x > left && x < (left + width) && y > top && y < (top + height)) {
+                                this.attackHero();
+                            } else {
+                                this.currentTableCardK = -1;
+                            }
+                        } else {
+                            this.attackCard(k);
+                        }
+                    }
+                };
+            },
+
+            /**
+             * 注册游戏socket相应事件
+             */
+            registerSocketEvent() {
+                this.socket.on("WAITE", function () {
+                    this.matchDialogShow = true;
+                });
+                this.socket.on("START", (result) => {
+                    this.matchDialogShow = false;
+                    this.showTip("开始对战吧");
+
+                    this.roomNumber = result.roomNumber;
+                    this.startGame = true;
+                    this.tipDialogShow = false;
+                    this.winDialogShow = false;
+                    this.errorDialogShow = false;
+                });
+
+                this.socket.on("RECONNECT", (result) => {
+                    this.matchDialogShow = false;
+                    this.showTip("重连成功");
+
+                    this.roomNumber = result.roomNumber;
+                    this.startGame = true;
+                });
+
+                /**
+                 * 开局
+                 */
+                this.socket.on("INIT_CARD", (value) => {
+                    this.gameData = value;
+                });
+
+                /**
+                 * 轮到我的回合
+                 */
+                this.socket.on("YOUR_TURN", () => {
+                    this.isMyTurn = true;
+                    this.showTip("你的回合");
+                    if (this.gameData.myMaxThinkTimeNumber !== -1) {
+                        this.thinkTimeOutId = setTimeout(() => {
+                            this.endMyTurn();
+                        }, this.gameData.myMaxThinkTimeNumber * 1000);
+
+                        this.thinkTimeOutErrorId = setTimeout(() => {
+                            this.showError("您还有30秒时间")
+                        }, (this.gameData.myMaxThinkTimeNumber - 30) * 1000)
+                    }
+                });
+
+                /**
+                 * 抽卡
+                 */
+                this.socket.on("GET_CARD", (param) => {
+                    if (param.isMine) {
+                        this.gameData.myCard.push(param.card)
+                    }
+                });
+
+                /**
+                 * 攻击英雄
+                 */
+                this.socket.on("ATTACK_HERO", (param) => {
+                    this.animationQueue.push(["ATTACK_HERO", param]);
+                    if (!this.isAnimating) {
+                        this.animationStart();
+                    }
+                });
+
+                /**
+                 * 攻击随从
+                 */
+                this.socket.on("ATTACK_CARD", (param) => {
+                    this.animationQueue.push(["ATTACK_CARD", param]);
+                    if (!this.isAnimating) {
+                        this.animationStart();
+                    }
+                });
+
+                /**
+                 * 打出随从牌
+                 */
+                this.socket.on("OUT_CARD", (param) => {
+                    this.animationQueue.push(["OUT_CARD", param]);
+                    if (!this.isAnimating) {
+                        this.animationStart();
+                    }
+                });
+
+                /**
+                 * 打出效果牌
+                 */
+                this.socket.on('OUT_EFFECT', (param) => {
+                    this.animationQueue.push(["OUT_EFFECT", param]);
+                    if (!this.isAnimating) {
+                        this.animationStart();
+                    }
+                });
+
+                /**
+                 * 卡牌获得增益效果
+                 */
+                this.socket.on('BUFF_CARD', (param) => {
+                    this.animationQueue.push(["BUFF_CARD", param]);
+                    if (!this.isAnimating) {
+                        this.animationStart();
+                    }
+
+
+                });
+
+                this.socket.on("DIE_CARD", (param) => {
+                    this.animationQueue.push(["DIE_CARD", param]);
+                    if (!this.isAnimating) {
+                        this.animationStart();
+                    }
+                });
+
+                /**
+                 * 接收服务端来的牌数据
+                 */
+                this.socket.on("SEND_CARD", (value) => {
+                    this.gameData = Object.assign({}, this.gameData, value);
+                });
+
+                /**
+                 * 结束
+                 */
+                this.socket.on("END_GAME", (param) => {
+                    this.animationQueue.push(["END_GAME", param]);
+                    if (!this.isAnimating) {
+                        this.animationStart();
+                    }
+                    this.startGame = false
+                });
+
+                /**
+                 * 对话信息
+                 */
+                this.socket.on("SEND_TALK", (param) => {
+                    if (Array.isArray(param)) {
+                        this.talkList = this.talkList.concat(param);
+                    } else {
+                        this.talkList.push(param);
+                    }
+
+                    if (!this.talkDialogShow) {
+                        this.talkDialogShow = true;
+                        this.currentTalk = this.talkList.shift();
+                    }
+                });
+
+                /**
+                 * 接收任务
+                 */
+                this.socket.on("SEND_TASK", (param) => {
+                    this.taskList = param
+                });
+
+                /**
+                 * 升级
+                 */
+                this.socket.on("LEVEL_UP", (param) => {
+                    this.animationQueue.push(["LEVEL_UP", param]);
+                    if (!this.isAnimating) {
+                        this.animationStart();
+                    }
+                });
+
+                /**
+                 * 普通日志信息
+                 */
+                this.socket.on("LOG", (text) => {
+                    console.log(text);
+                });
+
+                /**
+                 * 特殊提醒信息
+                 */
+                this.socket.on("ERROR", (text) => {
+                    this.showError(text)
+                });
+
+                /**
+                 * 没有更多关卡的时候
+                 */
+                this.socket.on("NO_MORE_LEVEL", () => {
+                    this.normalDialogShow = true;
+                    this.normalDialogText = "暂时没有更多的关卡，后续剧情请期待下一次的更新。"
                 })
-                .then(el => {
-                    return Velocity(el, {scale: 1}, {duration: 200, complete() {done()}})
-                })
-        },
-        afterEnter(el) {
-            el.style['transition'] = "all 0.2s";
-            el.style.opacity = 1;
-            el.style.transform = '';
+            },
+
+            /**
+             * 卡牌在攻击时需要调用的回调函数
+             */
+            onAttackStart({startX, startY}) {
+                this.showCanvas = true;
+                window.isAttackDrag = true;
+                this.attackStartX = startX;
+                this.attackStartY = startY;
+            },
+
+            /**
+             * 初始化游戏的一些参数
+             */
+            initCommonValue() {
+                this.myCardAreaDom = document.querySelector(".my-card-area");
+                this.otherCardAreaDom = document.querySelector(".other-card-area");
+                this.otherHeroInfoDom = this.$refs["otherHeroInfo"];
+                this.myHeroInfoDom = this.$refs["myHeroInfo"];
+                this.effectDialogDom = document.querySelector("#effectDialog");
+
+                this.canvasContext = document.getElementById("animationCanvas").getContext('2d');
+
+                this.windowWidth = window.innerWidth;
+                this.windowHeight = window.innerHeight;
+
+                window.onresize = () => {
+                    this.windowWidth = window.innerWidth;
+                    this.windowHeight = window.innerHeight;
+                }
+            },
+
+            /**
+             * 显示下一句对话
+             */
+            nextTalk() {
+                if (this.talkList.length !== 0) {
+                    this.currentTalk = this.talkList.shift();
+                } else {
+                    this.talkDialogShow = false
+                }
+            },
+
+            /**
+             * 升级对话框确认
+             */
+            levelUpDialogConfirm() {
+                this.levelUpDialogShow = false;
+            },
+
+            /**
+             * 悬浮在卡片上的事件
+             * @param card 卡片数据
+             */
+            onHoverCard(card) {
+                this.hoverCard = card;
+            },
+
+            /**
+             * 整个动画的响应事件，动画队列
+             */
+            animationStart() {
+                if (this.animationQueue.length !== 0) {
+                    let currentAnimation = this.animationQueue.shift();
+                    let type = currentAnimation[0], param = currentAnimation[1];
+                    this.isAnimating = true;
+
+                    switch(type) {
+                        case "DIE_CARD":
+                            (function(thiz) {
+                                const { isMine, myKList, otherKList } = param;
+                                let myCardList, otherCardList;
+                                if (isMine) {
+                                    myCardList = thiz.gameData.myTableCard;
+                                    otherCardList = thiz.gameData.otherTableCard;
+                                } else {
+                                    myCardList = thiz.gameData.otherTableCard;
+                                    otherCardList = thiz.gameData.myTableCard;
+                                }
+                                myKList.forEach((k) => {
+                                    let index = myCardList.findIndex(c => c.k === k);
+                                    myCardList.splice(index, 1);
+                                });
+                                otherKList.forEach((k) => {
+                                    let index = otherCardList.findIndex(c => c.k === k);
+                                    otherCardList.splice(index, 1);
+                                });
+                                setTimeout(() => {
+                                    thiz.animationStart();
+                                }, 920);
+                            })(this);
+                            break;
+                        case "ATTACK_CARD":
+                            (function(thiz) {
+
+                                let index = thiz.gameData.myTableCard.findIndex(c => c.k === param.card.k);
+                                let attackIndex = thiz.gameData.otherTableCard.findIndex(c => c.k === param.attackCard.k);
+
+                                if (index === -1 || attackIndex === -1) {
+                                    return
+                                }
+
+                                if (param.attackType === AttackType.ATTACK) {
+                                    let myDom = thiz.myCardAreaDom.childNodes[index];
+                                    let otherDom = thiz.otherCardAreaDom.childNodes[attackIndex];
+
+                                    let h = otherDom.offsetLeft - myDom.offsetLeft;
+                                    let v = otherDom.offsetTop + otherDom.offsetHeight - myDom.offsetTop - myDom.parentElement.offsetTop;
+
+                                    Velocity(myDom, { translateX: h, translateY: v }, {
+                                        easing: 'ease-in',
+                                        duration: 200,
+                                        begin: () => {
+                                            thiz.isAnimating = true;
+                                            myDom.style['transition'] = "all 0s";
+                                        }
+                                    }).then(el => {
+                                        return Velocity(el, { translateX: 0, translateY: 0 }, {
+                                            easing: 'ease-out',
+                                            duration: 300,
+                                            complete: () => {
+                                                thiz.isAnimating = false;
+                                                myDom.style['transition'] = "all 0.2s";
+
+                                                if (index !== -1) {
+                                                    vm.$set(thiz.gameData.myTableCard, index, param.card);
+                                                }
+                                                if (attackIndex !== -1) {
+                                                    vm.$set(thiz.gameData.otherTableCard, attackIndex, param.attackCard);
+                                                }
+                                                thiz.animationStart();
+                                            }
+                                        })
+                                    })
+                                } else if (param.attackType === AttackType.BE_ATTACKED) {
+                                    let myDom = thiz.otherCardAreaDom.childNodes[index];
+                                    let otherDom = thiz.myCardAreaDom.childNodes[attackIndex];
+
+                                    let h = myDom.offsetLeft - otherDom.offsetLeft;
+                                    let v = myDom.offsetTop + myDom.offsetHeight - otherDom.offsetTop;
+                                    Velocity(myDom, { translateX: h, translateY: v }, {
+                                        easing: 'ease-in',
+                                        duration: 200,
+                                        begin: () => {
+                                            thiz.isAnimating = true;
+                                            myDom.style['transition'] = "all 0s";
+                                        }
+                                    }).then(el => {
+                                        return Velocity(el, { translateX: 0, translateY: 0 }, {
+                                            easing: 'ease-out', duration: 300, complete: () => {
+                                                thiz.isAnimating = false;
+                                                myDom.style['transition'] = "all 0.2s";
+
+                                                if (attackIndex !== -1) {
+                                                    vm.$set(thiz.gameData.myTableCard, attackIndex, param.attackCard);
+                                                }
+                                                if (index !== -1) {
+                                                    vm.$set(thiz.gameData.otherTableCard, index, param.card);
+                                                }
+                                                thiz.animationStart();
+                                            }
+                                        })
+                                    })
+                                }
+                            })(this);
+                            break;
+                        case "OUT_EFFECT":
+                            (function(thiz) {
+                                const {index, card, isMine, myHero, otherHero} = param;
+                                thiz.effectCard = card;
+                                if (isMine) {
+                                    if (index !== -1) {
+                                        thiz.gameData.myCard.splice(index, 1);
+                                    }
+                                    Velocity(thiz.effectDialogDom, {translateY: 2000}, {duration: 1})
+                                        .then(el => {
+                                            return Velocity(el, {translateY: 0, opacity: 1}, {
+                                                duration: 400,
+                                                begin: () => {
+                                                    thiz.effectDialogDom.style.display = 'block';
+                                                    if (card.animationName === 'normalAoe') {
+                                                        animationUtils.normalAoe(thiz.canvasContext, thiz);
+                                                    }
+                                                },
+                                                complete: () => {
+                                                    thiz.animationStart();
+                                                }
+                                            })
+                                        })
+                                        .then(el => {
+                                            return Velocity(el, {opacity: 0}, {duration: 300, delay: 600, complete: () => thiz.effectDialogDom.style.display = 'none'})
+                                        });
+
+                                    thiz.gameData.myLife = myHero.life;
+                                    thiz.gameData.myFee = myHero.fee;
+                                    thiz.gameData.myMaxFee = myHero.maxFee;
+                                    thiz.gameData.myMaxThinkTimeNumber = myHero.maxThinkTimeNumber;
+
+                                    thiz.gameData.otherLife = otherHero.life;
+                                    thiz.gameData.otherFee = otherHero.fee;
+                                    thiz.gameData.otherMaxFee = otherHero.maxFee;
+
+                                } else {
+                                    Velocity(thiz.effectDialogDom, {translateY: 2000}, {duration: 1})
+                                        .then(el => {
+                                            return Velocity(el, {translateY: 0, opacity: 1}, {
+                                                duration: 400,
+                                                begin: () => {
+                                                    thiz.effectDialogDom.style.display = 'block';
+                                                },
+                                                complete: () => {
+                                                    thiz.animationStart();
+                                                }
+                                            })
+                                        })
+                                        .then(el => {
+                                            return Velocity(el, {opacity: 0}, {duration: 300, delay: 600, complete: () => thiz.effectDialogDom.style.display = 'none'})
+                                        });
+
+                                    thiz.gameData.myLife = myHero.life;
+                                    thiz.gameData.myFee = myHero.fee;
+                                    thiz.gameData.myMaxFee = myHero.maxFee;
+                                    thiz.gameData.myMaxThinkTimeNumber = myHero.maxThinkTimeNumber;
+
+                                    thiz.gameData.otherLife = otherHero.life;
+                                    thiz.gameData.otherFee = otherHero.fee;
+                                    thiz.gameData.otherMaxFee = otherHero.maxFee;
+                                }
+                            })(this);
+                            break;
+                        case "OUT_CARD":
+                            (function(thiz) {
+                                const {index, toIndex, card, isMine, myHero, otherHero} = param;
+
+                                if (isMine) {
+                                    if (index !== -1) {
+                                        thiz.gameData.myCard.splice(index, 1);
+                                    }
+                                    if (toIndex === -1) {
+                                        thiz.gameData.myTableCard.push(card)
+                                    } else {
+                                        thiz.gameData.myTableCard.splice(toIndex, 0, card)
+                                    }
+
+                                    thiz.gameData.myLife = myHero.life;
+                                    thiz.gameData.myFee = myHero.fee;
+                                    thiz.gameData.myMaxFee = myHero.maxFee;
+                                    thiz.gameData.myMaxThinkTimeNumber = myHero.maxThinkTimeNumber;
+
+                                    thiz.gameData.otherLife = otherHero.life;
+                                    thiz.gameData.otherFee = otherHero.fee;
+                                    thiz.gameData.otherMaxFee = otherHero.maxFee;
+
+                                } else {
+                                    if (toIndex === -1) {
+                                        thiz.gameData.otherTableCard.push(card)
+                                    } else {
+                                        thiz.gameData.otherTableCard.splice(toIndex, 0, card)
+                                    }
+
+                                    thiz.gameData.myLife = myHero.life;
+                                    thiz.gameData.myFee = myHero.fee;
+                                    thiz.gameData.myMaxFee = myHero.maxFee;
+                                    thiz.gameData.myMaxThinkTimeNumber = myHero.maxThinkTimeNumber;
+
+                                    thiz.gameData.otherLife = otherHero.life;
+                                    thiz.gameData.otherFee = otherHero.fee;
+                                    thiz.gameData.otherMaxFee = otherHero.maxFee;
+                                }
+                                thiz.animationStart();
+                            })(this);
+                            break;
+                        case "ATTACK_HERO":
+                            (function(thiz) {
+                                if (param.attackType === AttackType.ATTACK) {
+                                    let index = thiz.gameData.myTableCard.findIndex(c => c.k === param.k);
+                                    let myDom = thiz.myCardAreaDom.childNodes[index];
+                                    let otherDom = thiz.otherHeroInfoDom;
+
+                                    let h = otherDom.offsetLeft - myDom.offsetLeft;
+                                    let v = otherDom.offsetTop + otherDom.offsetHeight - myDom.offsetTop - myDom.parentElement.offsetTop;
+
+                                    Velocity(myDom, { translateX: h, translateY: v }, {
+                                        duration: 300,
+                                        begin: () => {
+                                            thiz.isAnimating = true;
+                                            myDom.style['transition'] = "all 0s";
+                                        }
+                                    }).then(el => {
+                                        return Velocity(el, { translateX: 0, translateY: 0 }, {
+                                            duration: 400, complete: () => {
+                                                thiz.isAnimating = false;
+                                                myDom.style['transition'] = "all 0.2s";
+                                                thiz.gameData.otherLife = param.hero.life;
+                                                thiz.gameData.myTableCard[index] = param.card;
+                                                thiz.animationStart();
+                                            }
+                                        })
+                                    })
+
+                                } else if (param.attackType === AttackType.BE_ATTACKED) {
+                                    let index = thiz.gameData.otherTableCard.findIndex(c => c.k === param.k);
+                                    let myDom = thiz.otherCardAreaDom.childNodes[index];
+                                    let otherDom = thiz.myHeroInfoDom;
+
+                                    let h = otherDom.offsetLeft - myDom.offsetLeft;
+                                    let v = otherDom.offsetTop - myDom.offsetTop - myDom.offsetHeight;
+
+                                    Velocity(myDom, { translateX: h, translateY: v }, {
+                                        duration: 300,
+                                        begin: () => {
+                                            thiz.isAnimating = true;
+                                            myDom.style['transition'] = "all 0s";
+                                        }
+                                    }).then(el => {
+                                        return Velocity(el, { translateX: 0, translateY: 0 }, {
+                                            duration: 400, complete: () => {
+                                                thiz.isAnimating = false;
+                                                myDom.style['transition'] = "all 0.2s";
+                                                thiz.gameData.myLife = param.hero.life;
+                                                thiz.gameData.otherTableCard[index] = param.card;
+                                                thiz.animationStart();
+                                            }
+                                        })
+                                    })
+                                }
+                            })(this);
+                            break;
+                        case "BUFF_CARD":
+                            (function(thiz) {
+                                const {fromCard: card, toCard, isMine} = param;
+
+                                let myTableCard, otherTableCard;
+                                if (isMine) {
+                                    myTableCard = thiz.gameData.myTableCard;
+                                    otherTableCard = thiz.gameData.otherTableCard;
+                                } else {
+                                    myTableCard = thiz.gameData.otherTableCard;
+                                    otherTableCard = thiz.gameData.myTableCard;
+                                }
+                                let tableIndex;
+                                switch(card.targetType) {
+                                    case TargetType.MY_TABLE_CARD:
+                                    case TargetType.MY_TABLE_CARD_FILTER_INCLUDE:
+                                    case TargetType.MY_TABLE_CARD_FILTER_EXCLUDE:
+                                        tableIndex = myTableCard.findIndex(c => c.k === toCard.k);
+                                        if (tableIndex !== -1) {
+                                            window.vm.$set(myTableCard, tableIndex, toCard)
+                                        }
+                                        break;
+                                    case TargetType.OTHER_TABLE_CARD:
+                                    case TargetType.OTHER_TABLE_CARD_FILTER_INCLUDE:
+                                    case TargetType.OTHER_TABLE_CARD_FILTER_EXCLUDE:
+                                        tableIndex = otherTableCard.findIndex(c => c.k === toCard.k);
+                                        if (tableIndex !== -1) {
+                                            window.vm.$set(otherTableCard, tableIndex, toCard)
+                                        }
+                                        break;
+                                    case TargetType.ALL_TABLE_CARD:
+                                    case TargetType.ALL_TABLE_CARD_FILTER_INCLUDE:
+                                    case TargetType.ALL_TABLE_CARD_FILTER_EXCLUDE:
+                                        tableIndex = myTableCard.findIndex(c => c.k === toCard.k);
+                                        if (tableIndex !== -1) {
+                                            window.vm.$set(myTableCard, tableIndex, toCard)
+                                        } else {
+                                            tableIndex = otherTableCard.findIndex(c => c.k === toCard.k);
+                                            if (tableIndex !== -1) {
+                                                window.vm.$set(otherTableCard, tableIndex, toCard)
+                                            }
+                                        }
+                                        break;
+                                }
+                                thiz.animationStart();
+                            })(this);
+                            break;
+                        case "END_GAME":
+                            (function(thiz) {
+                                if (param.win) {
+                                    thiz.showWin("您胜利了", param.reward)
+                                } else {
+                                    thiz.showWin("您失败了", param.reward)
+                                }
+                                thiz.animationStart();
+                            })(this);
+                            break;
+                        case "LEVEL_UP":
+                            (function(thiz) {
+                                thiz.levelUpDialogShow = true;
+                                thiz.animationStart();
+                            })(this);
+                            break;
+                    }
+
+                } else {
+                    this.isAnimating = false;
+                }
+            },
+
+            beforeEnter(el) {
+                el.style['transition'] = "all 0s";
+                el.style.opacity = 0
+            },
+            enter(el, done) {
+                Velocity(el, {scale: 1.3}, {duration: 10})
+                    .then(el => {
+                        return Velocity(el, {opacity: 1}, {duration: 300})
+                    })
+                    .then(el => {
+                        return Velocity(el, {scale: 1}, {duration: 200, complete() {done()}})
+                    })
+            },
+            afterEnter(el) {
+                el.style['transition'] = "all 0.2s";
+                el.style.opacity = 1;
+                el.style.transform = '';
+            },
+            beforeLeave(el) {
+                el.style['transition'] = "all 0s";
+            },
+            leave(el, done) {
+                let xMax = 7;
+                Velocity(el, {translateX: xMax}, { duration: 40 })
+                    .then(el => {
+                        return Velocity(el, {translateX: xMax * -1, translateY: xMax * -1}, { duration: 40 })
+                    })
+                    .then(el => {
+                        return Velocity(el, {translateX: xMax, translateY: xMax * -1}, { duration: 40 })
+                    })
+                    .then(el => {
+                        return Velocity(el, {translateX: xMax/-2}, { duration: 40 })
+                    })
+                    .then(el => {
+                        return Velocity(el, {translateX: xMax/2, translateY: xMax / 2}, { duration: 40 })
+                    })
+                    .then(el => {
+                        return Velocity(el, {translateX: xMax/-2}, { duration: 40 })
+                    })
+                    .then(el => {
+                        return Velocity(el, {translateX: xMax/2, translateY: xMax / -2}, { duration: 40 })
+                    })
+                    .then(el => {
+                        return Velocity(el, {translateX: 0, translateY: 0}, { duration: 40 })
+                    })
+                    .then(el => {
+                        return Velocity(el, {translateX: 0, opacity: 0}, {
+                            duration: 250, delay: 250, complete: () => {done();}
+                        })
+                    })
+            },
+            beforeHandCardEnter(el) {
+                el.style['transition'] = "all 0s";
+            },
+            handCardEnter(el, done) {
+                Velocity(el, {translateX: 2000}, {duration: 1})
+                    .then(el => {
+                        return Velocity(el, {translateX: 0}, {duration: 1000, easing: 'ease-out', complete: () => {done()}})
+                    })
+            },
+            afterHandCardEnter(el) {
+                el.style['transition'] = "all 0.2s";
+                el.style.transform = '';
+            },
+            beforeHandCardLeave(el) {
+                el.style['transition'] = "all 0s";
+                el.style['position'] = 'absolute';
+            },
+            handCardLeave(el, done) {
+                Velocity(el, {opacity: 0}, { duration: 1, complete() { done() } })
+            },
+
+            normalDialogConfirm() {
+                this.normalDialogShow = false;
+                this.$router.push("/mainMenu");
+            }
         }
     }
-};
 </script>
 
 <style scoped>
@@ -346,45 +1341,77 @@ export default {
         height: 100%;
         overflow: hidden;
         user-select: none;
+        background-color: #CDDCDC;
+        background-image: radial-gradient(at 50% 100%, rgba(255,255,255,0.50) 0%, rgba(0,0,0,0.50) 100%), linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, rgba(0,0,0,0.25) 100%);
+        background-blend-mode: screen, overlay;
     }
 
     .my-card {
         position: absolute;
         bottom: 20px;
         width: 100%;
-        min-height: 170px;
         display: flex;
         justify-content: center;
-        background: #f00;
     }
 
     .table {
         width: 100%;
         height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .end-button {
+        position: absolute;
+        right: 30px;
+        bottom: calc(33% + 190px);
     }
 
     .my-card-area {
         width: 100%;
         height: 33%;
-        min-height: 170px;
         position: absolute;
         bottom: 210px;
         display: flex;
         padding: 10px;
         box-sizing: border-box;
         justify-content: center;
-        background-color: #0f0;
+        background-color: #bccbcb;
+        background-image: radial-gradient(at 50% 100%, rgba(255,255,255,0.50) 0%, rgba(0,0,0,0.50) 100%), linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, rgba(0,0,0,0.25) 100%);
+        background-blend-mode: screen, overlay;
     }
 
     .other-card-area {
-        width: 100%;
-        min-height: 170px;
         display: flex;
-        padding: 10px;
         justify-content: center;
-        box-sizing: border-box;
         flex-wrap: wrap;
-        background-color: #00f;
+    }
+
+    .game-start, .game-wait {
+        width: 100%;
+        height: 100%;
+    }
+
+    .game-wait {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .my-hero-info, .other-hero-info {
+        position: absolute;
+        padding: 30px;
+        background: white;
+        right: 0;
+    }
+
+    .my-hero-info {
+        bottom: 0;
+    }
+
+    .other-hero-info {
+        top: 0;
     }
 
     .match-dialog-container {
@@ -402,11 +1429,12 @@ export default {
     }
 
     #animationCanvas {
+        position: absolute;
         width: 100%;
         height: 100%;
-        position: absolute;
         left: 0;
         top: 0;
         z-index: 999;
     }
+
 </style>

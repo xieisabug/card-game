@@ -1,20 +1,24 @@
 {
-  "name": "card-game-server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "mealkey-card-game-server",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./bin/www"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "cors": "^2.8.5",
-    "express": "^4.16.4",
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.4",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "jade": "~1.11.0",
     "log4js": "^3.0.6",
-    "seedrandom": "^3.0.5",
-    "socket.io": "^2.2.0",
+    "moment": "^2.24.0",
+    "mongodb": "^2.2.31",
+    "morgan": "~1.8.1",
+    "seedrandom": "^2.4.4",
+    "serve-favicon": "~2.4.2",
+    "socket.io": "^2.0.3",
     "uuid": "^3.3.2"
   }
 }
