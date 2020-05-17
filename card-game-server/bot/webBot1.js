@@ -6,16 +6,40 @@ class WebBot1 {
     // TODO 模拟亡语和战吼等生命周期效果，不然无法计算出最真实的值
     // TODO 还要处理效果牌的效果
 
-    getAct(myTableCard, otherTableCard, myHandCard, myRemainingCard, fee) {
+    getAct(gameData, myGameData, otherGameData) {
+        let myTableCard = myGameData.tableCards, otherTableCard = otherGameData.tableCards,
+            myHandCard = myGameData.cards, myRemainingCard = myGameData.remainingCards, fee = myGameData.fee;
+
 
         // 循环手牌每一张牌，假设打出这张牌（费用够的情况下），计算打出之后的价值，如果价值最大，就打出这张牌
         // 循环桌面的牌，是否进行攻击
-        let maxValue = -9999999, action = null, remainingFee = fee, nextMyTableCard, nextOtherTableCard, nextMyHandCard;
+        let maxValue = this.checkValue(myTableCard, otherTableCard, myHandCard, myRemainingCard),
+            action = null,
+            remainingFee = fee,
+            nextMyTableCard,
+            nextOtherTableCard,
+            nextMyHandCard;
 
         for (let i = 0; i < myHandCard.length; i++) { // 出牌判断
             if (myHandCard[i].cost <= fee) {
                 let newMyTableCard = myTableCard.slice(), newMyHandCard = myHandCard.slice();
-                newMyTableCard.push(newMyHandCard.splice(i, 1)[0]);
+                let outCard = newMyHandCard.splice(i, 1)[0];
+                newMyTableCard.push(outCard);
+
+                let nextMyGameData = clone(myGameData), nextOtherGameData = clone(otherGameData);
+                nextMyGameData.tableCards = newMyTableCard;
+                nextMyGameData.cards = newMyHandCard;
+                nextMyGameData.fee = fee - outCard.cost;
+
+                if (outCard.onStart) {
+                    outCard.onStart({
+                        myGameData: nextMyGameData,
+                        otherGameData: nextOtherGameData,
+                        thisCard: outCard,
+                        specialMethod: mySpecialMethod
+                    })
+                }
+
                 let value = this.checkValue(newMyTableCard, otherTableCard, newMyHandCard, myRemainingCard);
 
                 console.log("web bot out card", maxValue, value, myHandCard[i]);
@@ -92,9 +116,16 @@ class WebBot1 {
 
         }
 
-        if (maxValue === -9999999) return []; // 没有能行动的情况了
+        if (action === null) return []; // 没有能行动的情况了
 
-        return [action].concat(this.getAct(nextMyTableCard, nextOtherTableCard, nextMyHandCard, myRemainingCard, remainingFee));
+        let nextMyGameData = clone(myGameData), nextOtherGameData = clone(otherGameData);
+        nextMyGameData.tableCards = nextMyTableCard;
+        nextOtherGameData.tableCards = nextOtherTableCard;
+        nextMyGameData.cards = nextMyHandCard;
+        nextMyGameData.remainingCards = myRemainingCard;
+        nextMyGameData.fee = remainingFee;
+
+        return [action].concat(this.getAct(gameData, nextMyGameData, nextOtherGameData));
     }
 
 
@@ -156,6 +187,70 @@ class WebBot1 {
 
     calRemainingCardValue(handCard, remainingCard) {
         return 0
+    }
+}
+
+// TODO 需要实现伪specialMethod
+function getFakeSpecialMethod(gameData) {
+    let identity = "two", otherIdentity = "one";
+
+    return {
+        rand() {
+            return gameData.rand()
+        },
+        getGameCardKForMe() {
+            // memoryData[roomNumber][identity]['cardIndexNo'] += 1;
+            // return identity + '-' + memoryData[roomNumber][identity]['cardIndexNo']
+        },
+        getGameCardKForOther() {
+            // memoryData[roomNumber][otherIdentity]['cardIndexNo'] += 1;
+            // return otherIdentity + '-' + memoryData[roomNumber][otherIdentity]['cardIndexNo']
+        },
+        getRandomCardForMe(number) {
+            // let ret = [];
+            // for (let i = 0; i < number; i++) {
+            //     ret.push(getRandomCard(memoryData[roomNumber].rand, memoryData[roomNumber][identity]['remainingCards']))
+            // }
+            // return ret;
+        },
+        getRandomCardForOther(number) {
+            // let ret = [];
+            // for (let i = 0; i < number; i++) {
+            //     ret.push(getRandomCard(memoryData[roomNumber].rand, memoryData[roomNumber][otherIdentity]['remainingCards']))
+            // }
+            // return ret;
+        },
+        getNextCardForMe(number) {
+            // let ret = [];
+            // for (let i = 0; i < number; i++) {
+            //     ret.push(getNextCard(memoryData[roomNumber][identity]['remainingCards']))
+            // }
+            // return ret;
+        },
+        getNextCardForOther(number) {
+            // let ret = [];
+            // for (let i = 0; i < number; i++) {
+            //     ret.push(getRandomCard(memoryData[roomNumber].rand, memoryData[roomNumber][otherIdentity]['remainingCards']))
+            // }
+            // return ret;
+        },
+        getFilterCardTypeRandomCardForMe(number, cardType) {
+            // let ret = [];
+            // for (let i = 0; i < number; i++) {
+            //     let randomCard = getFilterCardTypeRandomCard(memoryData[roomNumber].rand, memoryData[roomNumber][otherIdentity]['remainingCards'], cardType);
+            //     if (randomCard) {
+            //         ret.push(randomCard)
+            //     }
+            // }
+            // return ret;
+        },
+        outCardAnimation(isMine, card) {},
+        buffCardAnimation(isMine, fromIndex, toIndex, fromCard, toCard) {},
+        getCardAnimation(isMine, card) {},
+        dieCardAnimation(isMine, myKList, otherKList) {},
+        attackCardAnimation(index, attackIndex, card, attackCard) {},
+        checkWin() {},
+        refreshGameData() {}
     }
 }
 

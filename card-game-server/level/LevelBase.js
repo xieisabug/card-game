@@ -1,10 +1,13 @@
 const {GameMode} = require('../constants');
 const {userWinPve} = require('../db');
-const {sleep} = require("../utils");
+const {clone} = require("../utils");
+const seedrandom = require('seedrandom');
 
 class LevelBase {
     constructor(gameData, socketFunction) {
         this.gameData = gameData;
+        this.gameData.seed = Math.floor(Math.random() * 10000);
+        this.gameData.rand = seedrandom(this.gameData.seed);
 
         this.socket = {
             id: "two",
@@ -14,13 +17,16 @@ class LevelBase {
                         if (this.gameData.gameMode === GameMode.PVE1) {
                             this.gameData['one'].socket.emit("END_GAME", {win: false});
                         } else if (this.gameData.gameMode === GameMode.PVE2) {
+                            if (!this.bot) {
+                                console.log("没有ai");
+                                return;
+                            }
 
                             let actList = this.bot.getAct(
-                                this.gameData["two"].tableCards, 
-                                this.gameData["one"].tableCards, 
-                                this.gameData["two"]["cards"],
-                                this.gameData["two"]["remainingCards"], 
-                                this.gameData["two"].fee);
+                                this.gameData,
+                                clone(this.gameData["two"]),
+                                clone(this.gameData["one"])
+                            );
 
                             console.log(actList)
 
