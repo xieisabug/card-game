@@ -789,13 +789,6 @@ const WebCards = [
                 myGameData.tableCards.forEach(c => subCost += ((c.type.indexOf("前端") !== -1) ? 1 : 0));
                 thisCard.cost = (10 - subCost) < 0 ? 0 : (10 - subCost);
             }
-        },
-        onTableCardChange: function ({myGameData, thisCard, position}) {
-            if (position === CardPosition.HANDS) {
-                let subCost = 0;
-                myGameData.tableCards.forEach(c => subCost += ((c.type.indexOf("前端") !== -1) ? 1 : 0));
-                thisCard.cost = (10 - subCost) < 0 ? 0 : (10 - subCost);
-            }
         }
     },
     {

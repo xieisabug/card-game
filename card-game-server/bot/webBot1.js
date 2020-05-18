@@ -1,4 +1,4 @@
-const {range} = require("../utils")
+const {range, clone} = require("../utils")
 const {ComboCardsMap} = require("../constants");
 
 class WebBot1 {
@@ -10,6 +10,7 @@ class WebBot1 {
         let myTableCard = myGameData.tableCards, otherTableCard = otherGameData.tableCards,
             myHandCard = myGameData.cards, myRemainingCard = myGameData.remainingCards, fee = myGameData.fee;
 
+        console.log("thinking", "hand", myHandCard, "table", myTableCard, "otherTable", otherTableCard);
 
         // 循环手牌每一张牌，假设打出这张牌（费用够的情况下），计算打出之后的价值，如果价值最大，就打出这张牌
         // 循环桌面的牌，是否进行攻击
@@ -187,6 +188,7 @@ class WebBot1 {
                 }
 
                 let value = this.checkValue(newMyTableCard, newOtherTableCard, myHandCard, myRemainingCard);
+                console.log("web bot attack card", maxValue, value, attackCard, beAttackCard);
 
                 if (maxValue < value) {
                     maxValue = value;
@@ -234,9 +236,6 @@ class WebBot1 {
         // 对手场面价值算法 = 对手场攻 + 对手怪物生命值 + 对手特殊怪物属性 + 固定组合价值 * 1.5
         // 己方牌库价值 = 固定组合价值
         // 己方手牌价值 = 固定组合价值
-        console.log(myTableCard, (myTableCard.length ? myTableCard.reduce((pre, current) => {
-            return pre + current.attack + current.life + this.calSpecialValue(current)
-        }, 0) : 0));
 
         return (myTableCard.length ? myTableCard.reduce((pre, current) => {
                 return pre + current.attack + current.life + this.calSpecialValue(current)

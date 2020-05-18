@@ -1,3 +1,5 @@
+const cloneDeep = require('lodash/cloneDeep');
+
 function range(start, end, step) {
     if (end === undefined) {
         end = start;
@@ -72,6 +74,9 @@ function getTypeText(text) {
 }
 
 function clone(item) {
+    return cloneDeep(item);
+}
+function clone2(item) {
     if (!item) { return item; } // null, undefined values check
 
     let types = [Number, String, Boolean],
