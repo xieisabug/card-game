@@ -36,8 +36,34 @@ class WebBot1 {
                         myGameData: nextMyGameData,
                         otherGameData: nextOtherGameData,
                         thisCard: outCard,
-                        specialMethod: mySpecialMethod
-                    })
+                        specialMethod: getFakeSpecialMethod(gameData)
+                    });
+                }
+                if (outCard.onMyTurnStart) {
+                    outCard.onMyTurnStart({
+                        myGameData: nextMyGameData,
+                        otherGameData: nextOtherGameData,
+                        thisCard: outCard,
+                        thisCardIndex: newMyTableCard.length - 1,
+                        position: CardPosition.TABLE,
+                        specialMethod: getFakeSpecialMethod(gameData)
+                    });
+                }
+                newMyTableCard.forEach(c => {
+                    if (c.onOtherCardStart) {
+                        c.onOtherCardStart({
+                            myGameData: nextMyGameData,
+                            otherGameData: nextOtherGameData,
+                            thisCard: c,
+                            position: CardPosition.TABLE,
+                            specialMethod: getFakeSpecialMethod(gameData)
+                        })
+                    }
+                });
+
+                if (outCard.isTarget) {
+                    // TODO choose target需要循环
+
                 }
 
                 let value = this.checkValue(newMyTableCard, otherTableCard, newMyHandCard, myRemainingCard);
@@ -81,15 +107,83 @@ class WebBot1 {
                 let newMyTableCard = myTableCard.slice(), newOtherTableCard = otherTableCard.slice(),
                     attackCard = Object.assign({}, newMyTableCard[i]), beAttackCard = Object.assign({}, attackCardList[j]);
 
+                let nextMyGameData = clone(myGameData), nextOtherGameData = clone(otherGameData);
+                nextMyGameData.tableCards = newMyTableCard;
+                nextOtherGameData.tableCards = newOtherTableCard;
+
+                if (attackCard.onAttack) {
+                    attackCard.onAttack({
+                        myGameData: nextMyGameData,
+                        otherGameData: nextOtherGameData,
+                        thisCard: attackCard,
+                        beAttackedCard: beAttackCard,
+                        specialMethod: getFakeSpecialMethod(gameData),
+                    });
+                }
+
+                if (beAttackCard.onBeAttacked) {
+                    beAttackCard.onBeAttacked({
+                        myGameData: nextMyGameData,
+                        otherGameData: nextOtherGameData,
+                        thisCard: beAttackCard,
+                        attackCard: attackCard,
+                        specialMethod: getFakeSpecialMethod(gameData),
+                    })
+                }
+
+                newMyTableCard.forEach(c => {
+                    if (c.onOtherCardAttack && c.k !== card.k) {
+                        c.onOtherCardAttack({
+                            myGameData: nextMyGameData,
+                            otherGameData: nextOtherGameData,
+                            attackCard: attackCard,
+                            beAttackedCard: beAttackCard,
+                            thisCard: c,
+                            specialMethod: getFakeSpecialMethod(gameData),
+                        })
+                    }
+                });
+
+                otherTableCard.forEach(c => {
+                    if (c.onOtherCardBeAttacked && c.k !== attackCard.k) {
+                        c.onOtherCardBeAttacked({
+                            myGameData: nextOtherGameData,
+                            otherGameData: nextMyGameData,
+                            attackCard: attackCard,
+                            beAttackedCard: beAttackCard,
+                            thisCard: c,
+                            specialMethod: getFakeSpecialMethod(gameData),
+                        })
+                    }
+                });
+
                 attackCard.life -= beAttackCard.attack;
                 beAttackCard.life -= attackCard.attack;
 
                 if (attackCard.life <= 0) {
                     newMyTableCard.splice(i, 1);
+
+                    if (attackCard.onEnd) {
+                        attackCard.onEnd({
+                            myGameData: nextMyGameData,
+                            otherGameData: nextOtherGameData,
+                            thisCard: attackCard,
+                            specialMethod: getFakeSpecialMethod(gameData)
+                        });
+                    }
                 }
 
                 if (beAttackCard.life <= 0) {
                     newOtherTableCard.splice(dedicationIndexList[j], 1);
+
+                    if (beAttackCard.onEnd) {
+                        beAttackCard.onEnd({
+                            myGameData: nextOtherGameData,
+                            otherGameData: nextMyGameData,
+                            thisCard: beAttackCard,
+                            specialMethod: getFakeSpecialMethod(gameData)
+                        });
+                    }
                 }
 
                 let value = this.checkValue(newMyTableCard, newOtherTableCard, myHandCard, myRemainingCard);
