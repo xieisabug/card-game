@@ -305,12 +305,11 @@ function endMyTurn(args, socket) {
         && memoryData[roomNumber][other]['remainingCards'].length > 0) {
         memoryData[roomNumber][other]["cards"].push(getNextCard(memoryData[roomNumber][other]['remainingCards']));
     } else {
-        if (memoryData[roomNumber][other]["cards"].length < memoryData[roomNumber][other]["maxHandCardNumber"]) {
+        if (memoryData[roomNumber][other]["cards"].length > memoryData[roomNumber][other]["maxHandCardNumber"]) {
             error(memoryData[roomNumber][other].socket, `您的手牌超过了${memoryData[roomNumber][other]["maxHandCardNumber"]}张，不能抽牌`)
         } else if (memoryData[roomNumber][other]['remainingCards'].length === 0) {
             error(memoryData[roomNumber][other].socket, `没有剩余卡牌了，不能抽牌`)
         }
-        
     }
     let otherSpecialMethod = getSpecialMethod(other, roomNumber);
 
