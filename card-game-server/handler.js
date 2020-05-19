@@ -532,6 +532,7 @@ function attackCard(args, socket) {
         return
     }
 
+    console.log( memoryData[roomNumber]["one"].socket.id, socket.id);
     let belong = memoryData[roomNumber]["one"].socket.id === socket.id ? "one" : "two"; // 判断当前是哪个玩家出牌
     let other = memoryData[roomNumber]["one"].socket.id !== socket.id ? "one" : "two";
 

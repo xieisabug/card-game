@@ -919,10 +919,12 @@
              * 整个动画的响应事件，动画队列
              */
             animationStart() {
+                // console.log("animation start " + new Date().getTime());
                 if (this.animationQueue.length !== 0) {
+                    this.isAnimating = true;
                     let currentAnimation = this.animationQueue.shift();
                     let type = currentAnimation[0], param = currentAnimation[1];
-                    this.isAnimating = true;
+                    console.log("animation start " + type + " ,time :" + new Date().getTime());
 
                     switch(type) {
                         case "DIE_CARD":
@@ -951,9 +953,16 @@
                             break;
                         case "ATTACK_CARD":
                             (function(thiz) {
+                                let index = -1;
+                                let attackIndex = -1;
 
-                                let index = thiz.gameData.myTableCard.findIndex(c => c.k === param.card.k);
-                                let attackIndex = thiz.gameData.otherTableCard.findIndex(c => c.k === param.attackCard.k);
+                                if (param.attackType === AttackType.ATTACK) {
+                                    index = thiz.gameData.myTableCard.findIndex(c => c.k === param.card.k);
+                                    attackIndex = thiz.gameData.otherTableCard.findIndex(c => c.k === param.attackCard.k);
+                                } else if (param.attackType === AttackType.BE_ATTACKED) {
+                                    index = thiz.gameData.otherTableCard.findIndex(c => c.k === param.card.k);
+                                    attackIndex = thiz.gameData.myTableCard.findIndex(c => c.k === param.attackCard.k);
+                                }
 
                                 if (index === -1 || attackIndex === -1) {
                                     return

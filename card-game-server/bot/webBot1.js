@@ -201,6 +201,7 @@ class WebBot1 {
                         i,
                         j: dedicationIndexList[j]
                     };
+                    console.log(" action !!!", action);
 
                     remainingFee = fee;
 
@@ -226,6 +227,7 @@ class WebBot1 {
 
 
     checkValue(myTableCard, otherTableCard, myHandCard, myRemainingCard) {
+        // TODO 需要考虑对方会攻击英雄生命
         // 算法：己方场面价值 + 己方手牌价值 + 己方牌库价值 - 对手场面价值
         // 目的：打出更多的combo，计算出各种出牌的顺序和各种出牌的方法中己方价值最大化的方法
         //
