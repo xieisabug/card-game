@@ -787,8 +787,11 @@
                 /**
                  * 接收服务端来的牌数据
                  */
-                this.socket.on("SEND_CARD", (value) => {
-                    this.gameData = Object.assign({}, this.gameData, value);
+                this.socket.on("SEND_CARD", (param) => {
+                    this.animationQueue.push(["SEND_CARD", param]);
+                    if (!this.isAnimating) {
+                        this.animationStart();
+                    }
                 });
 
                 /**
@@ -1004,8 +1007,8 @@
                                     let myDom = thiz.otherCardAreaDom.childNodes[index];
                                     let otherDom = thiz.myCardAreaDom.childNodes[attackIndex];
 
-                                    let h = myDom.offsetLeft - otherDom.offsetLeft;
-                                    let v = myDom.offsetTop + myDom.offsetHeight - otherDom.offsetTop;
+                                    let h = otherDom.offsetLeft - myDom.offsetLeft;
+                                    let v = otherDom.offsetTop + otherDom.parentElement.offsetTop - (myDom.offsetTop + myDom.offsetHeight);
                                     Velocity(myDom, { translateX: h, translateY: v }, {
                                         easing: 'ease-in',
                                         duration: 200,
@@ -1254,6 +1257,12 @@
                         case "LEVEL_UP":
                             (function(thiz) {
                                 thiz.levelUpDialogShow = true;
+                                thiz.animationStart();
+                            })(this);
+                            break;
+                        case "SEND_CARD":
+                            (function(thiz) {
+                                thiz.gameData = Object.assign({}, thiz.gameData, param);
                                 thiz.animationStart();
                             })(this);
                             break;
