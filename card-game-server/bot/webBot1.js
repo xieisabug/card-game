@@ -246,7 +246,7 @@ class WebBot1 {
             + this.calHandCardValue(myHandCard)
             + this.calRemainingCardValue(myHandCard, myRemainingCard)
             - (otherTableCard.length ? otherTableCard.reduce((pre, current) => {
-                return pre + current.attack + current.life + this.calSpecialValue(current)
+                return pre + current.attack * 1.2 + current.life + this.calSpecialValue(current)
             }, 0) : 0)
     }
 
@@ -259,7 +259,7 @@ class WebBot1 {
         value += (card.onEnd ? 1 : 0);
         value += (card.onMyTurnEnd ? 5 : 0);
         value += (card.onMyTurnStart ? 5 : 0);
-        value += (card.specialValue != undefined ? card.specialValue : 0); // 因为specialValue可以为负数，所以只能直接判断undefined
+        value += (card.specialValue !== undefined ? card.specialValue : 0); // 因为specialValue可以为负数，所以只能直接判断undefined
 
         return value
     }
@@ -275,7 +275,7 @@ class WebBot1 {
     calHandCardValue(myHandCard) {
         myHandCard.forEach(card => { // 遍历手牌，看是否有特殊组合
 
-        })
+        });
 
         return 0;
     }
