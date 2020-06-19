@@ -1,4 +1,4 @@
-const {range, clone} = require("../utils")
+const {range, clone} = require("../utils");
 const {ComboCardsMap} = require("../constants");
 
 class WebBot1 {
@@ -8,13 +8,14 @@ class WebBot1 {
 
     getAct(gameData, myGameData, otherGameData) {
         let myTableCard = myGameData.tableCards, otherTableCard = otherGameData.tableCards,
-            myHandCard = myGameData.cards, myRemainingCard = myGameData.remainingCards, fee = myGameData.fee;
+            myHandCard = myGameData.cards, myRemainingCard = myGameData.remainingCards, fee = myGameData.fee,
+            myLife = myGameData.life, otherLife = otherGameData.life;
 
         console.log("thinking", "hand", myHandCard, "table", myTableCard, "otherTable", otherTableCard);
 
         // 循环手牌每一张牌，假设打出这张牌（费用够的情况下），计算打出之后的价值，如果价值最大，就打出这张牌
         // 循环桌面的牌，是否进行攻击
-        let maxValue = this.checkValue(myTableCard, otherTableCard, myHandCard, myRemainingCard),
+        let maxValue = this.checkValue(myTableCard, otherTableCard, myHandCard, myRemainingCard, myLife, otherLife),
             action = null,
             remainingFee = fee,
             nextMyTableCard,
@@ -67,7 +68,7 @@ class WebBot1 {
 
                 }
 
-                let value = this.checkValue(newMyTableCard, otherTableCard, newMyHandCard, myRemainingCard);
+                let value = this.checkValue(newMyTableCard, otherTableCard, newMyHandCard, myRemainingCard, myLife, otherLife);
 
                 console.log("web bot out card", maxValue, value, myHandCard[i]);
 
@@ -187,7 +188,7 @@ class WebBot1 {
                     }
                 }
 
-                let value = this.checkValue(newMyTableCard, newOtherTableCard, myHandCard, myRemainingCard);
+                let value = this.checkValue(newMyTableCard, newOtherTableCard, myHandCard, myRemainingCard, myLife, otherLife);
                 console.log("web bot attack card", maxValue, value, attackCard, beAttackCard);
 
                 if (maxValue < value) {
@@ -213,6 +214,8 @@ class WebBot1 {
 
         }
 
+        // TODO 攻击英雄
+
         if (action === null) return []; // 没有能行动的情况了
 
         let nextMyGameData = clone(myGameData), nextOtherGameData = clone(otherGameData);
@@ -226,7 +229,7 @@ class WebBot1 {
     }
 
 
-    checkValue(myTableCard, otherTableCard, myHandCard, myRemainingCard) {
+    checkValue(myTableCard, otherTableCard, myHandCard, myRemainingCard, myLife, otherLife) {
         // TODO 需要考虑对方会攻击英雄生命
         // 算法：己方场面价值 + 己方手牌价值 + 己方牌库价值 - 对手场面价值
         // 目的：打出更多的combo，计算出各种出牌的顺序和各种出牌的方法中己方价值最大化的方法
@@ -234,19 +237,25 @@ class WebBot1 {
         //   注: 特殊怪物属性价值计算 = 嘲讽2 + 战吼0 + 亡语1 + 每回合5 + 圣盾1 + 吸血2 + 精力充沛1
         //       固定组合价值 = 固定组合设置价值 + 原卡价值
         //
-        // 己方场面价值算法 = 己方场攻 + 己方怪物生命值 + 己方特殊怪物属性 + 固定组合价值 * 1.5    固定价值乘以一个放大的数字是为了让ai更多的打出combo
-        // 对手场面价值算法 = 对手场攻 + 对手怪物生命值 + 对手特殊怪物属性 + 固定组合价值 * 1.5
+        // 己方场面价值算法 = 己方场攻 * 攻击价值 + 己方怪物生命值 + 己方特殊怪物属性 + 固定组合价值 * 1.5    固定价值乘以一个放大的数字是为了让ai更多的打出combo
+        // 对手场面价值算法 = 对手场攻 * 攻击价值 + 对手怪物生命值 + 对手特殊怪物属性 + 固定组合价值 * 1.5
         // 己方牌库价值 = 固定组合价值
         // 己方手牌价值 = 固定组合价值
 
+        let myLifeRemaining = 50 - myLife, otherLifeRemaining = 30 - otherLife;
+        // 衡量生命危险程度，自己生命越低，敌人的攻击越致命
+        let otherAttackWeight = myLifeRemaining < 0 ? 1 : (1.5 * myLifeRemaining / 50),
+            myAttackWeight = otherLifeRemaining < 0 ? 1 : (1.5 * otherLifeRemaining / 30);
+
+
         return (myTableCard.length ? myTableCard.reduce((pre, current) => {
-                return pre + current.attack + current.life + this.calSpecialValue(current)
+                return pre + current.attack * myAttackWeight + current.life + this.calSpecialValue(current)
             }, 0) : 0)
             + this.comboCardValue(myTableCard)
             + this.calHandCardValue(myHandCard)
             + this.calRemainingCardValue(myHandCard, myRemainingCard)
             - (otherTableCard.length ? otherTableCard.reduce((pre, current) => {
-                return pre + current.attack * 1.2 + current.life + this.calSpecialValue(current)
+                return pre + current.attack * otherAttackWeight + current.life + this.calSpecialValue(current)
             }, 0) : 0)
     }
 
