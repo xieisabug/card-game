@@ -1,9 +1,9 @@
 let {
-    CardType, TargetType, CardMap, CardPosition, MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, MAX_THINK_TIME_NUMBER, 
+    CardType, TargetType, CardMap, CardPosition, MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, MAX_THINK_TIME_NUMBER,
     AttackAnimationType, AttackType, GameMode, UserOperatorType
 } = require('./constants');
 const log4js = require('log4js');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 const {findCardsById, findUserById, findNextLevel, userLevelUp, saveUserOperator} = require('./db');
 const {shuffle, extractHeroInfo, levelCanUp, getLevelUpExp} = require('./utils');
 const {levelList, maxLevelId} = require('./level/level-utils');
@@ -91,6 +91,7 @@ function connect(args, socket, socketServer) {
                         memoryData[roomNumber]['two'] = new levelList[levelId](memoryData[roomNumber], {
                             outCard,
                             attackCard,
+                            attackHero,
                             endMyTurn
                         });
 
@@ -305,12 +306,12 @@ function endMyTurn(args, socket) {
         && memoryData[roomNumber][other]['remainingCards'].length > 0) {
         memoryData[roomNumber][other]["cards"].push(getNextCard(memoryData[roomNumber][other]['remainingCards']));
     } else {
-        if (memoryData[roomNumber][other]["cards"].length < memoryData[roomNumber][other]["maxHandCardNumber"]) {
+        if (memoryData[roomNumber][other]["cards"].length >= memoryData[roomNumber][other]["maxHandCardNumber"]) {
             error(memoryData[roomNumber][other].socket, `您的手牌超过了${memoryData[roomNumber][other]["maxHandCardNumber"]}张，不能抽牌`)
         } else if (memoryData[roomNumber][other]['remainingCards'].length === 0) {
             error(memoryData[roomNumber][other].socket, `没有剩余卡牌了，不能抽牌`)
         }
-        
+
     }
     let otherSpecialMethod = getSpecialMethod(other, roomNumber);
 
@@ -368,7 +369,7 @@ function outCard(args, socket) {
         memoryData[roomNumber][belong]['useCards'].push(Object.assign({outRound: memoryData[roomNumber].round}, card));
         memoryData[roomNumber][belong]["fee"] -= card.cost;
 
-        let mySpecialMethod = getSpecialMethod(belong, roomNumber); 
+        let mySpecialMethod = getSpecialMethod(belong, roomNumber);
 
         if (card.isFullOfEnergy) {
             card.isActionable = true;

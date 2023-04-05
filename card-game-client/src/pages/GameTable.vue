@@ -136,7 +136,7 @@
 
 <script>
     import Card from "../components/Card";
-    import * as io from 'socket.io-client';
+    import { io } from 'socket.io-client';
     import {buildClassName, TargetType, AttackType, GameMode} from "../utils";
     import {mapGetters} from "vuex";
     import {host, port} from "../config";
@@ -982,10 +982,10 @@
                                                 myDom.style['transition'] = "all 0.2s";
 
                                                 if (index !== -1) {
-                                                    vm.$set(thiz.gameData.myTableCard, index, param.card);
+                                                    thiz.gameData.myTableCard[index] = param.card;
                                                 }
                                                 if (attackIndex !== -1) {
-                                                    vm.$set(thiz.gameData.otherTableCard, attackIndex, param.attackCard);
+                                                    thiz.gameData.otherTableCard[attackIndex] = param.attackCard;
                                                 }
                                                 thiz.animationStart();
                                             }
@@ -1011,10 +1011,10 @@
                                                 myDom.style['transition'] = "all 0.2s";
 
                                                 if (attackIndex !== -1) {
-                                                    vm.$set(thiz.gameData.myTableCard, attackIndex, param.attackCard);
+                                                    thiz.gameData.myTableCard[attackIndex] = param.attackCard;
                                                 }
                                                 if (index !== -1) {
-                                                    vm.$set(thiz.gameData.otherTableCard, index, param.card);
+                                                    thiz.gameData.otherTableCard[index] = param.card;
                                                 }
                                                 thiz.animationStart();
                                             }
@@ -1204,7 +1204,7 @@
                                     case TargetType.MY_TABLE_CARD_FILTER_EXCLUDE:
                                         tableIndex = myTableCard.findIndex(c => c.k === toCard.k);
                                         if (tableIndex !== -1) {
-                                            window.vm.$set(myTableCard, tableIndex, toCard)
+                                            myTableCard[tableIndex] = toCard
                                         }
                                         break;
                                     case TargetType.OTHER_TABLE_CARD:
@@ -1212,7 +1212,7 @@
                                     case TargetType.OTHER_TABLE_CARD_FILTER_EXCLUDE:
                                         tableIndex = otherTableCard.findIndex(c => c.k === toCard.k);
                                         if (tableIndex !== -1) {
-                                            window.vm.$set(otherTableCard, tableIndex, toCard)
+                                            otherTableCard[tableIndex] = toCard
                                         }
                                         break;
                                     case TargetType.ALL_TABLE_CARD:
@@ -1220,11 +1220,11 @@
                                     case TargetType.ALL_TABLE_CARD_FILTER_EXCLUDE:
                                         tableIndex = myTableCard.findIndex(c => c.k === toCard.k);
                                         if (tableIndex !== -1) {
-                                            window.vm.$set(myTableCard, tableIndex, toCard)
+                                            myTableCard[tableIndex] = toCard
                                         } else {
                                             tableIndex = otherTableCard.findIndex(c => c.k === toCard.k);
                                             if (tableIndex !== -1) {
-                                                window.vm.$set(otherTableCard, tableIndex, toCard)
+                                                otherTableCard[tableIndex] = toCard
                                             }
                                         }
                                         break;

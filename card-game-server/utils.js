@@ -71,6 +71,69 @@ function getTypeText(text) {
     return `<span style="color: blue">${text}</span>`
 }
 
+function hashState({myTableCard, otherTableCard, myHandCard, myRemainingCard, fee, myLife, otherLife}) {
+    return `${myTableCard.map(i => i.k).join("")}-${otherTableCard.map(i => i.k).join("")}-${myHandCard.map(i => i.k).join("")}-${myRemainingCard.length}-${fee}-${myLife}-${otherLife}`;
+}
+
+function nextStateByAction(state, action) {
+    switch(action.event) {
+        case "OUT_CARD": {
+            let newMyTableCard = state.myTableCard.slice(), newMyHandCard = state.myHandCard.slice();
+            newMyTableCard.push(newMyHandCard.splice(action.i, 1)[0]);
+            return Object.assign({}, state, {
+                myTableCard: newMyTableCard,
+                myHandCard: newMyHandCard,
+                fee: state.fee - action.card.cost,
+            });
+        }
+
+        case "ATTACK_HERO": {
+            let index = state.myTableCard.findIndex(c => c.k === action.k);
+            let newMyTableCard = state.myTableCard.slice(), attackCard = Object.assign({}, state.myTableCard[action.index])
+            attackCard.isActionable = false;
+            newMyTableCard[index] = attackCard;
+
+            return Object.assign({}, state, {
+                myTableCard: newMyTableCard,
+                otherLife: state.otherLife - state.myTableCard[index].attack
+            });
+        }
+        case "ATTACK_CARD":
+        {
+            let newMyTableCard = state.myTableCard.slice(), newOtherTableCard = state.otherTableCard.slice(),
+                attackCard = Object.assign({}, newMyTableCard[action.i]), beAttackCard = Object.assign({}, newOtherTableCard[action.j]);
+
+            attackCard.isActionable = false;
+            attackCard.life -= beAttackCard.attack;
+            beAttackCard.life -= attackCard.attack;
+
+            if (attackCard.life <= 0) {
+                newMyTableCard.splice(action.i, 1);
+            } else {
+                newMyTableCard[action.i] = attackCard;
+            }
+
+            if (beAttackCard.life <= 0) {
+                newOtherTableCard.splice(action.j, 1);
+            } else {
+                newOtherTableCard[action.j] = beAttackCard;
+            }
+
+            return Object.assign({}, state, {
+                myTableCard: newMyTableCard,
+                otherTableCard: newOtherTableCard
+            });
+        }
+        case "END_MY_TURN":
+            return Object.assign({}, state, {
+                isFinish: true
+            });
+        default:
+            return action.event;
+    }
+}
+
+
 module.exports = {
     range,
     shuffle,
@@ -79,5 +142,7 @@ module.exports = {
     levelCanUp,
     getLevelUpExp,
     extractUserCard,
-    getTypeText
+    getTypeText,
+    hashState,
+    nextStateByAction
 };

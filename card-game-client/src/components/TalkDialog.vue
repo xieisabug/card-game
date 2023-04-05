@@ -9,8 +9,8 @@
 
 <script>
     import Velocity from 'velocity-animate'
-    import npcTeacher from "@/assets/npc.png"
-    import npcBad1 from "@/assets/bad1.jpg"
+    import npcTeacher from "../assets/npc.png"
+    import npcBad1 from "../assets/bad1.jpg"
 
     /**
      * npc对话框

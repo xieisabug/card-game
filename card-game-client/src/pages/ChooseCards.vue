@@ -27,6 +27,7 @@
             </div>
             <!-- <button @click="pveMode" class="button" style="margin-top: 20px">剧情模式</button> -->
             <!-- <button class="button" disabled style="margin-top: 20px">合作模式</button> -->
+            <button @click="goToMainMenu" class="button" style="margin-top: 20px">回到首页</button>
 
             <button @click="goToSuggest" class="button" style="margin-top: 20px">提出建议</button>
 
@@ -98,6 +99,9 @@
                     default:
                         return "未知";
                 }
+            },
+            goToMainMenu() {
+                this.$router.push("/mainMenu")
             },
             goToSuggest() {
                 this.$router.push("/suggest")

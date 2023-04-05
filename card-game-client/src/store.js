@@ -1,10 +1,8 @@
 /**
  * Created by Oxygen on 2017/5/26.
  */
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { createStore } from 'vuex';
 
-Vue.use(Vuex);
 
 const INIT_GAME_INFO = 'INIT_GAME_INFO';
 const CHOOSE_CARDS = 'CHOOSE_CARDS';
@@ -54,7 +52,7 @@ const mutations = {
     }
 };
 
-const store = new Vuex.Store({
+const store = createStore({
     state,
     getters,
     mutations,

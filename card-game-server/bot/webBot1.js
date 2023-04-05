@@ -1,162 +1,57 @@
-const {range} = require("../utils")
-const {ComboCardsMap} = require("../constants");
+const MonteCarloTreeSearch = require('./monte-carlo/monte-carlo-tree-search');
+const { nextStateByAction } = require('../utils');
 
 class WebBot1 {
+
+    constructor() {
+        let MAX_DEEP = 10, MAX_TIME = 0.3, UCB1 = 2;
+
+        this.algorithm = new MonteCarloTreeSearch(MAX_DEEP, MAX_TIME, UCB1);
+    }
 
     // TODO 模拟亡语和战吼等生命周期效果，不然无法计算出最真实的值
     // TODO 还要处理效果牌的效果
 
-    getAct(myTableCard, otherTableCard, myHandCard, myRemainingCard, fee) {
-
-        // 循环手牌每一张牌，假设打出这张牌（费用够的情况下），计算打出之后的价值，如果价值最大，就打出这张牌
-        // 循环桌面的牌，是否进行攻击
-        let maxValue = -9999999, action = null, remainingFee = fee, nextMyTableCard, nextOtherTableCard, nextMyHandCard;
-
-        for (let i = 0; i < myHandCard.length; i++) { // 出牌判断
-            if (myHandCard[i].cost <= fee) {
-                let newMyTableCard = myTableCard.slice(), newMyHandCard = myHandCard.slice();
-                newMyTableCard.push(newMyHandCard.splice(i, 1)[0]);
-                let value = this.checkValue(newMyTableCard, otherTableCard, newMyHandCard, myRemainingCard);
-
-                console.log("web bot out card", maxValue, value, myHandCard[i]);
-
-                if (maxValue < value) {
-                    maxValue = value;
-                    action = {
-                        event: "OUT_CARD",
-                        card: Object.assign({}, myHandCard[i]),
-                        index: i
-                    };
-
-                    remainingFee = fee - action.card.cost;
-
-                    nextMyTableCard = newMyTableCard;
-                    nextOtherTableCard = otherTableCard;
-                    nextMyHandCard = newMyHandCard;
-                }
-            }
-        }
-
-        for (let i = 0; i < myTableCard.length; i++) { // 攻击卡牌判断
-            if (!myTableCard[i].isActionable) continue; // 行动过的不需要继续了
-
-            let dedicationIndexList = []; // 如果有嘲讽，必须先攻击嘲讽，如果没有，则随意攻击
-            let attackCardList = [];
-            otherTableCard.forEach((i, index) => {
-                if (i.isDedication) {
-                    dedicationIndexList.push(index);
-                    attackCardList.push(i);
-                }
-            });
-            if (attackCardList.length === 0) {
-                attackCardList = otherTableCard.slice();
-                dedicationIndexList = range(otherTableCard.length)
-            }
-
-            for (let j = 0; j < attackCardList.length; j++) {
-                let newMyTableCard = myTableCard.slice(), newOtherTableCard = otherTableCard.slice(),
-                    attackCard = Object.assign({}, newMyTableCard[i]), beAttackCard = Object.assign({}, attackCardList[j]);
-
-                attackCard.life -= beAttackCard.attack;
-                beAttackCard.life -= attackCard.attack;
-
-                if (attackCard.life <= 0) {
-                    newMyTableCard.splice(i, 1);
-                }
-
-                if (beAttackCard.life <= 0) {
-                    newOtherTableCard.splice(dedicationIndexList[j], 1);
-                }
-
-                let value = this.checkValue(newMyTableCard, newOtherTableCard, myHandCard, myRemainingCard);
-
-                if (maxValue < value) {
-                    maxValue = value;
-                    action = {
-                        event: "ATTACK_CARD",
-                        card: attackCard,
-                        attackCard: beAttackCard,
-                        myK: attackCard.k,
-                        attackK: beAttackCard.k,
-                        i,
-                        j: dedicationIndexList[j]
-                    };
-
-                    remainingFee = fee;
-
-                    nextMyTableCard = newMyTableCard;
-                    nextOtherTableCard = newOtherTableCard;
-                    nextMyHandCard = myHandCard;
-                }
-            }
-
-        }
-
-        if (maxValue === -9999999) return []; // 没有能行动的情况了
-
-        return [action].concat(this.getAct(nextMyTableCard, nextOtherTableCard, nextMyHandCard, myRemainingCard, remainingFee));
-    }
-
-
-    checkValue(myTableCard, otherTableCard, myHandCard, myRemainingCard) {
-        // 算法：己方场面价值 + 己方手牌价值 + 己方牌库价值 - 对手场面价值
-        // 目的：打出更多的combo，计算出各种出牌的顺序和各种出牌的方法中己方价值最大化的方法
-        //
-        //   注: 特殊怪物属性价值计算 = 嘲讽2 + 战吼0 + 亡语1 + 每回合5 + 圣盾1 + 吸血2 + 精力充沛1
-        //       固定组合价值 = 固定组合设置价值 + 原卡价值
-        //
-        // 己方场面价值算法 = 己方场攻 + 己方怪物生命值 + 己方特殊怪物属性 + 固定组合价值 * 1.5    固定价值乘以一个放大的数字是为了让ai更多的打出combo
-        // 对手场面价值算法 = 对手场攻 + 对手怪物生命值 + 对手特殊怪物属性 + 固定组合价值 * 1.5
-        // 己方牌库价值 = 固定组合价值
-        // 己方手牌价值 = 固定组合价值
-        console.log(myTableCard, (myTableCard.length ? myTableCard.reduce((pre, current) => {
-            return pre + current.attack + current.life + this.calSpecialValue(current)
-        }, 0) : 0));
-
-        return (myTableCard.length ? myTableCard.reduce((pre, current) => {
-                return pre + current.attack + current.life + this.calSpecialValue(current)
-            }, 0) : 0)
-            + this.comboCardValue(myTableCard)
-            + this.calHandCardValue(myHandCard)
-            + this.calRemainingCardValue(myHandCard, myRemainingCard)
-            - (otherTableCard.length ? otherTableCard.reduce((pre, current) => {
-                return pre + current.attack + current.life + this.calSpecialValue(current)
-            }, 0) : 0)
-    }
-
-    // 嘲讽2  战吼0  亡语1  每回合5  圣盾1  吸血2  精力充沛1
-    calSpecialValue(card) {
-        let value = 0;
-        value += (card.isDedication ? 2 : 0);
-        value += (card.isStrong ? 1 : 0);
-        value += (card.isFullOfEnergy ? 1 : 0);
-        value += (card.onEnd ? 1 : 0);
-        value += (card.onMyTurnEnd ? 5 : 0);
-        value += (card.onMyTurnStart ? 5 : 0);
-        value += (card.specialValue != undefined ? card.specialValue : 0); // 因为specialValue可以为负数，所以只能直接判断undefined
-
-        return value
-    }
-
     /**
-     * 
-     * @param {*} cardList 
+     * 使用蒙特卡洛树搜索，对于每一个可能的组合，计算出价值，选择最大的组合
+     *
+     * @param {List<Card>} myTableCard 我桌面卡组
+     * @param {List<Card>} otherTableCard 对手桌面卡组
+     * @param {List<Card>} myHandCard 我手牌
+     * @param {List<Card>} myRemainingCard 我剩余卡组
+     * @param {Integer} fee 剩余费用
+     * @returns 选出来的最好的行动组合
      */
-    comboCardValue(cardList) {
-        return 0
+    getRunActionList(myTableCard, otherTableCard, myHandCard, myRemainingCard, fee, myLife, otherLife) {
+        // TODO 如果能够直接击败对方，则直接击败
+        let result = [];
+
+        let action = null, isFinish = false;
+
+        // action = this.algorithm.getBestAction(myTableCard, otherTableCard, myHandCard, myRemainingCard, fee, myLife, otherLife);
+        // console.log("getRunActionList", action);
+
+        while (!isFinish) {
+            action = this.algorithm.getBestAction(myTableCard, otherTableCard, myHandCard, myRemainingCard, fee, myLife, otherLife);
+            console.log("getRunActionList", action);
+            result.push(action);
+
+            let newState = nextStateByAction({myTableCard, otherTableCard, myHandCard, myRemainingCard, fee, myLife, otherLife}, action);
+
+            myTableCard = newState.myTableCard;
+            otherTableCard = newState.otherTableCard;
+            myHandCard = newState.myHandCard;
+            myRemainingCard = newState.myRemainingCard;
+            fee = newState.fee;
+            myLife = newState.myLife;
+            otherLife = newState.otherLife;
+            isFinish = newState.isFinish;
+        }
+
+        return result;
     }
 
-    calHandCardValue(myHandCard) {
-        myHandCard.forEach(card => { // 遍历手牌，看是否有特殊组合
-
-        })
-
-        return 0;
-    }
-
-    calRemainingCardValue(handCard, remainingCard) {
-        return 0
-    }
 }
+
 
 module.exports = WebBot1;

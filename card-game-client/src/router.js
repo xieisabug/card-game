@@ -1,19 +1,17 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import GameTable from '@/pages/GameTable'
-import Login from '@/pages/Login'
-import Register from '@/pages/Register'
-import MainMenu from '@/pages/MainMenu'
-import CreateCards from '@/pages/CreateCards'
-import ChooseCards from '@/pages/ChooseCards'
-import Suggest from '@/pages/Suggest'
-import FirstTeach from '@/pages/FirstTeach'
-import ChooseLevel from '@/pages/ChooseLevel'
-import UserCenter from '@/pages/UserCenter'
+import {createRouter, createWebHashHistory} from 'vue-router'
+import GameTable from './pages/GameTable'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import MainMenu from './pages/MainMenu'
+import CreateCards from './pages/CreateCards'
+import ChooseCards from './pages/ChooseCards'
+import Suggest from './pages/Suggest'
+import FirstTeach from './pages/FirstTeach'
+import ChooseLevel from './pages/ChooseLevel'
+import UserCenter from './pages/UserCenter'
 
-Vue.use(Router);
-
-const myRouter = new Router({
+const myRouter = createRouter({
+    history: createWebHashHistory(),
     routes: [
         {
             path: '/login',

@@ -26,7 +26,8 @@
         </div>
 
         <div class="card-type" v-show="typeShow">
-            <div class="card-type-item" v-for="t in data.type" :key="t">{{t}}</div>
+            <div v-if="Array.isArray(data.type)" class="card-type-item" v-for="t in data.type" :key="t">{{t}}</div>
+            <div v-else class="card-type-item">{{data.type}}</div>
         </div>
     </div>
 </template>

@@ -1,32 +1,32 @@
 <template>
     <div class="menu-card-container">
         <div class="menu-card story-mode-card" @click="pveMode">
-            <img src="@/assets/story-mode.svg" class="menu-card-img" />
+            <img src="../assets/story-mode.svg" class="menu-card-img" />
             <div>剧情模式</div>
         </div>
         <div class="menu-card multi-story-mode-card">
-            <img src="@/assets/multi-story-mode.svg" class="menu-card-img" />
+            <img src="../assets/multi-story-mode.svg" class="menu-card-img" />
             <div>双人剧情合作</div>
         </div>
 
         <div class="menu-card single-vs-mode-card" @click="cardManage">
-            <img src="@/assets/single-vs-mode.svg" class="menu-card-img" />
+            <img src="../assets/single-vs-mode.svg" class="menu-card-img" />
             <div>单人匹配</div>
         </div>
         <div class="menu-card idea-factory-card">
-            <img src="@/assets/idea-factory.svg" class="menu-card-img" />
+            <img src="../assets/idea-factory.svg" class="menu-card-img" />
             <div>创意工厂</div>
         </div>
         <div class="menu-card card-manage-card" @click="cardManage">
-            <img src="@/assets/card-manage.svg" class="menu-card-img" />
+            <img src="../assets/card-manage.svg" class="menu-card-img" />
             <div>卡组管理</div>
         </div>
         <div class="menu-card setting-card">
-            <img src="@/assets/setting.svg" class="menu-card-img" />
+            <img src="../assets/setting.svg" class="menu-card-img" />
             <div>设置</div>
         </div>
         <div class="menu-card user-center-card" @click="userCenter">
-            <img src="@/assets/user-center.svg" class="menu-card-img" />
+            <img src="../assets/user-center.svg" class="menu-card-img" />
             <div>用户中心</div>
         </div>
     </div>
