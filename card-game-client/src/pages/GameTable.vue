@@ -1,52 +1,13 @@
 <template>
     <div class="app">
-        <div class="table">
-            <div class="game-start">
-                <transition-group
-                    class="other-card-area"
-                    tag="div"
-                    :css="false"
-                    @before-enter="beforeEnter"
-                    @enter="enter"
-                    @after-enter="afterEnter"
-                    @before-leave="beforeLeave"
-                    @leave="leave"
-                >
-                    <Card
-                        :key="c.k"
-                        :data="c"
-                        :index="index"
-                        :isMyTurn="false"
-                        :isOut="true"
-                        @onHoverCard="onHoverCard"
-                        v-for="(c, index) in gameData.otherTableCard"
-                    />
-                </transition-group>
-                <transition-group
-                    class="my-card-area"
-                    tag="div"
-                    :css="false"
-                    @before-enter="beforeEnter"
-                    @enter="enter"
-                    @after-enter="afterEnter"
-                    @before-leave="beforeLeave"
-                    @leave="leave"
-                >
-                    <Card
-                        :key="c.k"
-                        :data="c"
-                        :index="index"
-                        :chooseCard="chooseTableCard"
-                        @onHoverCard="onHoverCard"
-                        :currentCardK="currentTableCardK"
-                        :isMyTurn="isMyTurn"
-                        :isOut="true"
-                        @onAttackStart="onAttackStart"
-                        v-for="(c, index) in gameData.myTableCard"
-                    />
-                </transition-group>
-            </div>
-        </div>
+        <TableCardArea
+            :game-data="gameData"
+            :choose-table-card="chooseTableCard"
+            :on-hover-card="onHoverCard"
+            :on-attack-start="onAttackStart"
+            :is-my-turn="isMyTurn"
+            :current-table-card-k="currentTableCardK"
+        />
 
         <transition-group
             class="my-card"
@@ -137,7 +98,7 @@
 <script>
     import Card from "../components/Card";
     import { io } from 'socket.io-client';
-    import {buildClassName, TargetType, AttackType, GameMode} from "../utils";
+    import {TargetType, AttackType, GameMode} from "../utils";
     import {mapGetters} from "vuex";
     import {host, port} from "../config";
     import ErrorDialog from "../components/ErrorDialog";
@@ -153,11 +114,13 @@
     import CardStatusPanel from "../components/CardStatusPanel";
     import LevelUpDialog from "../components/LevelUpDialog";
     import animationUtils from "../animationUtils";
+    import TableCardArea from "../components/TableCardArea.vue";
 
     export default {
         name: 'GameTable',
         components: {
-            LevelUpDialog, CardStatusPanel, TaskPanel, TalkDialog, EndButton, 
+            TableCardArea,
+            LevelUpDialog, CardStatusPanel, TaskPanel, TalkDialog, EndButton,
             ChooseEffectFrame, ChooseCardFrame, TipDialog, ErrorDialog, Card, 
             WinDialog, NormalDialog
         },
@@ -183,7 +146,7 @@
                 roomNumber: -1,
                 isMyTurn: false,
                 currentCardIndex: -1,
-                currentTableCardK: -1,
+                currentTableCardK: '-1',
                 chooseDialogShow: false,
                 chooseEffectDialogShow: false,
                 chooseEffectIndex: 0,
@@ -788,7 +751,11 @@
                  * 接收服务端来的牌数据
                  */
                 this.socket.on("SEND_CARD", (value) => {
-                    this.gameData = Object.assign({}, this.gameData, value);
+                    this.animationQueue.push(["SEND_CARD", value]);
+
+                    if (!this.isAnimating) {
+                        this.animationStart();
+                    }
                 });
 
                 /**
@@ -1232,6 +1199,12 @@
                                 thiz.animationStart();
                             })(this);
                             break;
+                        case "SEND_CARD":
+                            (function(thiz) {
+                                thiz.gameData = Object.assign({}, thiz.gameData, param);
+                                thiz.animationStart();
+                            })(this);
+                            break;
                         case "END_GAME":
                             (function(thiz) {
                                 if (param.win) {
@@ -1255,57 +1228,6 @@
                 }
             },
 
-            beforeEnter(el) {
-                el.style['transition'] = "all 0s";
-                el.style.opacity = 0
-            },
-            enter(el, done) {
-                Velocity(el, {scale: 1.3}, {duration: 10})
-                    .then(el => {
-                        return Velocity(el, {opacity: 1}, {duration: 300})
-                    })
-                    .then(el => {
-                        return Velocity(el, {scale: 1}, {duration: 200, complete() {done()}})
-                    })
-            },
-            afterEnter(el) {
-                el.style['transition'] = "all 0.2s";
-                el.style.opacity = 1;
-                el.style.transform = '';
-            },
-            beforeLeave(el) {
-                el.style['transition'] = "all 0s";
-            },
-            leave(el, done) {
-                let xMax = 7;
-                Velocity(el, {translateX: xMax}, { duration: 40 })
-                    .then(el => {
-                        return Velocity(el, {translateX: xMax * -1, translateY: xMax * -1}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: xMax, translateY: xMax * -1}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: xMax/-2}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: xMax/2, translateY: xMax / 2}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: xMax/-2}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: xMax/2, translateY: xMax / -2}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: 0, translateY: 0}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: 0, opacity: 0}, {
-                            duration: 250, delay: 250, complete: () => {done();}
-                        })
-                    })
-            },
             beforeHandCardEnter(el) {
                 el.style['transition'] = "all 0s";
             },
@@ -1352,51 +1274,6 @@
         width: 100%;
         display: flex;
         justify-content: center;
-    }
-
-    .table {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .end-button {
-        position: absolute;
-        right: 30px;
-        bottom: calc(33% + 190px);
-    }
-
-    .my-card-area {
-        width: 100%;
-        height: 33%;
-        position: absolute;
-        bottom: 210px;
-        display: flex;
-        padding: 10px;
-        box-sizing: border-box;
-        justify-content: center;
-        background-color: #bccbcb;
-        background-image: radial-gradient(at 50% 100%, rgba(255,255,255,0.50) 0%, rgba(0,0,0,0.50) 100%), linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, rgba(0,0,0,0.25) 100%);
-        background-blend-mode: screen, overlay;
-    }
-
-    .other-card-area {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .game-start, .game-wait {
-        width: 100%;
-        height: 100%;
-    }
-
-    .game-wait {
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
 
     .my-hero-info, .other-hero-info {

@@ -36,5 +36,9 @@
 </script>
 
 <style scoped>
-
+.end-button {
+    position: absolute;
+    right: 30px;
+    bottom: calc(33% + 190px);
+}
 </style>
