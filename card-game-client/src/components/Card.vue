@@ -32,198 +32,218 @@
     </div>
 </template>
 
-<script>
+<script setup>
     import {buildClassName} from "../utils.js";
     import Velocity from 'velocity-animate';
+    import {ref, defineProps, computed, watch, reactive} from "vue";
 
     /**
      * 卡牌
      */
-    export default {
-        name: "Card",
-        props: {
-            data: Object, // 卡牌的信息
-            chooseCard: Function, // 选择卡牌事件
-            currentCardK: String | Number, // 当前选择卡牌的Index，用于判断是否是自己被选中
-            index: Number, // 当前卡牌的index
-            isMyTurn: Boolean, // 是否是我的回合，用于判断卡片是否可行动
-            isOut: Boolean, // 是否打出
-            canDrag: Boolean, // 是否可拖拽
-            isDisplay: Boolean, // 是否是展示
-            isShowType: Boolean, // 是否展示卡牌的类型
-            className: String, // 新的class
-        },
-        mounted() {
-            this.cardDom = this.$refs['cardDom'];
-        },
-        computed: {
-            cardClassName() {
-                return buildClassName({
-                    "card": true,
-                    "choose": this.currentCardK !== undefined && this.data.k === this.currentCardK,
-                    "actionable": this.isActionable && this.isMyTurn,
-                    "hide-effect": this.isHide && !this.isDisplay,
-                    "in-hand": !this.isOut,
-                    [this.className]: !!this.className
-                })
-            },
-            attackClassName() {
-                return buildClassName({
-                    "card-attack": true,
-                    "low": this.attack < this.attackBase,
-                    "up": this.attack > this.attackBase
-                })
-            },
-            lifeClassName() {
-                return buildClassName({
-                    "card-life": true,
-                    "low": this.life < this.lifeBase,
-                    "up": this.life > this.lifeBase
-                })
-            },
-            isDedicationClassName() {
-                return buildClassName({
-                    "dedication": true,
-                    "hide": !this.isDedication || !this.isOut || this.isDisplay
-                })
-            },
-            isStrongClassName() {
-                return buildClassName({
-                    "strong": true,
-                    "hide": !this.isStrong || !this.isOut || this.isDisplay
-                })
-            },
-            id() {
-                return this.data.id
-            },
-            name() {
-                return this.data.name
-            },
-            cost() {
-                return this.data.cost
-            },
-            content() {
-                return this.data.content
-            },
-            attack() {
-                return this.data.attack
-            },
-            life() {
-                return this.data.life
-            },
-            attackBase() {
-                return this.data.attackBase
-            },
-            lifeBase() {
-                return this.data.lifeBase
-            },
-            isActionable() {
-                return this.data.isActionable
-            },
-            isStrong() {
-                return this.data.isStrong
-            },
-            isDedication() {
-                return this.data.isDedication
-            },
-            isHide() {
-                return this.data.isHide
-            },
-        },
-        watch: {
-            life: function(newVal, oldVal) {
-                if (this.$refs['cardLife']) {
-                    Velocity(this.$refs['cardLife'], {
-                        scale: 1.8
-                    }, {
-                        duration: 150
-                    }).then(el => {
-                        Velocity(el, {
-                            scale: 1
-                        }, {
-                            duration: 150,
-                            delay: 250
-                        })
-                    });
+    const props = defineProps({
+        data: {
+            type: Object,
+            required: true
+        }, // 卡牌的信息
+        chooseCard: {
+            type: Function,
+        }, // 选择卡牌事件
+        currentCardK: {
+            type: [String, Number],
+        }, // 当前选择卡牌的Index，用于判断是否是自己被选中
+        index: {
+            type: Number,
+            required: true
+        }, // 当前卡牌的index
+        isMyTurn: {
+            type: Boolean,
+        }, // 是否是我的回合，用于判断卡片是否可行动
+        isOut: {
+            type: Boolean,
+        }, // 是否打出
+        canDrag: {
+            type: Boolean,
+        }, // 是否可拖拽
+        isDisplay: {
+            type: Boolean,
+        }, // 是否是展示
+        isShowType: {
+            type: Boolean,
+        }, // 是否展示卡牌的类型
+        className: {
+            type: String,
+        }, // 新的class
+    });
 
-                    this.hurtNumber = newVal - oldVal;
-                    Velocity(this.$refs['hurtContainer'], {
-                        scale: [1, 0]
+    const name = computed(() => {
+        return props.data.name;
+    });
+    const cost = computed(() => {
+        return props.data.cost;
+    });
+    const content = computed(() => {
+        return props.data.content;
+    });
+
+
+    // 卡牌相关样式
+    const isHide = computed(() => {
+        return props.data.isHide;
+    });
+    const isActionable = computed(() => {
+        return props.data.isActionable;
+    });
+    const cardClassName = computed(() => {
+        return buildClassName({
+            "card": true,
+            "choose": props.currentCardK !== undefined && props.data.k === props.currentCardK,
+            "actionable": isActionable.value && props.isMyTurn,
+            "hide-effect": isHide.value && !props.isDisplay,
+            "in-hand": !props.isOut,
+            [props.className]: !!props.className
+        });
+    });
+
+    // 攻击与攻击相关样式
+    const attack = computed(() => {
+        return props.data.attack;
+    });
+    const attackBase = computed(() => {
+        return props.data.attackBase;
+    });
+    const attackClassName = computed(() => {
+        return buildClassName({
+            "card-attack": true,
+            "low": attack.value < attackBase.value,
+            "up": attack.value > attackBase.value
+        });
+    });
+
+    // 生命相关样式
+    const life = computed(() => {
+        return props.data.life;
+    });
+    const lifeBase = computed(() => {
+        return props.data.lifeBase;
+    });
+    const lifeClassName = computed(() => {
+        return buildClassName({
+            "card-life": true,
+            "low": life.value < lifeBase.value,
+            "up": life.value > lifeBase.value
+        });
+    });
+
+    // 奉献相关样式
+    const isDedicationClassName = computed(() => {
+        return buildClassName({
+            "dedication": true,
+            "hide": !props.data.isDedication || !props.isOut || props.isDisplay
+        });
+    });
+
+    // 强壮相关样式
+    const isStrongClassName = computed(() => {
+        return buildClassName({
+            "strong": true,
+            "hide": !props.data.isStrong || !props.isOut || props.isDisplay
+        })
+    });
+
+    const cardLife = ref(null); // 生命的dom
+    const hurtContainer = ref(null); // 伤害的dom
+
+    const hurtNumber = ref(0); // 伤害数字
+    const hurtShow = ref(false); // 是否展示伤害
+    const typeShow = ref(false); // 是否展示类型
+
+    watch(life, (newVal, oldVal) => {
+        if (props.data.cardType === 2) {
+            if (cardLife.value) {
+                Velocity(cardLife.value, {
+                    scale: 1.8
+                }, {
+                    duration: 150
+                }).then(el => {
+                    Velocity(el, {
+                        scale: 1
+                    }, {
+                        duration: 150,
+                        delay: 250
+                    })
+                });
+
+                hurtNumber.value = newVal - oldVal;
+                Velocity(hurtContainer.value, {
+                    scale: [1, 0]
+                }, {
+                    duration: 200,
+                    begin: () => {
+                        hurtShow.value = true
+                    }
+                }).then(el => {
+                    Velocity(el, {
+                        scale: 0
                     }, {
                         duration: 200,
-                        begin: () => {
-                            this.hurtShow = true
+                        delay: 600,
+                        complete: () => {
+                            hurtShow.value = false
                         }
-                    }).then(el => {
-                        Velocity(el, {
-                            scale: 0
-                        }, {
-                            duration: 200,
-                            delay: 600,
-                            complete: () => {
-                                this.hurtShow = false
-                            }
-                        })
                     })
-                }
-
-            },
-        },
-        data() {
-            return {
-                hurtNumber: 0,
-                hurtShow: false,
-                typeShow: false
+                })
             }
-        },
-        methods: {
-            mouseDown(e) {
-                if (this.canDrag) {
-                    this.isDrag = true;
-                    window.isCardDrag = true;
-                    this.cardDom.style['transition'] = 'all 0s';
-                    this.startX = e.pageX;
-                    this.startY = e.pageY;
-                    window.cardMoveX = this.startX;
-                    window.cardMoveY = this.startY;
-                    this.outCardLoop();
-                } else if (this.data.isActionable && this.isOut) {
-                    this.$emit('onAttackStart', {
-                        startX: e.pageX, startY: e.pageY
-                    });
-                }
-                if (this.chooseCard) {
-                    this.chooseCard(this.index, e);
-                }
-            },
-            mouseUp() {
-                if (this.canDrag) {
-                    this.isDrag = false;
-                }
-            },
-            outCardLoop() {
-                if (this.isDrag) {
-                    requestAnimationFrame(this.outCardLoop);
+        }
+    });
 
-                    this.cardDom.style['transform'] = 'translate(' + (window.cardMoveX - this.startX) + 'px, ' + (window.cardMoveY - this.startY) + 'px) scale(1.1)';
-                } else {
-                    this.cardDom.style['transform'] = '';
-                }
-            },
-            mouseOver() {
-                this.$emit('onHoverCard', this.data);
+    let isDrag = false, startX, startY;
+    const emit = defineEmits(['onAttackStart', 'onHoverCard']);
+    const cardDom = ref(null);
 
-                if (this.data.type && this.data.type.length != 0 && this.data.type[0] !== "") {
-                    this.typeShow = true;
-                }
-                
-            },
-            mouseOut() {
-                this.$emit('onHoverCard', null);
+    function mouseDown(e) {
+        if (props.canDrag) {
+            isDrag = true;
+            window.isCardDrag = true;
+            cardDom.value.style['transition'] = 'all 0s';
+            startX = e.pageX;
+            startY = e.pageY;
+            window.cardMoveX = startX;
+            window.cardMoveY = startY;
+            outCardLoop();
+        } else if (props.data.isActionable && props.isOut) {
+            emit('onAttackStart', {
+                startX: e.pageX, startY: e.pageY
+            });
+        }
+        if (props.chooseCard) {
+            props.chooseCard(props.index, e);
+        }
+    }
+    function mouseUp() {
+        if (props.canDrag) {
+            isDrag = false;
+        }
+    }
+    function outCardLoop() {
+        if (isDrag) {
+            requestAnimationFrame(outCardLoop);
 
-                this.typeShow = false;
-            },
-        },
+            cardDom.value.style['transform'] = 'translate(' + (window.cardMoveX - startX) + 'px, ' + (window.cardMoveY - startY) + 'px) scale(1.1)';
+        } else {
+            cardDom.value.style['transform'] = '';
+        }
+    }
+    function mouseOver() {
+        emit('onHoverCard', props.data);
+
+        if (props.data.type && props.data.type.length !== 0 && props.data.type[0] !== "") {
+            typeShow.value = true;
+        }
+    }
+    function mouseOut() {
+        emit('onHoverCard', null);
+
+        typeShow.value = false;
     }
 </script>
 

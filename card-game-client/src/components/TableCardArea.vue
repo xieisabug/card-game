@@ -65,7 +65,7 @@ defineProps({
         required: true
     },
     currentTableCardK: {
-        type: String,
+        type: [String, Number],
         required: true
     },
     onAttackStart: {

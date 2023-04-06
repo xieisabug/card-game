@@ -9,28 +9,29 @@
     </div>
 </template>
 
-<script>
+<script setup>
     import {buildClassName} from "../utils";
-
+    import {defineProps, computed} from "vue";
     /**
      * 获胜框
      */
-    export default {
-        name: "LevelUpDialog",
-        props: {
-            show: Boolean, // 是否展示
-            confirm: Function, // 确定按钮事件
-            reward: Object, // 奖励
+    const props = defineProps({
+        show: {
+            type: Boolean,
+            required: true,
         },
-        computed: {
-            levelUpDialogClass() {
-                return buildClassName({
-                    "level-up-dialog-container": true,
-                    "hide": !this.show,
-                });
-            },
+        confirm: {
+            type: Function,
+            required: true,
         },
-    }
+    });
+
+    const levelUpDialogClass = computed(() => {
+        return buildClassName({
+            "level-up-dialog-container": true,
+            "hide": !props.show,
+        });
+    });
 </script>
 
 <style scoped>

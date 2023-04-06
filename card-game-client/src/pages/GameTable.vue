@@ -119,8 +119,7 @@
     export default {
         name: 'GameTable',
         components: {
-            TableCardArea,
-            LevelUpDialog, CardStatusPanel, TaskPanel, TalkDialog, EndButton,
+            TableCardArea, LevelUpDialog, CardStatusPanel, TaskPanel, TalkDialog, EndButton,
             ChooseEffectFrame, ChooseCardFrame, TipDialog, ErrorDialog, Card, 
             WinDialog, NormalDialog
         },
