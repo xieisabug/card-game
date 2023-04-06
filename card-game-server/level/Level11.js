@@ -45,7 +45,8 @@ class Level11 extends LevelBase {
             useCards: [],
             life: 1,
             fee: 10,
-            maxFee: 10
+            maxFee: 10,
+            maxHandCardNumber: 10
         });
         Object.assign(this.gameData[second], {
             cards: [],
@@ -135,7 +136,6 @@ class Level11 extends LevelBase {
                                     id: 14,
                                     name: "IDE大师",
                                     cardType: CardType.CHARACTER,
-                                    targetType: TargetType.MY_TABLE_CARD,
                                     cost: 7,
                                     content: `出场：场上所有人员获得+1/+1`,
                                     attack: 6,
@@ -214,28 +214,7 @@ class Level11 extends LevelBase {
                                             specialMethod.buffCardAnimation(true, -1, -1, thisCard, thisCard)
                                         }
                                     }
-                                },
-                                {
-                                    k: "9",
-                                    id: 14,
-                                    name: "IDE大师",
-                                    cardType: CardType.CHARACTER,
-                                    targetType: TargetType.MY_TABLE_CARD,
-                                    cost: 7,
-                                    content: `出场：场上所有人员获得+1/+1`,
-                                    attack: 6,
-                                    life: 4,
-                                    attackBase: 6,
-                                    lifeBase: 4,
-                                    type: [""],
-                                    onStart: function ({ myGameData, specialMethod, thisCard }) {
-                                        myGameData.tableCards.forEach((c, i) => {
-                                            c.attack += 1;
-                                            c.life += 1;
-                                            specialMethod.buffCardAnimation(true, -1, i, thisCard, c)
-                                        })
-                                    }
-                                },
+                                }
                             ],
                             tableCards: [],
                             life: 10,

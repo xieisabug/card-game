@@ -1,52 +1,13 @@
 <template>
     <div class="app">
-        <div class="table">
-            <div class="game-start">
-                <transition-group
-                    class="other-card-area"
-                    tag="div"
-                    :css="false"
-                    @before-enter="beforeEnter"
-                    @enter="enter"
-                    @after-enter="afterEnter"
-                    @before-leave="beforeLeave"
-                    @leave="leave"
-                >
-                    <Card
-                        :key="c.k"
-                        :data="c"
-                        :index="index"
-                        :isMyTurn="false"
-                        :isOut="true"
-                        @onHoverCard="onHoverCard"
-                        v-for="(c, index) in gameData.otherTableCard"
-                    />
-                </transition-group>
-                <transition-group
-                    class="my-card-area"
-                    tag="div"
-                    :css="false"
-                    @before-enter="beforeEnter"
-                    @enter="enter"
-                    @after-enter="afterEnter"
-                    @before-leave="beforeLeave"
-                    @leave="leave"
-                >
-                    <Card
-                        :key="c.k"
-                        :data="c"
-                        :index="index"
-                        :chooseCard="chooseTableCard"
-                        @onHoverCard="onHoverCard"
-                        :currentCardK="currentTableCardK"
-                        :isMyTurn="isMyTurn"
-                        :isOut="true"
-                        @onAttackStart="onAttackStart"
-                        v-for="(c, index) in gameData.myTableCard"
-                    />
-                </transition-group>
-            </div>
-        </div>
+        <TableCardArea
+            :game-data="gameData"
+            :choose-table-card="chooseTableCard"
+            :on-hover-card="onHoverCard"
+            :on-attack-start="onAttackStart"
+            :is-my-turn="isMyTurn"
+            :current-table-card-k="currentTableCardK"
+        />
 
         <transition-group
             class="my-card"
@@ -136,8 +97,8 @@
 
 <script>
     import Card from "../components/Card";
-    import * as io from 'socket.io-client';
-    import {buildClassName, TargetType, AttackType, GameMode} from "../utils";
+    import { io } from 'socket.io-client';
+    import {TargetType, AttackType, GameMode} from "../utils";
     import {mapGetters} from "vuex";
     import {host, port} from "../config";
     import ErrorDialog from "../components/ErrorDialog";
@@ -153,11 +114,12 @@
     import CardStatusPanel from "../components/CardStatusPanel";
     import LevelUpDialog from "../components/LevelUpDialog";
     import animationUtils from "../animationUtils";
+    import TableCardArea from "../components/TableCardArea.vue";
 
     export default {
         name: 'GameTable',
         components: {
-            LevelUpDialog, CardStatusPanel, TaskPanel, TalkDialog, EndButton, 
+            TableCardArea, LevelUpDialog, CardStatusPanel, TaskPanel, TalkDialog, EndButton,
             ChooseEffectFrame, ChooseCardFrame, TipDialog, ErrorDialog, Card, 
             WinDialog, NormalDialog
         },
@@ -183,7 +145,7 @@
                 roomNumber: -1,
                 isMyTurn: false,
                 currentCardIndex: -1,
-                currentTableCardK: -1,
+                currentTableCardK: '-1',
                 chooseDialogShow: false,
                 chooseEffectDialogShow: false,
                 chooseEffectIndex: 0,
@@ -787,8 +749,9 @@
                 /**
                  * 接收服务端来的牌数据
                  */
-                this.socket.on("SEND_CARD", (param) => {
-                    this.animationQueue.push(["SEND_CARD", param]);
+                this.socket.on("SEND_CARD", (value) => {
+                    this.animationQueue.push(["SEND_CARD", value]);
+
                     if (!this.isAnimating) {
                         this.animationStart();
                     }
@@ -922,12 +885,10 @@
              * 整个动画的响应事件，动画队列
              */
             animationStart() {
-                // console.log("animation start " + new Date().getTime());
                 if (this.animationQueue.length !== 0) {
-                    this.isAnimating = true;
                     let currentAnimation = this.animationQueue.shift();
                     let type = currentAnimation[0], param = currentAnimation[1];
-                    console.log("animation start " + type + " ,time :" + new Date().getTime());
+                    this.isAnimating = true;
 
                     switch(type) {
                         case "DIE_CARD":
@@ -956,16 +917,9 @@
                             break;
                         case "ATTACK_CARD":
                             (function(thiz) {
-                                let index = -1;
-                                let attackIndex = -1;
 
-                                if (param.attackType === AttackType.ATTACK) {
-                                    index = thiz.gameData.myTableCard.findIndex(c => c.k === param.card.k);
-                                    attackIndex = thiz.gameData.otherTableCard.findIndex(c => c.k === param.attackCard.k);
-                                } else if (param.attackType === AttackType.BE_ATTACKED) {
-                                    index = thiz.gameData.otherTableCard.findIndex(c => c.k === param.card.k);
-                                    attackIndex = thiz.gameData.myTableCard.findIndex(c => c.k === param.attackCard.k);
-                                }
+                                let index = thiz.gameData.myTableCard.findIndex(c => c.k === param.card.k);
+                                let attackIndex = thiz.gameData.otherTableCard.findIndex(c => c.k === param.attackCard.k);
 
                                 if (index === -1 || attackIndex === -1) {
                                     return
@@ -994,10 +948,10 @@
                                                 myDom.style['transition'] = "all 0.2s";
 
                                                 if (index !== -1) {
-                                                    vm.$set(thiz.gameData.myTableCard, index, param.card);
+                                                    thiz.gameData.myTableCard[index] = param.card;
                                                 }
                                                 if (attackIndex !== -1) {
-                                                    vm.$set(thiz.gameData.otherTableCard, attackIndex, param.attackCard);
+                                                    thiz.gameData.otherTableCard[attackIndex] = param.attackCard;
                                                 }
                                                 thiz.animationStart();
                                             }
@@ -1007,8 +961,8 @@
                                     let myDom = thiz.otherCardAreaDom.childNodes[index];
                                     let otherDom = thiz.myCardAreaDom.childNodes[attackIndex];
 
-                                    let h = otherDom.offsetLeft - myDom.offsetLeft;
-                                    let v = otherDom.offsetTop + otherDom.parentElement.offsetTop - (myDom.offsetTop + myDom.offsetHeight);
+                                    let h = myDom.offsetLeft - otherDom.offsetLeft;
+                                    let v = myDom.offsetTop + myDom.offsetHeight - otherDom.offsetTop;
                                     Velocity(myDom, { translateX: h, translateY: v }, {
                                         easing: 'ease-in',
                                         duration: 200,
@@ -1023,10 +977,10 @@
                                                 myDom.style['transition'] = "all 0.2s";
 
                                                 if (attackIndex !== -1) {
-                                                    vm.$set(thiz.gameData.myTableCard, attackIndex, param.attackCard);
+                                                    thiz.gameData.myTableCard[attackIndex] = param.attackCard;
                                                 }
                                                 if (index !== -1) {
-                                                    vm.$set(thiz.gameData.otherTableCard, index, param.card);
+                                                    thiz.gameData.otherTableCard[index] = param.card;
                                                 }
                                                 thiz.animationStart();
                                             }
@@ -1216,7 +1170,7 @@
                                     case TargetType.MY_TABLE_CARD_FILTER_EXCLUDE:
                                         tableIndex = myTableCard.findIndex(c => c.k === toCard.k);
                                         if (tableIndex !== -1) {
-                                            window.vm.$set(myTableCard, tableIndex, toCard)
+                                            myTableCard[tableIndex] = toCard
                                         }
                                         break;
                                     case TargetType.OTHER_TABLE_CARD:
@@ -1224,7 +1178,7 @@
                                     case TargetType.OTHER_TABLE_CARD_FILTER_EXCLUDE:
                                         tableIndex = otherTableCard.findIndex(c => c.k === toCard.k);
                                         if (tableIndex !== -1) {
-                                            window.vm.$set(otherTableCard, tableIndex, toCard)
+                                            otherTableCard[tableIndex] = toCard
                                         }
                                         break;
                                     case TargetType.ALL_TABLE_CARD:
@@ -1232,15 +1186,21 @@
                                     case TargetType.ALL_TABLE_CARD_FILTER_EXCLUDE:
                                         tableIndex = myTableCard.findIndex(c => c.k === toCard.k);
                                         if (tableIndex !== -1) {
-                                            window.vm.$set(myTableCard, tableIndex, toCard)
+                                            myTableCard[tableIndex] = toCard
                                         } else {
                                             tableIndex = otherTableCard.findIndex(c => c.k === toCard.k);
                                             if (tableIndex !== -1) {
-                                                window.vm.$set(otherTableCard, tableIndex, toCard)
+                                                otherTableCard[tableIndex] = toCard
                                             }
                                         }
                                         break;
                                 }
+                                thiz.animationStart();
+                            })(this);
+                            break;
+                        case "SEND_CARD":
+                            (function(thiz) {
+                                thiz.gameData = Object.assign({}, thiz.gameData, param);
                                 thiz.animationStart();
                             })(this);
                             break;
@@ -1260,12 +1220,6 @@
                                 thiz.animationStart();
                             })(this);
                             break;
-                        case "SEND_CARD":
-                            (function(thiz) {
-                                thiz.gameData = Object.assign({}, thiz.gameData, param);
-                                thiz.animationStart();
-                            })(this);
-                            break;
                     }
 
                 } else {
@@ -1273,57 +1227,6 @@
                 }
             },
 
-            beforeEnter(el) {
-                el.style['transition'] = "all 0s";
-                el.style.opacity = 0
-            },
-            enter(el, done) {
-                Velocity(el, {scale: 1.3}, {duration: 10})
-                    .then(el => {
-                        return Velocity(el, {opacity: 1}, {duration: 300})
-                    })
-                    .then(el => {
-                        return Velocity(el, {scale: 1}, {duration: 200, complete() {done()}})
-                    })
-            },
-            afterEnter(el) {
-                el.style['transition'] = "all 0.2s";
-                el.style.opacity = 1;
-                el.style.transform = '';
-            },
-            beforeLeave(el) {
-                el.style['transition'] = "all 0s";
-            },
-            leave(el, done) {
-                let xMax = 7;
-                Velocity(el, {translateX: xMax}, { duration: 40 })
-                    .then(el => {
-                        return Velocity(el, {translateX: xMax * -1, translateY: xMax * -1}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: xMax, translateY: xMax * -1}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: xMax/-2}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: xMax/2, translateY: xMax / 2}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: xMax/-2}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: xMax/2, translateY: xMax / -2}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: 0, translateY: 0}, { duration: 40 })
-                    })
-                    .then(el => {
-                        return Velocity(el, {translateX: 0, opacity: 0}, {
-                            duration: 250, delay: 250, complete: () => {done();}
-                        })
-                    })
-            },
             beforeHandCardEnter(el) {
                 el.style['transition'] = "all 0s";
             },
@@ -1370,51 +1273,6 @@
         width: 100%;
         display: flex;
         justify-content: center;
-    }
-
-    .table {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .end-button {
-        position: absolute;
-        right: 30px;
-        bottom: calc(33% + 190px);
-    }
-
-    .my-card-area {
-        width: 100%;
-        height: 33%;
-        position: absolute;
-        bottom: 210px;
-        display: flex;
-        padding: 10px;
-        box-sizing: border-box;
-        justify-content: center;
-        background-color: #bccbcb;
-        background-image: radial-gradient(at 50% 100%, rgba(255,255,255,0.50) 0%, rgba(0,0,0,0.50) 100%), linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, rgba(0,0,0,0.25) 100%);
-        background-blend-mode: screen, overlay;
-    }
-
-    .other-card-area {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .game-start, .game-wait {
-        width: 100%;
-        height: 100%;
-    }
-
-    .game-wait {
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
 
     .my-hero-info, .other-hero-info {

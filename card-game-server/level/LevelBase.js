@@ -1,13 +1,10 @@
 const {GameMode} = require('../constants');
 const {userWinPve} = require('../db');
-const {clone} = require("../utils");
-const seedrandom = require('seedrandom');
+const {sleep} = require("../utils");
 
 class LevelBase {
     constructor(gameData, socketFunction) {
         this.gameData = gameData;
-        this.gameData.seed = Math.floor(Math.random() * 10000);
-        this.gameData.rand = seedrandom(this.gameData.seed);
 
         this.socket = {
             id: "two",
@@ -17,16 +14,15 @@ class LevelBase {
                         if (this.gameData.gameMode === GameMode.PVE1) {
                             this.gameData['one'].socket.emit("END_GAME", {win: false});
                         } else if (this.gameData.gameMode === GameMode.PVE2) {
-                            if (!this.bot) {
-                                console.log("没有ai");
-                                return;
-                            }
 
-                            let actList = this.bot.getAct(
-                                this.gameData,
-                                clone(this.gameData["two"]),
-                                clone(this.gameData["one"])
-                            );
+                            let actList = this.bot.getRunActionList(
+                                this.gameData["two"].tableCards,
+                                this.gameData["one"].tableCards,
+                                this.gameData["two"]["cards"],
+                                this.gameData["two"]["remainingCards"],
+                                this.gameData["two"].fee,
+                                this.gameData["two"].life,
+                                this.gameData["one"].life);
 
                             console.log(actList)
 
@@ -38,20 +34,27 @@ class LevelBase {
                                 setTimeout(() => {
                                     switch(act.event) {
                                         case "OUT_CARD":
-                                            this.socketFunction.outCard({r: this.roomNumber, index: act.index}, this.socket);
+                                            this.socketFunction.outCard({r: this.roomNumber, index: act.i}, this.socket);
                                             break;
                                         case "ATTACK_CARD":
                                             this.socketFunction.attackCard({r: this.roomNumber, myK: act.myK, attackK: act.attackK}, this.socket);
                                             break;
+                                        case "ATTACK_HERO":
+                                            this.socketFunction.attackHero({r: this.roomNumber, k: act.k}, this.socket);
+                                            break;
+                                        case "END_MY_TURN":
+                                            this.socketFunction.endMyTurn({r: this.roomNumber}, this.socket);
+                                            break;
                                     }
                                 }, baseTime);
-                                
+
                             });
 
-                            baseTime += Math.random() * 2000;
-                            setTimeout(() => {
-                                this.socketFunction.endMyTurn({r: this.roomNumber}, this.socket);    
-                            }, baseTime);
+                            // baseTime += Math.random() * 2000;
+                            // // TODO 已经处理了结束，应该要把这里改一下
+                            // setTimeout(() => {
+                            //     this.socketFunction.endMyTurn({r: this.roomNumber}, this.socket);
+                            // }, baseTime);
                         }
                         break;
                 }
@@ -69,7 +72,7 @@ class LevelBase {
 
         this.gameData['one'].socket.emit("SEND_TASK", this.taskList);
     }
-    
+
     sendCards() {
         this.gameData['one'].socket.emit("SEND_CARD", {
             myCard: this.gameData["one"]["cards"],

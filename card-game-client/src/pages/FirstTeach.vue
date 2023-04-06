@@ -829,10 +829,10 @@
                                                 myDom.style['transition'] = "all 0.2s";
 
                                                 if (index !== -1) {
-                                                    vm.$set(thiz.gameData.myTableCard, index, param.card);
+                                                    thiz.gameData.myTableCard[index] = param.card;
                                                 }
                                                 if (attackIndex !== -1) {
-                                                    vm.$set(thiz.gameData.otherTableCard, attackIndex, param.attackCard);
+                                                    thiz.gameData.otherTableCard[attackIndex] = param.attackCard;
                                                 }
                                                 thiz.animationStart();
                                             }

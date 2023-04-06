@@ -1,5 +1,3 @@
-const cloneDeep = require('lodash/cloneDeep');
-
 function range(start, end, step) {
     if (end === undefined) {
         end = start;
@@ -73,56 +71,68 @@ function getTypeText(text) {
     return `<span style="color: blue">${text}</span>`
 }
 
-function clone(item) {
-    return cloneDeep(item);
+function hashState({myTableCard, otherTableCard, myHandCard, myRemainingCard, fee, myLife, otherLife}) {
+    return `${myTableCard.map(i => i.k).join("")}-${otherTableCard.map(i => i.k).join("")}-${myHandCard.map(i => i.k).join("")}-${myRemainingCard.length}-${fee}-${myLife}-${otherLife}`;
 }
-function clone2(item) {
-    if (!item) { return item; } // null, undefined values check
 
-    let types = [Number, String, Boolean],
-        result;
-
-    // normalizing primitives if someone did new String('aaa'), or new Number('444');
-    types.forEach(function(type) {
-        if (item instanceof type) {
-            result = type( item );
-        }
-    });
-
-    if (typeof result == "undefined") {
-        if (Object.prototype.toString.call( item ) === "[object Array]") {
-            result = [];
-            item.forEach(function(child, index, array) {
-                result[index] = clone( child );
+function nextStateByAction(state, action) {
+    switch(action.event) {
+        case "OUT_CARD": {
+            let newMyTableCard = state.myTableCard.slice(), newMyHandCard = state.myHandCard.slice();
+            newMyTableCard.push(newMyHandCard.splice(action.i, 1)[0]);
+            return Object.assign({}, state, {
+                myTableCard: newMyTableCard,
+                myHandCard: newMyHandCard,
+                fee: state.fee - action.card.cost,
             });
-        } else if (typeof item == "object") {
-            if (!item.prototype) { // check that this is a literal
-                if (item instanceof Date) {
-                    result = new Date(item);
-                } else {
-                    // it is an object literal
-                    result = {};
-                    for (const i in item) {
-                        result[i] = clone( item[i] );
-                    }
-                }
-            } else {
-                // depending what you would like here,
-                // just keep the reference, or create new object
-                if (item.constructor) {
-                    // would not advice to do that, reason? Read below
-                    result = new item.constructor();
-                } else {
-                    result = item;
-                }
-            }
-        } else {
-            result = item;
         }
-    }
 
-    return result;
+        case "ATTACK_HERO": {
+            let index = state.myTableCard.findIndex(c => c.k === action.k);
+            let newMyTableCard = state.myTableCard.slice(), attackCard = Object.assign({}, state.myTableCard[action.index])
+            attackCard.isActionable = false;
+            newMyTableCard[index] = attackCard;
+
+            return Object.assign({}, state, {
+                myTableCard: newMyTableCard,
+                otherLife: state.otherLife - state.myTableCard[index].attack
+            });
+        }
+        case "ATTACK_CARD":
+        {
+            let newMyTableCard = state.myTableCard.slice(), newOtherTableCard = state.otherTableCard.slice(),
+                attackCard = Object.assign({}, newMyTableCard[action.i]), beAttackCard = Object.assign({}, newOtherTableCard[action.j]);
+
+            attackCard.isActionable = false;
+            attackCard.life -= beAttackCard.attack;
+            beAttackCard.life -= attackCard.attack;
+
+            if (attackCard.life <= 0) {
+                newMyTableCard.splice(action.i, 1);
+            } else {
+                newMyTableCard[action.i] = attackCard;
+            }
+
+            if (beAttackCard.life <= 0) {
+                newOtherTableCard.splice(action.j, 1);
+            } else {
+                newOtherTableCard[action.j] = beAttackCard;
+            }
+
+            return Object.assign({}, state, {
+                myTableCard: newMyTableCard,
+                otherTableCard: newOtherTableCard
+            });
+        }
+        case "END_MY_TURN":
+            return Object.assign({}, state, {
+                isFinish: true
+            });
+        default:
+            return action.event;
+    }
 }
+
 
 module.exports = {
     range,
@@ -133,5 +143,6 @@ module.exports = {
     getLevelUpExp,
     extractUserCard,
     getTypeText,
-    clone
+    hashState,
+    nextStateByAction
 };

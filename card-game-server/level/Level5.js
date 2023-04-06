@@ -38,6 +38,7 @@ class Level5 extends LevelBase {
                 }
             ],
             tableCards: [],
+            useCards: [],
             life: 1,
             fee: 1,
             maxFee: 1
