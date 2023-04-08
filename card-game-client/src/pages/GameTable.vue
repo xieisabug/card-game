@@ -115,6 +115,14 @@
     import LevelUpDialog from "../components/LevelUpDialog";
     import animationUtils from "../animationUtils";
     import TableCardArea from "../components/TableCardArea.vue";
+    import {
+        attackCardCommand,
+        attackHeroCommand,
+        connectCommand,
+        endMyTurnCommand, initBindSocketEvent, nextLevelCommand,
+        outCardCommand,
+        restartCommand, winExitCommand
+    } from "../logic/socketCommand";
 
     export default {
         name: 'GameTable',
@@ -215,13 +223,7 @@
              * 连接服务器
              */
             connectSocketServer() {
-                this.socket.emit("COMMAND", {
-                    type: "CONNECT",
-                    r: this.roomNumber,
-                    userId: sessionStorage.getItem("userId"),
-                    cardsId: this.chooseCardsId,
-                    isPve: this.isPve
-                })
+                connectCommand.apply(this);
             },
 
             /**
@@ -229,15 +231,9 @@
              */
             endMyTurn() {
                 if (this.gameData.gameMode === GameMode.PVE1) {
-                    this.socket.emit("COMMAND", {
-                        type: "RESTART",
-                        r: this.roomNumber
-                    });
+                    restartCommand.apply(this);
                 } else {
-                    this.socket.emit("COMMAND", {
-                        type: "END_MY_TURN",
-                        r: this.roomNumber
-                    });
+                    endMyTurnCommand.apply(this);
                 }
 
                 this.isMyTurn = false;
@@ -276,12 +272,7 @@
             attackCard(k) {
                 // TODO 检查k
                 if (this.isMyTurn && this.currentTableCardK !== -1) {
-                    this.socket.emit("COMMAND", {
-                        type: "ATTACK_CARD",
-                        r: this.roomNumber,
-                        myK: this.currentTableCardK,
-                        attackK: k
-                    });
+                    attackCardCommand.apply(this, [k]);
                     this.resetAllCurrentCard();
                 }
             },
@@ -291,11 +282,7 @@
              */
             attackHero() {
                 if (this.isMyTurn && this.currentTableCardK !== -1) {
-                    this.socket.emit("COMMAND", {
-                        type: "ATTACK_HERO",
-                        r: this.roomNumber,
-                        k: this.currentTableCardK
-                    });
+                    attackHeroCommand.apply(this);
                     this.resetAllCurrentCard();
                 }
             },
@@ -343,11 +330,7 @@
                         this.chooseDialogShow = true;
 
                     } else {
-                        this.socket.emit("COMMAND", {
-                            type: "OUT_CARD",
-                            r: this.roomNumber,
-                            index: this.currentCardIndex
-                        });
+                        outCardCommand.apply(this);
                         this.resetAllCurrentCard();
                     }
                 }
@@ -375,12 +358,7 @@
                     this.chooseDialogShow = false;
                     this.chooseCardList = [];
                 } else {
-                    this.socket.emit("COMMAND", {
-                        type: "OUT_CARD",
-                        r: this.roomNumber,
-                        index: this.currentCardIndex,
-                        targetIndex: this.currentChooseIndex
-                    });
+                    outCardCommand.apply(this);
                     this.chooseDialogShow = false;
                     this.chooseCardList = [];
                     this.currentChooseIndex = 0;
@@ -407,13 +385,7 @@
                 if (this.chooseEffectIndex === this.chooseEffectList.length - 1) {
                     this.chooseEffectDialogShow = false;
                     this.chooseEffectAnswer.push(this.currentChooseEffectIndex);
-                    this.socket.emit("COMMAND", {
-                        type: "OUT_CARD",
-                        r: this.roomNumber,
-                        index: this.currentCardIndex,
-                        targetIndex: this.currentChooseIndex,
-                        effectIndex: this.chooseEffectAnswer
-                    });
+                    outCardCommand.apply(this);
                     this.currentChooseIndex = 0;
                     this.currentChooseEffectIndex = 0;
                     this.chooseEffectAnswer = [];
@@ -480,10 +452,7 @@
             onWinConfirm() {
                 this.$router.push("/chooseCards");
 
-                this.socket.emit("COMMAND", {
-                    type: "WIN_EXIT",
-                    r: this.roomNumber
-                })
+                winExitCommand.apply(this);
             },
 
             /**
@@ -503,10 +472,7 @@
              */
             onWinNext() {
                 if (this.gameData.gameMode === GameMode.PVE1) {
-                    this.socket.emit("COMMAND", {
-                        type: "NEXT_LEVEL",
-                        r: this.roomNumber
-                    });
+                    nextLevelCommand.apply(this);
                 }
             },
 
@@ -632,196 +598,7 @@
              * 注册游戏socket相应事件
              */
             registerSocketEvent() {
-                this.socket.on("WAITE", function () {
-                    this.matchDialogShow = true;
-                });
-                this.socket.on("START", (result) => {
-                    this.matchDialogShow = false;
-                    this.showTip("开始对战吧");
-
-                    this.roomNumber = result.roomNumber;
-                    this.startGame = true;
-                    this.tipDialogShow = false;
-                    this.winDialogShow = false;
-                    this.errorDialogShow = false;
-                });
-
-                this.socket.on("RECONNECT", (result) => {
-                    this.matchDialogShow = false;
-                    this.showTip("重连成功");
-
-                    this.roomNumber = result.roomNumber;
-                    this.startGame = true;
-                });
-
-                /**
-                 * 开局
-                 */
-                this.socket.on("INIT_CARD", (value) => {
-                    this.gameData = value;
-                });
-
-                /**
-                 * 轮到我的回合
-                 */
-                this.socket.on("YOUR_TURN", () => {
-                    this.isMyTurn = true;
-                    this.showTip("你的回合");
-                    if (this.gameData.myMaxThinkTimeNumber !== -1) {
-                        this.thinkTimeOutId = setTimeout(() => {
-                            this.endMyTurn();
-                        }, this.gameData.myMaxThinkTimeNumber * 1000);
-
-                        this.thinkTimeOutErrorId = setTimeout(() => {
-                            this.showError("您还有30秒时间")
-                        }, (this.gameData.myMaxThinkTimeNumber - 30) * 1000)
-                    }
-                });
-
-                /**
-                 * 抽卡
-                 */
-                this.socket.on("GET_CARD", (param) => {
-                    if (param.isMine) {
-                        this.gameData.myCard.push(param.card)
-                    }
-                });
-
-                /**
-                 * 攻击英雄
-                 */
-                this.socket.on("ATTACK_HERO", (param) => {
-                    this.animationQueue.push(["ATTACK_HERO", param]);
-                    if (!this.isAnimating) {
-                        this.animationStart();
-                    }
-                });
-
-                /**
-                 * 攻击随从
-                 */
-                this.socket.on("ATTACK_CARD", (param) => {
-                    this.animationQueue.push(["ATTACK_CARD", param]);
-                    if (!this.isAnimating) {
-                        this.animationStart();
-                    }
-                });
-
-                /**
-                 * 打出随从牌
-                 */
-                this.socket.on("OUT_CARD", (param) => {
-                    this.animationQueue.push(["OUT_CARD", param]);
-                    if (!this.isAnimating) {
-                        this.animationStart();
-                    }
-                });
-
-                /**
-                 * 打出效果牌
-                 */
-                this.socket.on('OUT_EFFECT', (param) => {
-                    this.animationQueue.push(["OUT_EFFECT", param]);
-                    if (!this.isAnimating) {
-                        this.animationStart();
-                    }
-                });
-
-                /**
-                 * 卡牌获得增益效果
-                 */
-                this.socket.on('BUFF_CARD', (param) => {
-                    this.animationQueue.push(["BUFF_CARD", param]);
-                    if (!this.isAnimating) {
-                        this.animationStart();
-                    }
-
-
-                });
-
-                this.socket.on("DIE_CARD", (param) => {
-                    this.animationQueue.push(["DIE_CARD", param]);
-                    if (!this.isAnimating) {
-                        this.animationStart();
-                    }
-                });
-
-                /**
-                 * 接收服务端来的牌数据
-                 */
-                this.socket.on("SEND_CARD", (value) => {
-                    this.animationQueue.push(["SEND_CARD", value]);
-
-                    if (!this.isAnimating) {
-                        this.animationStart();
-                    }
-                });
-
-                /**
-                 * 结束
-                 */
-                this.socket.on("END_GAME", (param) => {
-                    this.animationQueue.push(["END_GAME", param]);
-                    if (!this.isAnimating) {
-                        this.animationStart();
-                    }
-                    this.startGame = false
-                });
-
-                /**
-                 * 对话信息
-                 */
-                this.socket.on("SEND_TALK", (param) => {
-                    if (Array.isArray(param)) {
-                        this.talkList = this.talkList.concat(param);
-                    } else {
-                        this.talkList.push(param);
-                    }
-
-                    if (!this.talkDialogShow) {
-                        this.talkDialogShow = true;
-                        this.currentTalk = this.talkList.shift();
-                    }
-                });
-
-                /**
-                 * 接收任务
-                 */
-                this.socket.on("SEND_TASK", (param) => {
-                    this.taskList = param
-                });
-
-                /**
-                 * 升级
-                 */
-                this.socket.on("LEVEL_UP", (param) => {
-                    this.animationQueue.push(["LEVEL_UP", param]);
-                    if (!this.isAnimating) {
-                        this.animationStart();
-                    }
-                });
-
-                /**
-                 * 普通日志信息
-                 */
-                this.socket.on("LOG", (text) => {
-                    console.log(text);
-                });
-
-                /**
-                 * 特殊提醒信息
-                 */
-                this.socket.on("ERROR", (text) => {
-                    this.showError(text)
-                });
-
-                /**
-                 * 没有更多关卡的时候
-                 */
-                this.socket.on("NO_MORE_LEVEL", () => {
-                    this.normalDialogShow = true;
-                    this.normalDialogText = "暂时没有更多的关卡，后续剧情请期待下一次的更新。"
-                })
+                initBindSocketEvent.apply(this);
             },
 
             /**
