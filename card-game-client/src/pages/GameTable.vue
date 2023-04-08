@@ -9,29 +9,14 @@
             :current-table-card-k="currentTableCardK"
         />
 
-        <transition-group
-            class="my-card"
-            tag="div"
-            :css="false"
-            @before-enter="beforeHandCardEnter"
-            @enter="handCardEnter"
-            @after-enter="afterHandCardEnter"
-            @before-leave="beforeHandCardLeave"
-            @leave="handCardLeave"
-        >
-            <Card
-                :key="c.k"
-                :data="c"
-                :index="index"
-                :chooseCard="chooseCard"
-                @onHoverCard="onHoverCard"
-                :currentCardIndex="currentCardIndex"
-                :isMyTurn="isMyTurn"
-                :canDrag="true"
-                :isOut="false"
-                v-for="(c, index) in gameData.myCard"
-            />
-        </transition-group>
+        <HandCardArea
+            :game-data="gameData"
+            :choose-card="chooseCard"
+            :on-hover-card="onHoverCard"
+            :on-attack-start="onAttackStart"
+            :is-my-turn="isMyTurn"
+            :current-card-index="currentCardIndex"
+        />
 
         <div class="my-hero-info" ref="myHeroInfo">
             <div>{{gameData.myInfo.nickname}}</div>
@@ -123,10 +108,12 @@
         outCardCommand,
         restartCommand, winExitCommand
     } from "../logic/socketCommand";
+    import HandCardArea from "../components/HandCardArea.vue";
 
     export default {
         name: 'GameTable',
         components: {
+            HandCardArea,
             TableCardArea, LevelUpDialog, CardStatusPanel, TaskPanel, TalkDialog, EndButton,
             ChooseEffectFrame, ChooseCardFrame, TipDialog, ErrorDialog, Card, 
             WinDialog, NormalDialog
@@ -1002,27 +989,6 @@
                 } else {
                     this.isAnimating = false;
                 }
-            },
-
-            beforeHandCardEnter(el) {
-                el.style['transition'] = "all 0s";
-            },
-            handCardEnter(el, done) {
-                Velocity(el, {translateX: 2000}, {duration: 1})
-                    .then(el => {
-                        return Velocity(el, {translateX: 0}, {duration: 1000, easing: 'ease-out', complete: () => {done()}})
-                    })
-            },
-            afterHandCardEnter(el) {
-                el.style['transition'] = "all 0.2s";
-                el.style.transform = '';
-            },
-            beforeHandCardLeave(el) {
-                el.style['transition'] = "all 0s";
-                el.style['position'] = 'absolute';
-            },
-            handCardLeave(el, done) {
-                Velocity(el, {opacity: 0}, { duration: 1, complete() { done() } })
             },
 
             normalDialogConfirm() {
