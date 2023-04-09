@@ -3,7 +3,7 @@
         <div class="left-container">
             <div style="padding: 40px">选择下列已有卡组进行匹配对战</div>
             <div class="cards-list">
-                <div class="cards" v-for="c in cardsList" @click="confirmStart(c)" :key="c._id">
+                <div class="cards" v-for="c in cardsList" @click="confirmSelectCards(c)" :key="c._id">
                     <div :class="getCardsTopCareerClass(c)">{{getCardsTopCareerName(c)}}</div>
                     <div class="cards-name">
                         {{c.cardsName}}
@@ -25,8 +25,6 @@
                 <div>等级：{{userInfo.level}}</div>
                 <div>经验：{{userInfo.exp}}</div>
             </div>
-            <!-- <button @click="pveMode" class="button" style="margin-top: 20px">剧情模式</button> -->
-            <!-- <button class="button" disabled style="margin-top: 20px">合作模式</button> -->
             <button @click="goToMainMenu" class="button" style="margin-top: 20px">回到首页</button>
 
             <button @click="goToSuggest" class="button" style="margin-top: 20px">提出建议</button>
@@ -34,82 +32,115 @@
             <div class="qq">交流群：532413727</div>
 
         </div>
+
+        <OptionsDialog
+            :on-cancel="cancelStart"
+            :on-select="gameModeSelect"
+            :options="gameModes"
+            :show="optionsDialogShow"
+        />
     </div>
 </template>
 
-<script>
-    import {mapActions, mapGetters} from "vuex"
+<script setup>
+import {computed, onMounted, ref} from "vue";
+    import {useStore} from "vuex"
+    import {useRouter} from "vue-router"
     import axios from "axios"
+    import OptionsDialog from "../components/OptionsDialog.vue";
 
-    export default {
-        name: "ChooseCards",
-        computed: mapGetters({
-            cardsList: 'cardsList',
-            userInfo: 'userInfo'
-        }),
-        mounted() {
-            axios
-                .post('cards/getUserCards', {
-                    userId: sessionStorage.getItem("userId")
-                })
-                .then(res => {
-                    if (res.data.success) {
-                        this.refreshCardsList(res.data.data);
-                    }
-                });
+    const router = useRouter()
 
-            axios
-                .get(`users/info?id=${sessionStorage.getItem("userId")}`)
-                .then(res => {
-                    if (res.data.success) {
-                        this.refreshUserInfo(res.data.data);
-                    }
-                })
-        },
-        methods: {
-            ...mapActions(['chooseCards', 'refreshCardsList', 'refreshUserInfo']),
-            createCards() {
-                this.$router.push('/createCards')
-            },
-            confirmStart(c) {
-                let r = confirm(`确认以 ${c.cardsName} 开始游戏么？`);
+    const store = useStore()
 
-                if (r) {
-                    this.chooseCards(c);
-                    this.$router.push("/")
+    // 获取用户数据与卡组数据
+    const userInfo = computed(() => store.state.userInfo)
+    const cardsList = computed(() => store.state.cardsList)
+    const refreshCardsList = (cards) => store.dispatch('refreshCardsList', cards)
+    const refreshUserInfo = (userInfo) => store.dispatch('refreshUserInfo', userInfo)
+    onMounted(() => {
+        axios
+            .post('cards/getUserCards', {
+                userId: sessionStorage.getItem("userId")
+            })
+            .then(res => {
+                if (res.data.success) {
+                    refreshCardsList(res.data.data);
                 }
-            },
-            getCardsTopCareerClass(c) {
-                let ret = "cards-top ";
-                switch (c.careerId) {
-                    case 1:
-                        return ret + "web";
-                    case 2:
-                        return ret + "server";
-                    default:
-                        return ret;
+            });
+
+        axios
+            .get(`users/info?id=${sessionStorage.getItem("userId")}`)
+            .then(res => {
+                if (res.data.success) {
+                    refreshUserInfo(res.data.data);
                 }
-            },
-            getCardsTopCareerName(c) {
-                switch (c.careerId) {
-                    case 1:
-                        return "Web前端";
-                    case 2:
-                        return "服务端";
-                    default:
-                        return "未知";
-                }
-            },
-            goToMainMenu() {
-                this.$router.push("/mainMenu")
-            },
-            goToSuggest() {
-                this.$router.push("/suggest")
-            },
-            pveMode() {
-                this.$router.push("/pve")
-            }
+            })
+    })
+
+    // 选择卡牌进行游戏
+    const optionsDialogShow = ref(false)
+    const gameModes = [
+        { label: "随机匹配", value: 1},
+        { label: "创建房间", value: 2},
+        { label: "加入房间", value: 3},
+    ]
+    let tempCards;
+    const chooseCards = (cards) => store.dispatch('chooseCards', cards)
+    // 确认卡牌选择
+    function confirmSelectCards(c) {
+        let r = confirm(`确认以 ${c.cardsName} 开始游戏么？`);
+
+        if (r) {
+            tempCards = c;
+            optionsDialogShow.value = true
         }
+    }
+    // 取消游戏
+    function cancelStart() {
+        optionsDialogShow.value = false
+        tempCards = null;
+    }
+    // 选择游戏模式
+    function gameModeSelect(mode) {
+        if (tempCards === null) {
+            return;
+        }
+        optionsDialogShow.value = false
+        chooseCards(tempCards);
+        router.push("/pvp/" + mode.value)
+    }
+
+    function getCardsTopCareerClass(c) {
+        let ret = "cards-top ";
+        switch (c.careerId) {
+            case 1:
+                return ret + "web";
+            case 2:
+                return ret + "server";
+            default:
+                return ret;
+        }
+    }
+    function getCardsTopCareerName(c) {
+        switch (c.careerId) {
+            case 1:
+                return "Web前端";
+            case 2:
+                return "服务端";
+            default:
+                return "未知";
+        }
+    }
+
+    function createCards() {
+        router.push('/createCards')
+    }
+    function goToMainMenu() {
+        router.push("/mainMenu")
+    }
+    function goToSuggest() {
+        router.push("/suggest")
     }
 </script>
 

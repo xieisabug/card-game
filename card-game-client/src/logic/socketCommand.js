@@ -7,7 +7,8 @@ export function connectCommand() {
         r: this.roomNumber,
         userId: sessionStorage.getItem("userId"),
         cardsId: this.chooseCardsId,
-        isPve: this.isPve
+        isPve: this.isPve,
+        pvpGameMode: this.pvpGameMode
     })
 }
 
@@ -89,9 +90,13 @@ export function nextLevelCommand() {
 }
 
 export function initBindSocketEvent() {
-    this.socket.on("WAITE", function () {
+    this.socket.on("WAIT", (result) => {
         this.matchDialogShow = true;
+        if (result.roomNumber) {
+            this.roomNumber = result.roomNumber;
+        }
     });
+
     this.socket.on("START", (result) => {
         this.matchDialogShow = false;
         this.showTip("开始对战吧");

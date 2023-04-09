@@ -1,7 +1,6 @@
 const { MongoClient, ObjectId } = require("mongodb");
 const { getLevelReward } = require('./utils');
 const {UserOperatorType} = require("./constants");
-// let connectedDB;
 
 // Connection URL
 const url = 'mongodb://localhost:27017';
@@ -241,6 +240,7 @@ function findUserOperator(userId) {
         }
     }).limit(10).toArray()
 }
+
 
 module.exports = {
     login,

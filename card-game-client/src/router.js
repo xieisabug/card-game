@@ -39,7 +39,7 @@ const myRouter = createRouter({
             component: CreateCards
         },
         {
-            path: '/',
+            path: '/pvp/:gameMode',
             name: 'GameTable',
             component: GameTable
         },

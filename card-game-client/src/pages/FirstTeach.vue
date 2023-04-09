@@ -513,7 +513,7 @@
                     userId: sessionStorage.getItem("userId"),
                     name: "firstTeach"
                 }).then(r => {
-                    this.$router.push("/chooseCards");
+                    this.$router.push("/mainMenu");
                 });
             },
 

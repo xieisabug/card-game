@@ -46,9 +46,11 @@
             :cancel-choose-effect="cancelChooseEffect"
         />
 
-        <div class="match-dialog-container" v-show="matchDialogShow">
-            正在匹配，请等待
-        </div>
+        <MatchDialog
+            :match-dialog-show="matchDialogShow"
+            :pvp-game-mode="pvpGameMode"
+            :room-number="roomNumber"
+        />
 
         <TipDialog :show="tipDialogShow" :text="tipText"/>
         <ErrorDialog :show="errorDialogShow" :text="errorText"/>
@@ -109,18 +111,18 @@
         restartCommand, winExitCommand
     } from "../logic/socketCommand";
     import HandCardArea from "../components/HandCardArea.vue";
+    import MatchDialog from "../components/MatchDialog.vue";
 
     export default {
         name: 'GameTable',
         components: {
-            HandCardArea,
-            TableCardArea, LevelUpDialog, CardStatusPanel, TaskPanel, TalkDialog, EndButton,
-            ChooseEffectFrame, ChooseCardFrame, TipDialog, ErrorDialog, Card, 
-            WinDialog, NormalDialog
+            MatchDialog, HandCardArea, TableCardArea, LevelUpDialog, CardStatusPanel, TaskPanel, TalkDialog, EndButton,
+            ChooseEffectFrame, ChooseCardFrame, TipDialog, ErrorDialog, Card, WinDialog, NormalDialog
         },
         data() {
             return {
                 startGame: false,
+                pvpGameMode: -1,
                 gameData: {
                     myCard: [],
                     myTableCard: [],
@@ -184,6 +186,9 @@
         },
         mounted() {
             this.isPve = this.$route.path === '/pve';
+            if (!this.isPve) {
+                this.pvpGameMode = this.$route.params.gameMode;
+            }
 
             if (!this.isPve && this.chooseCardsId === -1) {
                 this.$router.push("/chooseCards");
