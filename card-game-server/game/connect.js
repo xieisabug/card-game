@@ -19,6 +19,7 @@ const {endMyTurn} = require("./endMyTurn");
 const {attackCard} = require("./attackCard");
 const {attackHero} = require("./attackHero");
 const logger = log4js.getLogger('play');
+logger.level = "debug";
 const seedrandom = require('seedrandom');
 
 /**
@@ -126,7 +127,6 @@ function connect(args, socket, socketServer) {
             logger.info(`roomNumber:${roomNumber} one userId1:${memoryData['one'].userId} cardsId1:${memoryData['one'].cardsId} two userId2:${userId} cardsId2:${cardsId} pvp start`);
 
             socket.join(roomNumber);
-            memoryData['one'].socket.join(roomNumber);
 
             memoryData['one'].socket.emit("START", {
                 roomNumber: roomNumber,

@@ -85,7 +85,7 @@
 <script>
     import Card from "../components/Card";
     import { io } from 'socket.io-client';
-    import {TargetType, AttackType, GameMode} from "../utils";
+    import {TargetType, AttackType, GameMode, PvpMode} from "../utils";
     import {mapGetters} from "vuex";
     import {host, port} from "../config";
     import ErrorDialog from "../components/ErrorDialog";
@@ -215,6 +215,9 @@
              * 连接服务器
              */
             connectSocketServer() {
+                if (+this.pvpGameMode === PvpMode.JOIN_ROOM) {
+                    this.roomNumber = this.$route.query.roomNumber;
+                }
                 connectCommand.apply(this);
             },
 
