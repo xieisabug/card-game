@@ -13,6 +13,7 @@ let careers = require('./routes/careers');
 let cards = require('./routes/cards');
 let suggest = require('./routes/suggest');
 let activities = require('./routes/activities');
+let games = require('./routes/games');
 
 let handleSynchronousClient = require('./handler');
 
@@ -31,6 +32,7 @@ app.use("/careers", careers);
 app.use("/cards", cards);
 app.use("/suggest", suggest);
 app.use("/activities", activities);
+app.use("/games", games);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

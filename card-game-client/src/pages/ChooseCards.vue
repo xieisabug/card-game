@@ -25,6 +25,7 @@
                 <div>等级：{{userInfo.level}}</div>
                 <div>经验：{{userInfo.exp}}</div>
             </div>
+            <button @click="reconnect" class="button" style="margin-top: 20px">重连游戏</button>
             <button @click="goToMainMenu" class="button" style="margin-top: 20px">回到首页</button>
 
             <button @click="goToSuggest" class="button" style="margin-top: 20px">提出建议</button>
@@ -151,6 +152,18 @@ import {PvpMode} from "../utils";
     }
     function goToSuggest() {
         router.push("/suggest")
+    }
+    function reconnect() {
+        axios
+            .get('games/isStartingGame?userId=' + sessionStorage.getItem("userId"))
+            .then(res => {
+                if (res.data.isStartingGame) {
+                    chooseCards(res.data.isStartingGame);
+                    router.push("/pvp/" + PvpMode.RECONNECT)
+                } else {
+                    alert("您当前没有在游戏中")
+                }
+            });
     }
 </script>
 

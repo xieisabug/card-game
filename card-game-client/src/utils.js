@@ -44,5 +44,6 @@ export const GameMode = {
 export const PvpMode = {
     RANDOM: 1,
     CREATE_ROOM: 2,
-    JOIN_ROOM: 3
+    JOIN_ROOM: 3,
+    RECONNECT: 4
 }
