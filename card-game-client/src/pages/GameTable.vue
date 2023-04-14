@@ -1038,20 +1038,6 @@
         top: 0;
     }
 
-    .match-dialog-container {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        left: 0;
-        top: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 20px;
-        background: rgba(0, 0, 0, 0.5);
-        color: white;
-    }
-
     #animationCanvas {
         position: absolute;
         width: 100%;

@@ -2503,6 +2503,12 @@ const UserOperatorType = {
     cardsDelete: 6
 }
 
+const PvpMode = {
+    RANDOM: 1,
+    CREATE_ROOM: 2,
+    JOIN_ROOM: 3
+}
+
 module.exports = {
     CardType: CardType,
     TargetType: TargetType,
@@ -2523,5 +2529,6 @@ module.exports = {
     GameMode,
     ComboCards: comboCards,
     ComboCardsMap,
-    UserOperatorType
+    UserOperatorType,
+    PvpMode
 };

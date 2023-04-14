@@ -48,6 +48,7 @@ import {computed, onMounted, ref} from "vue";
     import {useRouter} from "vue-router"
     import axios from "axios"
     import OptionsDialog from "../components/OptionsDialog.vue";
+import {PvpMode} from "../utils";
 
     const router = useRouter()
 
@@ -81,9 +82,9 @@ import {computed, onMounted, ref} from "vue";
     // 选择卡牌进行游戏
     const optionsDialogShow = ref(false)
     const gameModes = [
-        { label: "随机匹配", value: 1},
-        { label: "创建房间", value: 2},
-        { label: "加入房间", value: 3},
+        { label: "随机匹配", value: PvpMode.RANDOM},
+        { label: "创建房间", value: PvpMode.CREATE_ROOM},
+        { label: "加入房间", value: PvpMode.JOIN_ROOM},
     ]
     let tempCards;
     const chooseCards = (cards) => store.dispatch('chooseCards', cards)
@@ -107,6 +108,15 @@ import {computed, onMounted, ref} from "vue";
             return;
         }
         optionsDialogShow.value = false
+        if (mode.value === PvpMode.JOIN_ROOM) {
+            const roomNumber = prompt("请输入您的房间号", "")
+            if (roomNumber === null || roomNumber.trim() === "") {
+                return;
+            }
+            chooseCards(tempCards);
+            router.push("/pvp/" + mode.value + "?roomNumber=" + roomNumber)
+            return;
+        }
         chooseCards(tempCards);
         router.push("/pvp/" + mode.value)
     }

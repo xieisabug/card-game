@@ -16,3 +16,9 @@
 
 [博客地址](http://blog.xiejingyang.com)
 
+## 启动方式
+client项目先运行 `npm install`，然后直接运行 `npm run serve`就可以了
+
+server项目先运行 `npm install`，然后运行 `node app.js`
+
+另，项目需要本地在27017端口运行一个mongodb

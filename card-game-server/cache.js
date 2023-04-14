@@ -2,8 +2,12 @@ const waitPairQueue = []; // 等待排序的队列
 const memoryData = {}; // 缓存的房间游戏数据，key => 房间号，value => 游戏数据
 const existUserGameRoomMap = {}; // 缓存用户的房间号， key => 用户标识，value => 房间号
 
-function existUserGameRoom(userId) {
-    return existUserGameRoomMap[userId];
+function existStartingUserGameRoom(userId) {
+    const roomId = existUserGameRoomMap[userId]
+    if (roomId && getRoomData(roomId).startTime) {
+        return roomId
+    }
+    return false;
 }
 function saveUserGameRoom(userId, roomNumber) {
     existUserGameRoomMap[userId] = roomNumber;
@@ -37,7 +41,7 @@ function getSocket(roomNumber, identity) {
 }
 
 module.exports = {
-    existUserGameRoom,
+    existStartingUserGameRoom,
     saveUserGameRoom,
     removeUserGameRoom,
     getRoomData,

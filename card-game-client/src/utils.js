@@ -40,3 +40,9 @@ export const GameMode = {
     PVE1: 2,
     PVE2: 3
 };
+
+export const PvpMode = {
+    RANDOM: 1,
+    CREATE_ROOM: 2,
+    JOIN_ROOM: 3
+}
