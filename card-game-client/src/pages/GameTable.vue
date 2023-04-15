@@ -1,5 +1,7 @@
 <template>
     <div class="app">
+        <GameSetting :on-give-up="giveUp" />
+
         <TableCardArea
             :game-data="gameData"
             :choose-table-card="chooseTableCard"
@@ -106,16 +108,18 @@
         attackCardCommand,
         attackHeroCommand,
         connectCommand,
-        endMyTurnCommand, initBindSocketEvent, nextLevelCommand,
+        endMyTurnCommand, giveUpCommand, initBindSocketEvent, nextLevelCommand,
         outCardCommand,
         restartCommand, winExitCommand
     } from "../logic/socketCommand";
     import HandCardArea from "../components/HandCardArea.vue";
     import MatchDialog from "../components/MatchDialog.vue";
+    import GameSetting from "../components/GameSetting.vue";
 
     export default {
         name: 'GameTable',
         components: {
+            GameSetting,
             MatchDialog, HandCardArea, TableCardArea, LevelUpDialog, CardStatusPanel, TaskPanel, TalkDialog, EndButton,
             ChooseEffectFrame, ChooseCardFrame, TipDialog, ErrorDialog, Card, WinDialog, NormalDialog
         },
@@ -651,6 +655,13 @@
              */
             onHoverCard(card) {
                 this.hoverCard = card;
+            },
+
+            giveUp() {
+                const result = confirm('确定要认输吗？');
+                if (result) {
+                    giveUpCommand.apply(this);
+                }
             },
 
             /**

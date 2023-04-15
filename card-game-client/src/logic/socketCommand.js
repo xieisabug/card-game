@@ -89,6 +89,13 @@ export function nextLevelCommand() {
     });
 }
 
+export function giveUpCommand() {
+    this.socket.emit("COMMAND", {
+        type: "GIVE_UP",
+        r: this.roomNumber
+    })
+}
+
 export function initBindSocketEvent() {
     this.socket.on("WAIT", (result) => {
         this.matchDialogShow = true;

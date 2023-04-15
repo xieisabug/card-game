@@ -6,6 +6,7 @@ const {attackHero} = require("./game/attackHero");
 const {winExit} = require("./game/winExit");
 const {restart} = require("./game/restart");
 const {nextLevel} = require("./game/nextLevel");
+const {giveUp} = require("./game/giveUp");
 
 module.exports = function handleSynchronousClient(args, socket, socketServer) {
     switch (args.type) {
@@ -32,6 +33,9 @@ module.exports = function handleSynchronousClient(args, socket, socketServer) {
             break;
         case "WIN_EXIT":
             winExit(args, socket);
+            break;
+        case "GIVE_UP":
+            giveUp(args, socket);
             break;
     }
 };
