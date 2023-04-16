@@ -1,12 +1,13 @@
-let express = require('express');
-let path = require('path');
-let favicon = require('serve-favicon');
-let logger = require('morgan');
-let http = require('http');
-let cookieParser = require('cookie-parser');
-let bodyParser = require('body-parser');
-let { Server } = require("socket.io");
-let cors = require('cors');
+const express = require('express');
+const path = require('path');
+const http = require('http');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const { Server } = require("socket.io");
+const cors = require('cors');
+const log4js = require('log4js');
+log4js.configure(process.env.NODE_ENV === "production" ? './config/log4js.json': './config/log4js-dev.json')
+
 
 let users = require('./routes/users');
 let careers = require('./routes/careers');
@@ -36,7 +37,8 @@ app.use("/games", games);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+// app.use(logger('dev'));
+app.use(log4js.connectLogger(log4js.getLogger("http"), { level: 'auto' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 let server = http.createServer(app);

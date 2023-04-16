@@ -1,0 +1,34 @@
+{
+  "appenders": {
+    "access": {
+      "type": "stdout"
+    },
+    "app": {
+      "type": "stdout"
+    },
+    "play": {
+      "type": "stdout"
+    },
+    "playErrorFile": {
+      "type": "stderr"
+    },
+    "errorFile": {
+      "type": "stderr"
+    },
+    "playErrors": {
+      "type": "logLevelFilter",
+      "level": "ERROR",
+      "appender": "playErrorFile"
+    },
+    "errors": {
+      "type": "logLevelFilter",
+      "level": "ERROR",
+      "appender": "errorFile"
+    }
+  },
+  "categories": {
+    "default": { "appenders": [ "app", "errors" ], "level": "DEBUG" },
+    "play": { "appenders": [ "play", "playErrors" ], "level": "DEBUG" },
+    "http": { "appenders": [ "access"], "level": "DEBUG" }
+  }
+}

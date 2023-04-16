@@ -1,0 +1,45 @@
+{
+  "appenders": {
+    "access": {
+      "type": "dateFile",
+      "filename": "log/access.log",
+      "pattern": "-yyyy-MM-dd",
+      "category": "http"
+    },
+    "app": {
+      "type": "file",
+      "filename": "log/app.log",
+      "maxLogSize": 10485760,
+      "numBackups": 3
+    },
+    "play": {
+      "type": "file",
+      "filename": "log/play.log",
+      "maxLogSize": 10485760,
+      "numBackups": 3
+    },
+    "playErrorFile": {
+      "type": "file",
+      "filename": "log/play_errors.log"
+    },
+    "errorFile": {
+      "type": "file",
+      "filename": "log/errors.log"
+    },
+    "playErrors": {
+      "type": "logLevelFilter",
+      "level": "ERROR",
+      "appender": "playErrorFile"
+    },
+    "errors": {
+      "type": "logLevelFilter",
+      "level": "ERROR",
+      "appender": "errorFile"
+    }
+  },
+  "categories": {
+    "default": { "appenders": [ "app", "errors" ], "level": "INFO" },
+    "play": { "appenders": [ "play", "playErrors" ], "level": "INFO" },
+    "http": { "appenders": [ "access"], "level": "INFO" }
+  }
+}
