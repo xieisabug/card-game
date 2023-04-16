@@ -5,6 +5,7 @@ const {getSpecialMethod} = require("./getSpecialMethod");
 const {sendCards} = require("./sendCards");
 const {error} = require("./log");
 const log4js = require("log4js");
+const {giveUp} = require("./giveUp");
 const logger = log4js.getLogger('play');
 
 /**
@@ -15,6 +16,7 @@ const logger = log4js.getLogger('play');
 function endMyTurn(args, socket) {
     let roomNumber = args.r;
     const memoryData = getRoomData(roomNumber);
+    // 停止之前的超时计时
     clearTimeout(memoryData.timeoutId);
 
     const oneSocket = getSocket(roomNumber, "one")
@@ -67,9 +69,24 @@ function endMyTurn(args, socket) {
     getSocket(roomNumber, other).emit("YOUR_TURN");
     socket.emit("END_MY_TURN");
 
+    // 超时计时
     memoryData.timeoutId = setTimeout(() => {
         logger.info(`${roomNumber} ${other} 超时 ${memoryData[other].myMaxThinkTimeNumber}秒, 自动结束回合`);
+
         endMyTurn(args, getSocket(roomNumber, other));
+        if (memoryData[other].timeoutTimes) {
+            memoryData[other].timeoutTimes += 1;
+
+            if (memoryData[other].timeoutTimes === 4) {
+                logger.info(`${roomNumber} ${other} 超时 ${memoryData[other].myMaxThinkTimeNumber}秒, 达到4次, 开始超时惩罚`);
+                memoryData[other].myMaxThinkTimeNumber = memoryData[other].myMaxThinkTimeNumber / 2;
+            } else if (memoryData[other].timeoutTimes >= 6) {
+                logger.info(`${roomNumber} ${other} 超时 ${memoryData[other].myMaxThinkTimeNumber}秒, 达到6次, 惩罚输掉游戏`);
+                giveUp(args, getSocket(roomNumber, other));
+            }
+        } else {
+            memoryData[other].timeoutTimes = 1;
+        }
     }, memoryData[other].myMaxThinkTimeNumber * 1000);
 
     memoryData['currentRound'] = other;

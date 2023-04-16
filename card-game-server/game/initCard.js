@@ -1,12 +1,14 @@
 const log4js = require("log4js");
 const logger = log4js.getLogger('play');
 
-const {getRoomData} = require("../cache");
+const {getRoomData, getSocket} = require("../cache");
 const {sendCards} = require("./sendCards");
 const {getNextCard} = require("./utils");
 const {findCardsById, findUserById} = require("../db");
 const {shuffle} = require("../utils");
 const {CardMap, MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, MAX_THINK_TIME_NUMBER} = require("../constants");
+const {endMyTurn} = require("./endMyTurn");
+const {giveUp} = require("./giveUp");
 
 /**
  * 开局
@@ -80,6 +82,26 @@ function initCard(roomNumber, oneCardsId, twoCardsId, oneUserId, twoUserId) {
             sendCards(roomNumber);
 
             memoryData[first].socket.emit("YOUR_TURN");
+            memoryData[second].socket.emit("END_MY_TURN");
+            // 超时计时
+            memoryData.timeoutId = setTimeout(() => {
+                logger.info(`${roomNumber} ${first} 超时 ${memoryData[first].myMaxThinkTimeNumber}秒, 自动结束回合`);
+
+                endMyTurn({r: roomNumber}, getSocket(roomNumber, first));
+                if (memoryData[first].timeoutTimes) {
+                    memoryData[first].timeoutTimes += 1;
+
+                    if (memoryData[first].timeoutTimes === 4) {
+                        logger.info(`${roomNumber} ${first} 超时 ${memoryData[first].myMaxThinkTimeNumber}秒, 达到4次, 开始超时惩罚`);
+                        memoryData[first].myMaxThinkTimeNumber = memoryData[first].myMaxThinkTimeNumber / 2;
+                    } else if (memoryData[first].timeoutTimes >= 6) {
+                        logger.info(`${roomNumber} ${first} 超时 ${memoryData[first].myMaxThinkTimeNumber}秒, 达到6次, 惩罚输掉游戏`);
+                        giveUp({r: roomNumber}, getSocket(roomNumber, first));
+                    }
+                } else {
+                    memoryData[first].timeoutTimes = 1;
+                }
+            }, memoryData[first].myMaxThinkTimeNumber * 1000);
         })
         .catch(r => {
             logger.error(JSON.stringify(r));
