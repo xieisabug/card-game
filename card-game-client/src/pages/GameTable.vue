@@ -236,8 +236,6 @@
                 }
 
                 this.isMyTurn = false;
-                clearTimeout(this.thinkTimeOutId);
-                clearTimeout(this.thinkTimeOutErrorId);
                 this.resetAllCurrentCard();
             },
 

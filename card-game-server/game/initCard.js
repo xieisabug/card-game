@@ -18,7 +18,7 @@ function initCard(roomNumber, oneCardsId, twoCardsId, oneUserId, twoUserId) {
     let first = random >= 1 ? "one" : "two"; // 判断当前是哪个玩家出牌
     let second = random < 1 ? "one" : "two";
 
-    logger.info(`roomNumber:${roomNumber} first:${first} init first`);
+    logger.info(`roomNumber:${roomNumber} 先手:${first} 初始化抽牌`);
 
     Promise
         .all([findCardsById(oneCardsId), findCardsById(twoCardsId), findUserById(oneUserId), findUserById(twoUserId)])

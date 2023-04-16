@@ -136,15 +136,13 @@ export function initBindSocketEvent() {
     this.socket.on("YOUR_TURN", () => {
         this.isMyTurn = true;
         this.showTip("你的回合");
-        if (this.gameData.myMaxThinkTimeNumber !== -1) {
-            this.thinkTimeOutId = setTimeout(() => {
-                this.endMyTurn();
-            }, this.gameData.myMaxThinkTimeNumber * 1000);
+    });
 
-            this.thinkTimeOutErrorId = setTimeout(() => {
-                this.showError("您还有30秒时间")
-            }, (this.gameData.myMaxThinkTimeNumber - 30) * 1000)
-        }
+    /**
+     * 结束我的回合
+     */
+    this.socket.on("END_MY_TURN", () => {
+        this.isMyTurn = false;
     });
 
     /**

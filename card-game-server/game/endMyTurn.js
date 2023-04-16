@@ -4,6 +4,8 @@ const {getNextCard} = require("./utils");
 const {getSpecialMethod} = require("./getSpecialMethod");
 const {sendCards} = require("./sendCards");
 const {error} = require("./log");
+const log4js = require("log4js");
+const logger = log4js.getLogger('play');
 
 /**
  * 结束当前回合
@@ -13,6 +15,8 @@ const {error} = require("./log");
 function endMyTurn(args, socket) {
     let roomNumber = args.r;
     const memoryData = getRoomData(roomNumber);
+    clearTimeout(memoryData.timeoutId);
+
     const oneSocket = getSocket(roomNumber, "one")
     let belong = oneSocket.id === socket.id ? "one" : "two"; // 判断当前是哪个玩家出牌
     let other = oneSocket.id !== socket.id ? "one" : "two";
@@ -61,6 +65,12 @@ function endMyTurn(args, socket) {
 
     memoryData[other].fee = memoryData[other].maxFee;
     getSocket(roomNumber, other).emit("YOUR_TURN");
+    socket.emit("END_MY_TURN");
+
+    memoryData.timeoutId = setTimeout(() => {
+        logger.info(`${roomNumber} ${other} 超时 ${memoryData[other].myMaxThinkTimeNumber}秒, 自动结束回合`);
+        endMyTurn(args, getSocket(roomNumber, other));
+    }, memoryData[other].myMaxThinkTimeNumber * 1000);
 
     memoryData['currentRound'] = other;
     if (memoryData[other]["cards"].length < memoryData[other]["maxHandCardNumber"]
