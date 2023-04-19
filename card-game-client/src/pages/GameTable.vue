@@ -460,6 +460,7 @@
                     case GameMode.PVP1:
                         return "确定";
                     case GameMode.PVE1:
+                    case GameMode.PVE2:
                         return "返回主界面"
                 }
             },
@@ -468,7 +469,7 @@
              * 获胜对话框中下一步按钮的相对应事件
              */
             onWinNext() {
-                if (this.gameData.gameMode === GameMode.PVE1) {
+                if (this.gameData.gameMode === GameMode.PVE1 || this.gameData.gameMode === GameMode.PVE2) {
                     nextLevelCommand.apply(this);
                 }
             },
@@ -481,6 +482,7 @@
                     case GameMode.PVP1:
                         return "继续匹配";
                     case GameMode.PVE1:
+                    case GameMode.PVE2:
                         return "下一关";
                 }
             },
