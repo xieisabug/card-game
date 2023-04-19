@@ -14,7 +14,7 @@ function winExit(args, socket) {
 
     delete memoryData[belong];
 
-    if (!memoryData[other]) {
+    if (!memoryData[other] || memoryData.isPve) {
         removeRoomData(roomNumber)
     }
 

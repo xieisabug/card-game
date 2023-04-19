@@ -9,6 +9,8 @@ function checkPveWin(roomNumber) {
     const memoryData = getRoomData(roomNumber)
     if (memoryData.isPve) {
         if (memoryData['two'].checkWin()) {
+            clearTimeout(memoryData.timeoutId);
+
             memoryData['two'].saveWin().then(result => {
                 getSocket(roomNumber, "one").emit("END_GAME", {win: true, reward: result.reward});
                 checkLevelUp(roomNumber);
