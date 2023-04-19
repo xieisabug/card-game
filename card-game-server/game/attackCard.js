@@ -44,7 +44,7 @@ function attackCard(args, socket) {
 
             if (card.isStrong) { // 强壮
                 card.isStrong = false;
-            } else if (attackCard.isShortInvincible) { // 短时间无敌
+            } else if (card.isShortInvincible) { // 短时间无敌
 
             } else {
                 card.life -= attackCard.attack;

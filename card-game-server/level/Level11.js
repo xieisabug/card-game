@@ -136,6 +136,7 @@ class Level11 extends LevelBase {
                                     id: 14,
                                     name: "IDE大师",
                                     cardType: CardType.CHARACTER,
+                                    targetType: TargetType.MY_TABLE_CARD,
                                     cost: 7,
                                     content: `出场：场上所有人员获得+1/+1`,
                                     attack: 6,
