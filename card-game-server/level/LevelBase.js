@@ -1,6 +1,6 @@
 const {GameMode} = require('../constants');
 const {userWinPve} = require('../db');
-const {sleep} = require("../utils");
+const {MAX_THINK_TIME_NUMBER} = require("../constants")
 
 class LevelBase {
     constructor(gameData, socketFunction) {
@@ -60,6 +60,7 @@ class LevelBase {
                 }
             }
         };
+        this.myMaxThinkTimeNumber = MAX_THINK_TIME_NUMBER;
         this.cards = [];
         this.tableCards = [];
         this.remainingCards = [];

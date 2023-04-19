@@ -7,6 +7,7 @@ const {
     changeRoomData,
     waitPairQueue
 } = require("../cache");
+const {MAX_THINK_TIME_NUMBER} = require("../constants")
 const {GameMode, UserOperatorType, PvpMode} = require("../constants");
 const {levelList, maxLevelId} = require("../level/level-utils");
 const {findNextLevel, saveUserOperator} = require("../db");
@@ -21,7 +22,6 @@ const {attackHero} = require("./attackHero");
 const logger = log4js.getLogger('play');
 const seedrandom = require('seedrandom');
 
-const DEFAULT_THINK_TIME_NUMBER = 120;
 
 /**
  * 连接
@@ -70,7 +70,7 @@ function connect(args, socket, socketServer) {
                         saveUserGameRoom(userId, roomNumber);
 
                         changeRoomData(roomNumber, 'one', {
-                            userId, cardsId, socket, roomNumber
+                            userId, cardsId, socket, roomNumber, myMaxThinkTimeNumber: MAX_THINK_TIME_NUMBER
                         });
                         changeRoomData(roomNumber, 'two', new levelList[levelId](memoryData, {
                             outCard,
@@ -122,7 +122,7 @@ function connect(args, socket, socketServer) {
 
             changeRoomData(roomNumber, 'startTime', new Date());
             changeRoomData(roomNumber, 'two', {
-                userId, cardsId, socket, roomNumber, myMaxThinkTimeNumber: DEFAULT_THINK_TIME_NUMBER
+                userId, cardsId, socket, roomNumber, myMaxThinkTimeNumber: MAX_THINK_TIME_NUMBER
             });
 
             logger.info(`roomNumber:${roomNumber} one userId1:${memoryData['one'].userId} cardsId1:${memoryData['one'].cardsId} two userId2:${userId} cardsId2:${cardsId} pvp start`);
@@ -163,7 +163,7 @@ function connect(args, socket, socketServer) {
             saveUserGameRoom(userId, roomNumber);
 
             changeRoomData(roomNumber, 'one', {
-                userId, cardsId, socket, roomNumber, myMaxThinkTimeNumber: DEFAULT_THINK_TIME_NUMBER
+                userId, cardsId, socket, roomNumber, myMaxThinkTimeNumber: MAX_THINK_TIME_NUMBER
             });
 
             logger.info(`roomNumber:${roomNumber} userId:${userId} cardsId:${cardsId} pvp create`);
@@ -176,7 +176,7 @@ function connect(args, socket, socketServer) {
             // 如果等待列表是空的，则加入等待列表
             if (waitPairQueue.length === 0) {
                 waitPairQueue.push({
-                    userId, cardsId, socket, myMaxThinkTimeNumber: DEFAULT_THINK_TIME_NUMBER
+                    userId, cardsId, socket, myMaxThinkTimeNumber: MAX_THINK_TIME_NUMBER
                 });
 
                 logger.info(`userId:${userId} cardsId:${cardsId} pvp wait`);
@@ -208,7 +208,7 @@ function connect(args, socket, socketServer) {
                 waitPlayer.roomNumber = roomNumber;
                 changeRoomData(roomNumber, 'one', waitPlayer);
                 changeRoomData(roomNumber, 'two', {
-                    userId, cardsId, socket, roomNumber, myMaxThinkTimeNumber: DEFAULT_THINK_TIME_NUMBER
+                    userId, cardsId, socket, roomNumber, myMaxThinkTimeNumber: MAX_THINK_TIME_NUMBER
                 });
 
                 logger.info(`roomNumber:${roomNumber} one userId1:${waitPlayer.userId} cardsId1:${waitPlayer.cardsId} two userId2:${userId} cardsId2:${cardsId} pvp start`);
