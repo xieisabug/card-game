@@ -161,6 +161,7 @@ class Level11 extends LevelBase {
                                     content: `指定一个己方召唤物本回合（当前操作回合）不受伤害`,
                                     type: ["效果卡"],
                                     isTarget: true,
+                                    isForceTarget: true,
                                     targetType: TargetType.MY_TABLE_CARD,
                                     onChooseTarget: function ({ chooseCard, toIndex, thisCard, specialMethod }) {
                                         chooseCard.isShortInvincible = true;

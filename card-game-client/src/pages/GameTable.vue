@@ -324,7 +324,19 @@
                             this.chooseCardList = this.gameData.otherTableCard
                                 .slice().filter(i => card.filter.every(t => i.type.indexOf(t) === -1));
                         }
-                        this.chooseDialogShow = true;
+
+                        if (this.chooseCardList.length === 0) {
+                            if (card.isForceTarget) {
+                                this.chooseDialogShow = true;
+                                return;
+                            }
+                            this.currentChooseIndex = -1;
+                            this.chooseEffectAnswer = -1;
+                            outCardCommand.apply(this);
+                            this.resetAllCurrentCard();
+                        } else {
+                            this.chooseDialogShow = true;
+                        }
 
                     } else {
                         outCardCommand.apply(this);
