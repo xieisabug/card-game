@@ -77,7 +77,7 @@ export default {
         ...mapActions(["refreshUserInfo"]),
         getUserInfo() {
             axios
-                .get(`users/info?id=${sessionStorage.getItem("userId")}`)
+                .get(`users/info`)
                 .then(res => {
                     if (res.data.success) {
                         this.nickname = res.data.data.nickname;
@@ -87,7 +87,7 @@ export default {
                 });
             axios
                 .get(
-                    `users/userOperator?id=${sessionStorage.getItem("userId")}`
+                    `users/userOperator`
                 )
                 .then(res => {
                     this.operatorList = res.data;
@@ -95,7 +95,7 @@ export default {
         },
         confirmChangeNickname() {
             axios
-                .post(`users/nickname?id=${sessionStorage.getItem("userId")}`, {
+                .post(`users/nickname`, {
                     nickname: this.nickname
                 })
                 .then(res => {

@@ -3,9 +3,9 @@ const router = express.Router();
 const {saveCards, findUserAllCards} = require('../db');
 
 router.post('/', function (req, res) {
-    const {userId, cardsName, chooseIdList, careerId} = req.body;
+    const {cardsName, chooseIdList, careerId} = req.body;
 
-    saveCards(userId, cardsName, chooseIdList, careerId)
+    saveCards(req.auth.id, cardsName, chooseIdList, careerId)
         .then(() => {
             res.json({
                 success: true
@@ -20,9 +20,8 @@ router.post('/', function (req, res) {
 });
 
 router.post('/getUserCards', function (req, res) {
-    const {userId} = req.body;
 
-    findUserAllCards(userId)
+    findUserAllCards(req.auth.id)
         .then((result) => {
             res.json({
                 success: true,

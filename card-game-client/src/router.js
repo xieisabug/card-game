@@ -72,7 +72,7 @@ const myRouter = createRouter({
 });
 
 myRouter.beforeEach((to, from, next) => {
-    if ( (to.path !== "/login" && to.path !== "/register") && !sessionStorage.getItem("userId")) {
+    if ( (to.path !== "/login" && to.path !== "/register") && !sessionStorage.getItem("token")) {
         next({ path: '/login' })
     } else {
         next()

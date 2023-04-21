@@ -186,6 +186,8 @@
                         if (res.data.success) {
                             this.initGameInfo(res.data.data);
                             sessionStorage.setItem("userId", res.data.data.userInfo.id);
+                            sessionStorage.setItem("token", res.data.data.token);
+                            axios.defaults.headers.common['Authorization'] = "Bearer " + res.data.data.token;
                             if (!res.data.data.userGameProcess["firstTeach"]) {
                                 this.$router.push("/firstTeach")
                             } else {

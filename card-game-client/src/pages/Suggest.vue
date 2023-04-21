@@ -27,7 +27,6 @@
             confirm() {
                 axios
                     .post('suggest', {
-                        userId: sessionStorage.getItem("userId"),
                         content: this.content,
                         contact: this.contact
                     })

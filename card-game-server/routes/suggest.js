@@ -3,9 +3,9 @@ const router = express.Router();
 const {saveSuggest} = require('../db');
 
 router.post('/', function (req, res) {
-    const {userId, content, contact} = req.body;
+    const {content, contact} = req.body;
 
-    saveSuggest(userId, content, contact, new Date().getTime())
+    saveSuggest(req.auth.id, content, contact, new Date().getTime())
         .then(() => {
             res.json({
                 success: true

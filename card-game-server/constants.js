@@ -2,6 +2,8 @@ const comboCards = require("./config/comboCards.json");
 let cardEffectFactory = require('./card-effect-factory');
 const {range, getTypeText} = require('./utils');
 
+const JWTSecret = "hello world!";
+
 const CardType = {
     EFFECT: 1,
     CHARACTER: 2,
@@ -2511,6 +2513,7 @@ const PvpMode = {
 }
 
 module.exports = {
+    JWTSecret,
     CardType: CardType,
     TargetType: TargetType,
     CardPosition: CardPosition,

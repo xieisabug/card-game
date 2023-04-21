@@ -146,7 +146,6 @@
                 } else {
                     axios
                         .post(`cards`, {
-                            userId: sessionStorage.getItem("userId"),
                             cardsName: this.cardsName,
                             careerId: this.careerId,
                             chooseIdList,

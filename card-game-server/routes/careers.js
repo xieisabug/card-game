@@ -19,11 +19,10 @@ router.get('/:id/cards/:userId', function (req, res, next) {
 
     Promise
         .all([
-            findUserOwnCard(req.params.userId, CharacterIdMap.BASE),
-            findUserOwnCard(req.params.userId, parseInt(req.params.id))
+            findUserOwnCard(req.auth.id, CharacterIdMap.BASE),
+            findUserOwnCard(req.auth.id, parseInt(req.params.id))
         ])
         .then(result => {
-            console.log(result);
             res.json({
                 success: true,
                 data: {

@@ -4,7 +4,7 @@ const {existStartingUserGameRoom, getRoomData} = require("../cache");
 
 // 查询是否有正在进行的游戏
 router.get('/isStartingGame', function(req, res) {
-    const userId = req.query.userId;
+    const userId = req.auth.id;
     const roomNumber = existStartingUserGameRoom(userId)
     if (roomNumber) {
         // 获取对应的cardsId

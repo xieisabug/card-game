@@ -1,4 +1,5 @@
 const express = require('express');
+const {expressjwt: jwt} = require("express-jwt");
 const path = require('path');
 const http = require('http');
 const cookieParser = require('cookie-parser');
@@ -17,12 +18,17 @@ let activities = require('./routes/activities');
 let games = require('./routes/games');
 
 let handleSynchronousClient = require('./handler');
+const {JWTSecret} = require("./constants");
 
 let app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(jwt({
+    secret: JWTSecret,
+    algorithms: ["HS256"]
+}).unless({ path: ["/users/login"] }))
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
@@ -56,15 +62,16 @@ app.use(function (req, res, next) {
 });
 
 // error handler
-app.use(function (err, req, res, next) {
-    console.log(err);
+app.use((err, req, res, next) => {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
     // render the error page
     res.status(err.status || 500);
-    res.render('error');
+    res.json({
+        error: err.message
+    })
 });
 server.listen(4001, function () {
     console.log("listen");

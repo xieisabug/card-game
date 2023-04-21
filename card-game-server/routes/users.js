@@ -5,7 +5,8 @@ const {
     updateUserGameProcess, saveInfo, saveUserOperator, findUserOperator
 } = require('../db');
 const crypto = require('crypto');
-const {CharacterIdMap, UserOperatorType} = require('../constants');
+const jwt = require("jsonwebtoken");
+const {CharacterIdMap, UserOperatorType, JWTSecret} = require('../constants');
 const moment = require("moment");
 
 /* GET users listing. */
@@ -19,9 +20,12 @@ router.post('/login', function (req, res, next) {
                 Promise.all([userGameProcess(result._id), findUserAllCards(result._id)])
                     .then(r => {
                         let result1 = r[0], result2 = r[1];
+
+                        const token = jwt.sign({id : result._id}, JWTSecret, {expiresIn: 60 * 60 * 24 * 7});
                         res.json({
                             success: true,
                             data: {
+                                token,
                                 userInfo: {
                                     id: result._id,
                                     nickname: result.nickname,
@@ -82,7 +86,7 @@ router.post('/register', function(req, res) {
 });
 
 router.get('/info', function(req, res) {
-    userInfo(req.query.id)
+    userInfo(req.auth.id)
         .then(result => {
             res.json({
                 success: true,
@@ -99,7 +103,7 @@ router.get('/info', function(req, res) {
 });
 
 router.put('/gameProcess', function(req, res) {
-    updateUserGameProcess(req.body.userId, req.body.name)
+    updateUserGameProcess(req.auth.id, req.body.name)
         .then(_ => {
             res.json({
                 success: true
@@ -109,7 +113,7 @@ router.put('/gameProcess', function(req, res) {
 
 router.post("/nickname", function(req, res) {
     let oldNickname;
-    userInfo(req.query.id)
+    userInfo(req.auth.id)
         .then(result => {
             oldNickname = result.nickname;
             result.nickname = req.body.nickname;
@@ -117,7 +121,7 @@ router.post("/nickname", function(req, res) {
             return saveInfo(result.username, result);
         })
         .then(result => {
-            saveUserOperator(req.query.id, { type: UserOperatorType.changeNickname, oldNickname: oldNickname, newNickname: req.body.nickname })
+            saveUserOperator(req.auth.id, { type: UserOperatorType.changeNickname, oldNickname: oldNickname, newNickname: req.body.nickname })
             res.json({
                 success: result.ok == 1
             })
@@ -125,7 +129,7 @@ router.post("/nickname", function(req, res) {
 });
 
 router.get("/userOperator", function(req, res) {
-    findUserOperator(req.query.id)
+    findUserOperator(req.auth.id)
         .then(result => {
             res.json(result.map(i => {
                 i.createDate = moment(i.createDate).format("YYYY-MM-DD HH:mm");

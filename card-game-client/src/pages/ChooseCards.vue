@@ -62,9 +62,7 @@ import {PvpMode} from "../utils";
     const refreshUserInfo = (userInfo) => store.dispatch('refreshUserInfo', userInfo)
     onMounted(() => {
         axios
-            .post('cards/getUserCards', {
-                userId: sessionStorage.getItem("userId")
-            })
+            .post('cards/getUserCards')
             .then(res => {
                 if (res.data.success) {
                     refreshCardsList(res.data.data);
@@ -72,7 +70,7 @@ import {PvpMode} from "../utils";
             });
 
         axios
-            .get(`users/info?id=${sessionStorage.getItem("userId")}`)
+            .get(`users/info`)
             .then(res => {
                 if (res.data.success) {
                     refreshUserInfo(res.data.data);
@@ -155,7 +153,7 @@ import {PvpMode} from "../utils";
     }
     function reconnect() {
         axios
-            .get('games/isStartingGame?userId=' + sessionStorage.getItem("userId"))
+            .get('games/isStartingGame')
             .then(res => {
                 if (res.data.isStartingGame) {
                     chooseCards(res.data.isStartingGame);
