@@ -4,14 +4,9 @@
             <img src="../assets/story-mode.svg" class="menu-card-img" />
             <div>剧情模式</div>
         </div>
-        <div class="menu-card multi-story-mode-card">
-            <img src="../assets/multi-story-mode.svg" class="menu-card-img" />
-            <div>双人剧情合作</div>
-        </div>
-
         <div class="menu-card single-vs-mode-card" @click="cardManage">
             <img src="../assets/single-vs-mode.svg" class="menu-card-img" />
-            <div>单人匹配</div>
+            <div>匹配</div>
         </div>
         <div class="menu-card idea-factory-card">
             <img src="../assets/idea-factory.svg" class="menu-card-img" />
