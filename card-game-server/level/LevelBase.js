@@ -36,6 +36,9 @@ class LevelBase {
                                         case "OUT_CARD":
                                             this.socketFunction.outCard({r: this.roomNumber, index: act.i}, this.socket);
                                             break;
+                                        case "USE_SKILL":
+                                            this.socketFunction.useSkill({r: this.roomNumber, index: act.i}, this.socket);
+                                            break;
                                         case "ATTACK_CARD":
                                             this.socketFunction.attackCard({r: this.roomNumber, myK: act.myK, attackK: act.attackK}, this.socket);
                                             break;
@@ -79,6 +82,8 @@ class LevelBase {
             myCard: this.gameData["one"]["cards"],
             myTableCard: this.gameData["one"]["tableCards"],
             otherTableCard: this.gameData["two"]["tableCards"],
+            mySkillList: this.gameData["one"]["skillList"],
+            otherSkillList: this.gameData["two"]["skillList"],
             myLife: this.gameData["one"]["life"],
             otherLife: this.gameData["two"]["life"],
             myFee: this.gameData["one"]["fee"],

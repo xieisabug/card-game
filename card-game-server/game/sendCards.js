@@ -15,6 +15,8 @@ function sendCards(roomNumber, identity) {
             myCard: memoryData[identity]["cards"],
             myTableCard: memoryData[identity]["tableCards"],
             otherTableCard: memoryData[otherIdentity]["tableCards"],
+            mySkillList: memoryData[identity]["skillList"],
+            otherSkillList: memoryData[otherIdentity]["skillList"],
             myLife: memoryData[identity]["life"],
             otherLife: memoryData[otherIdentity]["life"],
             myFee: memoryData[identity]["fee"],

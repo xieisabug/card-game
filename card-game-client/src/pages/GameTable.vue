@@ -21,11 +21,20 @@
         />
 
         <div class="my-hero-info" ref="myHeroInfo">
+            <SkillPanel
+                    position="top"
+                    :skill-list="gameData.mySkillList"
+                    @skill-click="onSkillClick"
+            />
             <div>{{gameData.myInfo.nickname}}</div>
             <div>生命：{{gameData.myLife}}</div>
             <div>费用：{{gameData.myFee}} / {{gameData.myMaxFee}}</div>
         </div>
         <div class="other-hero-info" ref="otherHeroInfo">
+            <SkillPanel
+                    position="bottom"
+                    :skill-list="gameData.otherSkillList"
+            />
             <div>{{gameData.otherInfo.nickname}}</div>
             <div>生命：{{gameData.otherLife}}</div>
             <div>费用：{{gameData.otherFee}} / {{gameData.otherMaxFee}}</div>
@@ -87,7 +96,7 @@
 <script>
     import Card from "../components/Card";
     import { io } from 'socket.io-client';
-    import {TargetType, AttackType, GameMode, PvpMode} from "../utils";
+    import {TargetType, AttackType, GameMode, PvpMode, ChooseDialogType} from "../utils";
     import {mapGetters} from "vuex";
     import {host, port} from "../config";
     import ErrorDialog from "../components/ErrorDialog";
@@ -110,15 +119,17 @@
         connectCommand,
         endMyTurnCommand, giveUpCommand, initBindSocketEvent, nextLevelCommand,
         outCardCommand,
-        restartCommand, winExitCommand
+        restartCommand, useSkillCommand, winExitCommand
     } from "../logic/socketCommand";
     import HandCardArea from "../components/HandCardArea.vue";
     import MatchDialog from "../components/MatchDialog.vue";
     import GameSetting from "../components/GameSetting.vue";
+    import SkillPanel from "../components/SkillPanel.vue";
 
     export default {
         name: 'GameTable',
         components: {
+            SkillPanel,
             GameSetting,
             MatchDialog, HandCardArea, TableCardArea, LevelUpDialog, CardStatusPanel, TaskPanel, TalkDialog, EndButton,
             ChooseEffectFrame, ChooseCardFrame, TipDialog, ErrorDialog, Card, WinDialog, NormalDialog
@@ -131,6 +142,8 @@
                     myCard: [],
                     myTableCard: [],
                     otherTableCard: [],
+                    mySkillList: [],
+                    otherSkillList: [],
                     myLife: 0,
                     myFee: 0,
                     myMaxFee: 0,
@@ -327,6 +340,7 @@
 
                         if (this.chooseCardList.length === 0) {
                             if (card.isForceTarget) {
+                                this.chooseDialogType = ChooseDialogType.OUTPUT_CARD;
                                 this.chooseDialogShow = true;
                                 return;
                             }
@@ -335,6 +349,7 @@
                             outCardCommand.apply(this);
                             this.resetAllCurrentCard();
                         } else {
+                            this.chooseDialogType = ChooseDialogType.OUTPUT_CARD;
                             this.chooseDialogShow = true;
                         }
 
@@ -345,6 +360,55 @@
                 }
             },
 
+            onSkillClick(index, skill) {
+                if (skill.cost > this.gameData.myFee) {
+                    this.showError("费用不足");
+                } else {
+                    this.currentSkillIndex = index;
+                    if (skill.isTarget) {
+                        let card = this.gameData.myCard[this.currentCardIndex];
+                        if (skill.targetType === TargetType.MY_TABLE_CARD) {
+                            this.chooseCardList = this.gameData.myTableCard.slice();
+                        } else if (skill.targetType === TargetType.OTHER_TABLE_CARD) {
+                            this.chooseCardList = this.gameData.otherTableCard.slice();
+                        } else if (skill.targetType === TargetType.ALL_TABLE_CARD) {
+                            this.chooseCardList =
+                                this.gameData.otherTableCard.slice()
+                                    .concat(this.gameData.myTableCard.slice());
+                        } else if (skill.targetType === TargetType.ALL_TABLE_CARD_FILTER_INCLUDE) { // 全桌面卡，过滤条件包含
+                            this.chooseCardList =
+                                this.gameData.otherTableCard
+                                    .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) !== -1) && !i.isHide)
+                                    .map(i => Object.assign({}, i, {name: i.name + "(敌方)"}))
+                                    .concat(this.gameData.myTableCard.slice().filter(i => skill.filter.every(t => i.type.indexOf(t) !== -1)));
+                        } else if (skill.targetType === TargetType.ALL_TABLE_CARD_FILTER_EXCLUDE) {
+                            this.chooseCardList =
+                                this.gameData.otherTableCard
+                                    .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) === -1) && !i.isHide)
+                                    .concat(this.gameData.myTableCard
+                                        .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) === -1)));
+                        } else if (skill.targetType === TargetType.MY_TABLE_CARD_FILTER_INCLUDE) {
+                            this.chooseCardList = this.gameData.myTableCard
+                                .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) !== -1));
+                        } else if (skill.targetType === TargetType.MY_TABLE_CARD_FILTER_EXCLUDE) {
+                            this.chooseCardList = this.gameData.myTableCard
+                                .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) === -1));
+                        } else if (skill.targetType === TargetType.OTHER_TABLE_CARD_FILTER_INCLUDE) {
+                            this.chooseCardList = this.gameData.otherTableCard
+                                .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) !== -1));
+                        } else if (skill.targetType === TargetType.OTHER_TABLE_CARD_FILTER_EXCLUDE) {
+                            this.chooseCardList = this.gameData.otherTableCard
+                                .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) === -1));
+                        }
+
+                        // 展示选择框
+                        this.chooseDialogType = ChooseDialogType.SKILL;
+                        this.chooseDialogShow = true;
+                    } else {
+                        useSkillCommand.apply(this);
+                    }
+                }
+            },
             /**
              * 重置桌面上选择的卡片状态
              */
@@ -359,20 +423,30 @@
             confirmChoose(index) {
                 this.currentChooseIndex = index;
 
-                // 看是否需要选择效果，需要选择效果就显示效果选择框
-                if (this.gameData.myCard[this.currentCardIndex].isNeedToChoose) {
-                    this.chooseEffectList = this.gameData.myCard[this.currentCardIndex].chooseList;
-                    this.chooseEffectIndex = 0;
-                    this.chooseEffectDialogShow = true;
-                    this.chooseDialogShow = false;
-                    this.chooseCardList = [];
-                } else {
-                    outCardCommand.apply(this);
+                // 如果是出牌的选择
+                if (this.chooseDialogType === ChooseDialogType.OUTPUT_CARD) {
+                    // 看是否需要选择效果，需要选择效果就显示效果选择框
+                    if (this.gameData.myCard[this.currentCardIndex].isNeedToChoose) {
+                        this.chooseEffectList = this.gameData.myCard[this.currentCardIndex].chooseList;
+                        this.chooseEffectIndex = 0;
+                        this.chooseEffectDialogShow = true;
+                        this.chooseDialogShow = false;
+                        this.chooseCardList = [];
+                    } else {
+                        outCardCommand.apply(this);
+                        this.chooseDialogShow = false;
+                        this.chooseCardList = [];
+                        this.currentChooseIndex = 0;
+                        this.resetAllCurrentCard();
+                    }
+                } else if (this.chooseDialogType === ChooseDialogType.SKILL) { // 如果是技能的选择
+                    useSkillCommand.apply(this);
                     this.chooseDialogShow = false;
                     this.chooseCardList = [];
                     this.currentChooseIndex = 0;
                     this.resetAllCurrentCard();
                 }
+
             },
 
             /**

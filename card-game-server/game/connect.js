@@ -21,6 +21,7 @@ const {attackCard} = require("./attackCard");
 const {attackHero} = require("./attackHero");
 const logger = log4js.getLogger('play');
 const seedrandom = require('seedrandom');
+const {useSkill} = require("./useSkill");
 
 
 /**
@@ -74,6 +75,7 @@ function connect(args, socket, socketServer) {
                         });
                         changeRoomData(roomNumber, 'two', new levelList[levelId](memoryData, {
                             outCard,
+                            useSkill,
                             attackCard,
                             attackHero,
                             endMyTurn

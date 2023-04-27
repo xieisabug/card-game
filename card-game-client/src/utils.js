@@ -47,3 +47,8 @@ export const PvpMode = {
     JOIN_ROOM: 3,
     RECONNECT: 4
 }
+
+export const ChooseDialogType = {
+    OUTPUT_CARD: 1,
+    SKILL: 2
+}

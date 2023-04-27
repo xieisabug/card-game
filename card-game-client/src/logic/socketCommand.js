@@ -69,6 +69,15 @@ export function outCardCommand() {
     });
 }
 
+export function useSkillCommand() {
+    this.socket.emit("COMMAND", {
+        type: "USE_SKILL",
+        r: this.roomNumber,
+        index: this.currentSkillIndex,
+        targetIndex: this.currentChooseIndex
+    })
+}
+
 /**
  * 获胜退出
  */

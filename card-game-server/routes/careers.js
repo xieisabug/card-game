@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const {Character, Cards, CharacterIdMap, WebCards, ServerCards} = require("../constants");
+const {Character, CharacterIdMap} = require("../constants");
+const {WebCards, ServerCards, Cards} = require("../cards");
 const {findUserOwnCard} = require('../db');
 const {extractUserCard} = require('../utils');
 

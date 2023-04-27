@@ -7,6 +7,7 @@ const {winExit} = require("./game/winExit");
 const {restart} = require("./game/restart");
 const {nextLevel} = require("./game/nextLevel");
 const {giveUp} = require("./game/giveUp");
+const {useSkill} = require("./game/useSkill");
 
 module.exports = function handleSynchronousClient(args, socket, socketServer) {
     switch (args.type) {
@@ -18,6 +19,9 @@ module.exports = function handleSynchronousClient(args, socket, socketServer) {
             break;
         case "OUT_CARD":
             outCard(args, socket);
+            break;
+        case "USE_SKILL":
+            useSkill(args, socket);
             break;
         case "ATTACK_CARD":
             attackCard(args, socket);

@@ -9,6 +9,7 @@ const Level8 = require('./Level8');
 const Level9 = require('./Level9');
 const Level10 = require('./Level10');
 const Level11 = require('./Level11');
+const Level12 = require('./Level12');
 
 module.exports = {
     levelList: [
@@ -21,7 +22,8 @@ module.exports = {
         Level8,
         Level9,
         Level10,
-        Level11
+        Level11,
+        Level12
     ],
-    maxLevelId: 9
+    maxLevelId: 10
 };

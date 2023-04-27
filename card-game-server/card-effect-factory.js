@@ -1,4 +1,4 @@
-let {BuffType} = require('./constants');
+const {BuffType} = require('./constants');
 
 module.exports = {
     haveTypeAddAttack: function(type, addAttack) {
@@ -14,18 +14,18 @@ module.exports = {
         }
     },
     oneChooseCardAddAttack: function(addAttack) {
-        return function ({chooseCard, thisCard, specialMethod}) {
+        return function ({chooseCard, thisCard, specialMethod, source}) {
             if (!chooseCard.buffList) {
                 chooseCard.buffList = [];
             }
 
             chooseCard.attack += addAttack;
-            chooseCard.buffList.append({
+            chooseCard.buffList.push({
                 type: BuffType.ADD_ATTACK,
                 value: addAttack,
-                from: thisCard
+                from: thisCard ? thisCard : source
             });
-            specialMethod.buffCardAnimation(true, -1, -1, thisCard, chooseCard)
+            specialMethod.buffCardAnimation(true, -1, -1, thisCard ? thisCard : source, chooseCard)
         }
     },
     oneChooseCardAddLife: function(addLife) {
@@ -35,7 +35,7 @@ module.exports = {
             }
 
             chooseCard.life += addLife;
-            chooseCard.buffList.append({
+            chooseCard.buffList.push({
                 type: BuffType.ADD_LIFE,
                 value: addLife,
                 from: thisCard
@@ -50,7 +50,7 @@ module.exports = {
             }
 
             chooseCard.isDedication = true;
-            chooseCard.buffList.append({
+            chooseCard.buffList.push({
                 type: BuffType.ADD_DEDICATION,
                 from: thisCard
             });
