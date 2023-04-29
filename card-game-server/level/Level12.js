@@ -72,8 +72,8 @@ class Level12 extends LevelBase {
             ],
             useCards: [],
             life: 1,
-            fee: 1,
-            maxFee: 1,
+            fee: 2,
+            maxFee: 2,
             maxHandCardNumber: 10
         });
         Object.assign(this.gameData[second], {

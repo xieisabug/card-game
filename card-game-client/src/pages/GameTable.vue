@@ -1073,6 +1073,37 @@
                                 thiz.animationStart();
                             })(this);
                             break;
+                        case "USE_SKILL":
+                            (function(thiz) {
+                                const {index, skill, isMine, myHero, otherHero} = param;
+
+                                if (isMine) {
+                                    // 技能是否到达使用次数，要进行禁用处理
+
+                                    thiz.gameData.myLife = myHero.life;
+                                    thiz.gameData.myFee = myHero.fee;
+                                    thiz.gameData.myMaxFee = myHero.maxFee;
+                                    thiz.gameData.myMaxThinkTimeNumber = myHero.maxThinkTimeNumber;
+
+                                    thiz.gameData.otherLife = otherHero.life;
+                                    thiz.gameData.otherFee = otherHero.fee;
+                                    thiz.gameData.otherMaxFee = otherHero.maxFee;
+
+                                } else {
+                                    // 技能是否到达使用次数，要进行禁用处理
+
+                                    thiz.gameData.myLife = myHero.life;
+                                    thiz.gameData.myFee = myHero.fee;
+                                    thiz.gameData.myMaxFee = myHero.maxFee;
+                                    thiz.gameData.myMaxThinkTimeNumber = myHero.maxThinkTimeNumber;
+
+                                    thiz.gameData.otherLife = otherHero.life;
+                                    thiz.gameData.otherFee = otherHero.fee;
+                                    thiz.gameData.otherMaxFee = otherHero.maxFee;
+                                }
+                                thiz.animationStart();
+                            })(this);
+                            break;
                         case "END_GAME":
                             (function(thiz) {
                                 if (param.win) {

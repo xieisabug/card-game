@@ -66,6 +66,8 @@ function endMyTurn(args, socket) {
     }
 
     memoryData[other].fee = memoryData[other].maxFee;
+    memoryData[other].useSkillRoundTimes = 0;
+
     getSocket(roomNumber, other).emit("YOUR_TURN");
     socket.emit("END_MY_TURN");
 

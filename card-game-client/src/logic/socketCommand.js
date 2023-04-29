@@ -194,6 +194,16 @@ export function initBindSocketEvent() {
     });
 
     /**
+     * 打出随从牌
+     */
+    this.socket.on("USE_SKILL", (param) => {
+        this.animationQueue.push(["USE_SKILL", param]);
+        if (!this.isAnimating) {
+            this.animationStart();
+        }
+    });
+
+    /**
      * 打出效果牌
      */
     this.socket.on('OUT_EFFECT', (param) => {

@@ -21,6 +21,18 @@ function useSkill(args, socket) {
     if (index !== -1 && memoryData[belong]["skillList"][index].cost <= memoryData[belong]["fee"]) {
         skill = memoryData[belong]["skillList"][index];
 
+        if (!skill.roundMaxUseTimes) {
+            skill.roundMaxUseTimes = 1;
+        }
+        if (!memoryData[belong]["useSkillRoundTimes"]) {
+            memoryData[belong]["useSkillRoundTimes"] = 0;
+        }
+        if (skill.roundMaxUseTimes <= memoryData[belong]["useSkillRoundTimes"]
+            || (skill.maxUseTimes && skill.maxUseTimes <= +memoryData[belong]["useSkillTimes"])) {
+            error(socket, "技能使用次数超过上限");
+            return;
+        }
+
         // 检查是否违反卡牌的必须选择施法对象属性（isForceTarget）
         let chooseCardList = [];
         if (skill.isTarget) {
@@ -103,6 +115,9 @@ function useSkill(args, socket) {
                 specialMethod: mySpecialMethod
             });
         }
+
+        memoryData[belong]["useSkillTimes"]++;
+        memoryData[belong]["useSkillRoundTimes"]++;
 
         checkCardDieEvent(roomNumber);
     } else {
