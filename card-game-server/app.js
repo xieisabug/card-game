@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(jwt({
     secret: JWTSecret,
     algorithms: ["HS256"]
-}).unless({ path: ["/users/login"] }))
+}).unless({ path: ["/users/login", "/users/register"] }))
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));

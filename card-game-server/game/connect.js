@@ -148,6 +148,7 @@ function connect(args, socket, socketServer) {
             // 创建房间
             let roomNumber = uuidv4();
 
+            // 防止出现重复的房间号
             while (getRoomData(roomNumber)) {
                 roomNumber = uuidv4();
             }
@@ -155,6 +156,7 @@ function connect(args, socket, socketServer) {
 
             // r就是房间号
             const seed = Math.floor(Math.random() * 10000);
+            // 创建房间，注意这里不要设置startTime，因为还在等待对手加入
             createRoomData(roomNumber, {
                 isPve,
                 gameMode: GameMode.PVP1,
@@ -170,6 +172,7 @@ function connect(args, socket, socketServer) {
 
             logger.info(`roomNumber:${roomNumber} userId:${userId} cardsId:${cardsId} pvp create`);
 
+            // 等待的时候把房间号发给客户端，让客户端显示在桌面
             socket.emit("WAIT", {
                 roomNumber
             });
