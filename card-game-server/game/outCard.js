@@ -6,6 +6,24 @@ const {error} = require("./log");
 const {getSpecialMethod} = require("./getSpecialMethod");
 const {checkCardDieEvent} = require("./checkCardDieEvent");
 
+
+// 选择目标的处理器，用于当卡牌需要选择目标时，根据目标类型获取目标列表
+const targetTypeHandlers = {
+    [TargetType.MY_TABLE_CARD]: () => memoryData[belong]["tableCards"],
+    [TargetType.OTHER_TABLE_CARD]: () => memoryData[other]["tableCards"],
+    [TargetType.ALL_TABLE_CARD]: () => memoryData[other]["tableCards"].concat(memoryData[belong]["tableCards"]),
+    [TargetType.ALL_TABLE_CARD_FILTER_INCLUDE]: () => filterCards(memoryData[other]["tableCards"], card.filter, false).concat(filterCards(memoryData[belong]["tableCards"], card.filter, false)),
+    [TargetType.ALL_TABLE_CARD_FILTER_EXCLUDE]: () => filterCards(memoryData[other]["tableCards"], card.filter, true).concat(filterCards(memoryData[belong]["tableCards"], card.filter, true)),
+    [TargetType.MY_TABLE_CARD_FILTER_INCLUDE]: () => filterCards(memoryData[belong]["tableCards"], card.filter, false),
+    [TargetType.MY_TABLE_CARD_FILTER_EXCLUDE]: () => filterCards(memoryData[belong]["tableCards"], card.filter, true),
+    [TargetType.OTHER_TABLE_CARD_FILTER_INCLUDE]: () => filterCards(memoryData[other]["tableCards"], card.filter, false),
+    [TargetType.OTHER_TABLE_CARD_FILTER_EXCLUDE]: () => filterCards(memoryData[other]["tableCards"], card.filter, true),
+};
+
+function filterCards(cards, filter, isExclude) {
+    return cards.filter(i => filter.every(t => isExclude ? i.type.indexOf(t) === -1 : i.type.indexOf(t) !== -1));
+}
+
 /**
  * 出牌
  * @param args
@@ -28,46 +46,15 @@ function outCard(args, socket) {
         // 检查是否违反卡牌的必须选择施法对象属性（isForceTarget）
         let targetIndex = args.targetIndex;
         let chooseCardList = [];
+        
         if (card.isTarget) {
-            if (card.targetType === TargetType.MY_TABLE_CARD) {
-                chooseCardList = memoryData[belong]["tableCards"];
-            } else if (card.targetType === TargetType.OTHER_TABLE_CARD) {
-                chooseCardList = memoryData[other]["tableCards"];
-            } else if (card.targetType === TargetType.ALL_TABLE_CARD) {
-                chooseCardList =
-                    memoryData[other]["tableCards"].slice()
-                        .concat(memoryData[belong]["tableCards"].slice());
-            } else if (card.targetType === TargetType.ALL_TABLE_CARD_FILTER_INCLUDE) {
-                chooseCardList =
-                    memoryData[other]["tableCards"]
-                        .slice().filter(i => card.filter.every(t => i.type.indexOf(t) !== -1) && !i.isHide)
-                        .concat(memoryData[belong]["tableCards"]
-                            .slice().filter(i => card.filter.every(t => i.type.indexOf(t) !== -1)));
-            } else if (card.targetType === TargetType.ALL_TABLE_CARD_FILTER_EXCLUDE) {
-                chooseCardList =
-                    memoryData[other]["tableCards"]
-                        .slice().filter(i => card.filter.every(t => i.type.indexOf(t) === -1) && !i.isHide)
-                        .concat(memoryData[belong]["tableCards"]
-                            .slice().filter(i => card.filter.every(t => i.type.indexOf(t) === -1)));
-            } else if (card.targetType === TargetType.MY_TABLE_CARD_FILTER_INCLUDE) {
-                chooseCardList = memoryData[belong]["tableCards"]
-                    .slice().filter(i => card.filter.every(t => i.type.indexOf(t) !== -1));
-            } else if (card.targetType === TargetType.MY_TABLE_CARD_FILTER_EXCLUDE) {
-                chooseCardList = memoryData[belong]["tableCards"]
-                    .slice().filter(i => card.filter.every(t => i.type.indexOf(t) === -1));
-            } else if (card.targetType === TargetType.OTHER_TABLE_CARD_FILTER_INCLUDE) {
-                chooseCardList = memoryData[other]["tableCards"]
-                    .slice().filter(i => card.filter.every(t => i.type.indexOf(t) !== -1));
-            } else if (card.targetType === TargetType.OTHER_TABLE_CARD_FILTER_EXCLUDE) {
-                chooseCardList = memoryData[other]["tableCards"]
-                    .slice().filter(i => card.filter.every(t => i.type.indexOf(t) === -1));
-            }
-            // 必须选择施法对象，返回错误
+            chooseCardList = targetTypeHandlers[card.targetType]();
             if (chooseCardList.length === 0 && targetIndex === -1 && card.isForceTarget) {
                 error(getSocket(roomNumber, belong), "请选择目标");
                 return;
             }
         }
+
         memoryData[belong]['useCards'].push(Object.assign({outRound: memoryData.round}, card));
         memoryData[belong]["fee"] -= card.cost;
 
