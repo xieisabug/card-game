@@ -1,5 +1,5 @@
 <template>
-    <div ref="cardDom" :class="cardClassName" @mousedown="mouseDown($event)" @mouseup="mouseUp" @mouseover="mouseOver" @mouseout="mouseOut" :data-k="data.k">
+    <div v-if="!data.cardImage" ref="cardDom" :class="cardClassName" @mousedown="mouseDown($event)" @mouseup="mouseUp" @mouseover="mouseOver" @mouseout="mouseOut" :data-k="data.k">
         <div :class="isDedicationClassName"></div>
         <div :class="isStrongClassName"></div>
 
@@ -7,6 +7,43 @@
         <div class="card-cost" v-if="cost !== -1">{{cost}}</div>
         <div class="card-content" v-html="content">
         </div>
+        <div class="card-bottom" v-if="data.cardType === 2">
+            <div>
+                <i class="iconfont icon-attack"></i>
+                <div :class="attackClassName">{{attack}}</div>
+            </div>
+            <div>
+                <i class="iconfont icon-life"></i>
+                <div :class="lifeClassName" ref="cardLife">{{life}}</div>
+            </div>
+        </div>
+        <div class="card-bottom" style="justify-content: center" v-if="data.cardType === 1">
+            <i class="iconfont icon-flash"></i>
+        </div>
+
+        <div class="hurt-container" v-show="hurtShow" ref="hurtContainer" style="transform: scale(0)">
+            {{hurtNumber > 0 ? `+${hurtNumber}` : hurtNumber}}
+        </div>
+
+        <div class="card-type" v-show="typeShow">
+            <div v-if="Array.isArray(data.type)" class="card-type-item" v-for="t in data.type" :key="t">{{t}}</div>
+            <div v-else class="card-type-item">{{data.type}}</div>
+        </div>
+    </div>
+
+    <div v-if="data.cardImage" ref="cardDom" :class="imageCardClassName" @mousedown="mouseDown($event)" @mouseup="mouseUp" @mouseover="mouseOver" @mouseout="mouseOut" :data-k="data.k">
+        <div :class="isDedicationClassName"></div>
+        <div :class="isStrongClassName"></div>
+        <div class="card-image">
+            <img :src="data.cardImage" alt="" style="width: 100%; height: 100%">
+        </div>
+        <div class="card-image-overlay">
+            <div class="card-name">{{name}}</div>
+            <div class="card-content" v-html="content"></div>
+        </div>
+        
+        <div class="card-cost" v-if="cost !== -1">{{cost}}</div>
+        
         <div class="card-bottom" v-if="data.cardType === 2">
             <div>
                 <i class="iconfont icon-attack"></i>
@@ -96,6 +133,18 @@
     const cardClassName = computed(() => {
         return buildClassName({
             "card": true,
+            "choose": props.currentCardK !== undefined && props.data.k === props.currentCardK,
+            "actionable": isActionable.value && props.isMyTurn,
+            "hide-effect": isHide.value && !props.isDisplay,
+            "in-hand": !props.isOut,
+            [props.className]: !!props.className
+        });
+    });
+
+    const imageCardClassName = computed(() => {
+        return buildClassName({
+            "card": true,
+            "image": true,
             "choose": props.currentCardK !== undefined && props.data.k === props.currentCardK,
             "actionable": isActionable.value && props.isMyTurn,
             "hide-effect": isHide.value && !props.isDisplay,
@@ -264,6 +313,9 @@
         user-select: none;
         zoom: 96%;
     }
+    .card.image {
+        overflow: hidden;
+    }
 
     .card:active {
         transition: none;
@@ -291,6 +343,22 @@
         margin-left: -50px;
     }
 
+    .card-image-overlay {
+        position: absolute;
+        top: 97px;
+        left: 0;
+        width: 100%;
+        box-sizing: border-box;
+        /* 从透明到白色的渐变 */
+        background: linear-gradient(to bottom, 
+                                rgba(255, 255, 255, 0) 0%, 
+                                rgba(255, 255, 255, 0.8) 40%, 
+                                rgba(255, 255, 255, 0.9) 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
     .card-name {
         margin-bottom: 15px;
         font-weight: bold;
@@ -304,6 +372,14 @@
         text-align: center;
     }
 
+    .card-image-overlay > .card-name {
+        background: transparent;
+        color: black;
+        padding: 0;
+        margin: 0;
+        margin-left: 16px;
+        height: auto;
+    }
     .card-cost {
         position: absolute;
         background-color: white;
@@ -318,9 +394,24 @@
         align-items: center;
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
     }
+    .image > .card-cost {
+        top: auto;
+        bottom: 50px;
+        background-color: #394950;
+        color: white;
+    }
 
     .card-content {
         padding: 0 8px;
+    }
+
+    .card-image-overlay > .card-content {
+        color: black;
+        padding: 0;
+        margin: 0;
+        margin-left: 30px;
+        height: auto;
+        font-size: 10px;
     }
 
     .card-bottom {
@@ -336,6 +427,10 @@
         color: white;
         border-bottom-right-radius: 5px;
         border-bottom-left-radius: 5px;
+    }
+    .image > .card-bottom {
+        background: white;
+        color: #394950;
     }
 
     .card-attack, .card-life {
