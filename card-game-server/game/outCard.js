@@ -9,15 +9,15 @@ const {checkCardDieEvent} = require("./checkCardDieEvent");
 
 // 选择目标的处理器，用于当卡牌需要选择目标时，根据目标类型获取目标列表
 const targetTypeHandlers = {
-    [TargetType.MY_TABLE_CARD]: () => memoryData[belong]["tableCards"],
-    [TargetType.OTHER_TABLE_CARD]: () => memoryData[other]["tableCards"],
-    [TargetType.ALL_TABLE_CARD]: () => memoryData[other]["tableCards"].concat(memoryData[belong]["tableCards"]),
-    [TargetType.ALL_TABLE_CARD_FILTER_INCLUDE]: () => filterCards(memoryData[other]["tableCards"], card.filter, false).concat(filterCards(memoryData[belong]["tableCards"], card.filter, false)),
-    [TargetType.ALL_TABLE_CARD_FILTER_EXCLUDE]: () => filterCards(memoryData[other]["tableCards"], card.filter, true).concat(filterCards(memoryData[belong]["tableCards"], card.filter, true)),
-    [TargetType.MY_TABLE_CARD_FILTER_INCLUDE]: () => filterCards(memoryData[belong]["tableCards"], card.filter, false),
-    [TargetType.MY_TABLE_CARD_FILTER_EXCLUDE]: () => filterCards(memoryData[belong]["tableCards"], card.filter, true),
-    [TargetType.OTHER_TABLE_CARD_FILTER_INCLUDE]: () => filterCards(memoryData[other]["tableCards"], card.filter, false),
-    [TargetType.OTHER_TABLE_CARD_FILTER_EXCLUDE]: () => filterCards(memoryData[other]["tableCards"], card.filter, true),
+    [TargetType.MY_TABLE_CARD]: (belong, other, memoryData, card) => memoryData[belong]["tableCards"],
+    [TargetType.OTHER_TABLE_CARD]: (belong, other, memoryData, card) => memoryData[other]["tableCards"],
+    [TargetType.ALL_TABLE_CARD]: (belong, other, memoryData, card) => memoryData[other]["tableCards"].concat(memoryData[belong]["tableCards"]),
+    [TargetType.ALL_TABLE_CARD_FILTER_INCLUDE]: (belong, other, memoryData, card) => filterCards(memoryData[other]["tableCards"], card.filter, false).concat(filterCards(memoryData[belong]["tableCards"], card.filter, false)),
+    [TargetType.ALL_TABLE_CARD_FILTER_EXCLUDE]: (belong, other, memoryData, card) => filterCards(memoryData[other]["tableCards"], card.filter, true).concat(filterCards(memoryData[belong]["tableCards"], card.filter, true)),
+    [TargetType.MY_TABLE_CARD_FILTER_INCLUDE]: (belong, other, memoryData, card) => filterCards(memoryData[belong]["tableCards"], card.filter, false),
+    [TargetType.MY_TABLE_CARD_FILTER_EXCLUDE]: (belong, other, memoryData, card) => filterCards(memoryData[belong]["tableCards"], card.filter, true),
+    [TargetType.OTHER_TABLE_CARD_FILTER_INCLUDE]: (belong, other, memoryData, card) => filterCards(memoryData[other]["tableCards"], card.filter, false),
+    [TargetType.OTHER_TABLE_CARD_FILTER_EXCLUDE]: (belong, other, memoryData, card) => filterCards(memoryData[other]["tableCards"], card.filter, true),
 };
 
 function filterCards(cards, filter, isExclude) {
@@ -48,7 +48,7 @@ function outCard(args, socket) {
         let chooseCardList = [];
         
         if (card.isTarget) {
-            chooseCardList = targetTypeHandlers[card.targetType]();
+            chooseCardList = targetTypeHandlers[card.targetType](belong, other, memoryData, card);
             if (chooseCardList.length === 0 && targetIndex === -1 && card.isForceTarget) {
                 error(getSocket(roomNumber, belong), "请选择目标");
                 return;

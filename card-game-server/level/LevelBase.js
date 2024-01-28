@@ -53,11 +53,14 @@ class LevelBase {
 
                             });
 
-                            // baseTime += Math.random() * 2000;
-                            // // TODO 已经处理了结束，应该要把这里改一下
-                            // setTimeout(() => {
-                            //     this.socketFunction.endMyTurn({r: this.roomNumber}, this.socket);
-                            // }, baseTime);
+                            // 检查规则后，如果符合规则，则执行脚本，执行完成后删除脚本
+                            this.ruleScriptList.forEach(ruleScript => {
+                                if (ruleScript.ruleFunction(this.gameData)) {
+                                    ruleScript.scriptFunction(this.gameData);
+                                    this.ruleScriptList.splice(this.ruleScriptList.indexOf(ruleScript), 1);
+                                }
+                            })
+
                         }
                         break;
                 }
@@ -71,6 +74,7 @@ class LevelBase {
         this.taskList = [];
         this.socketFunction = socketFunction;
         this.roomNumber = this.gameData['one'].roomNumber;
+        this.ruleScriptList = [];
 
         this.initValue();
 
@@ -109,6 +113,14 @@ class LevelBase {
      * 用于复写本地变量，最少要复写一个levelId
      */
     initValue() {}
+
+    // 用于注册条件执行脚本函数
+    registerRuleScript(ruleFunction, scriptFunction) {
+        this.ruleScriptList.push({
+            ruleFunction,
+            scriptFunction
+        })
+    }
 }
 
 module.exports = LevelBase;

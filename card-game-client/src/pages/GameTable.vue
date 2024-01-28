@@ -786,15 +786,14 @@
                             break;
                         case "ATTACK_CARD":
                             (function(thiz) {
-
-                                let index = thiz.gameData.myTableCard.findIndex(c => c.k === param.card.k);
-                                let attackIndex = thiz.gameData.otherTableCard.findIndex(c => c.k === param.attackCard.k);
-
-                                if (index === -1 || attackIndex === -1) {
-                                    return
-                                }
-
                                 if (param.attackType === AttackType.ATTACK) {
+                                    let index = thiz.gameData.myTableCard.findIndex(c => c.k === param.card.k);
+                                    let attackIndex = thiz.gameData.otherTableCard.findIndex(c => c.k === param.attackCard.k);
+
+                                    if (index === -1 || attackIndex === -1) {
+                                        return
+                                    }
+
                                     let myDom = thiz.myCardAreaDom.childNodes[index];
                                     let otherDom = thiz.otherCardAreaDom.childNodes[attackIndex];
 
@@ -827,6 +826,13 @@
                                         })
                                     })
                                 } else if (param.attackType === AttackType.BE_ATTACKED) {
+                                    let index = thiz.gameData.otherTableCard.findIndex(c => c.k === param.card.k);
+                                    let attackIndex = thiz.gameData.myTableCard.findIndex(c => c.k === param.attackCard.k);
+
+                                    if (index === -1 || attackIndex === -1) {
+                                        return
+                                    }
+
                                     let myDom = thiz.otherCardAreaDom.childNodes[index];
                                     let otherDom = thiz.myCardAreaDom.childNodes[attackIndex];
 

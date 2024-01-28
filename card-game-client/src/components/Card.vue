@@ -31,7 +31,7 @@
         </div>
     </div>
 
-    <div v-if="data.cardImage" ref="cardDom" :class="imageCardClassName" @mousedown="mouseDown($event)" @mouseup="mouseUp" @mouseover="mouseOver" @mouseout="mouseOut" :data-k="data.k">
+    <div v-else ref="cardDom" :class="imageCardClassName" @mousedown="mouseDown($event)" @mouseup="mouseUp" @mouseover="mouseOver" @mouseout="mouseOut" :data-k="data.k">
         <div :class="isDedicationClassName"></div>
         <div :class="isStrongClassName"></div>
         <div class="card-image">
@@ -253,7 +253,9 @@
         if (props.canDrag) {
             isDrag = true;
             window.isCardDrag = true;
-            cardDom.value.style['transition'] = 'all 0s';
+            if (cardDom.value) {
+                cardDom.value.style['transition'] = 'all 0s';
+            }
             startX = e.pageX;
             startY = e.pageY;
             window.cardMoveX = startX;
@@ -276,10 +278,13 @@
     function outCardLoop() {
         if (isDrag) {
             requestAnimationFrame(outCardLoop);
-
-            cardDom.value.style['transform'] = 'translate(' + (window.cardMoveX - startX) + 'px, ' + (window.cardMoveY - startY) + 'px) scale(1.1)';
+            if (cardDom.value) {
+                cardDom.value.style['transform'] = 'translate(' + (window.cardMoveX - startX) + 'px, ' + (window.cardMoveY - startY) + 'px) scale(1.1)';
+            }
         } else {
-            cardDom.value.style['transform'] = '';
+            if (cardDom.value) {
+                cardDom.value.style['transform'] = '';
+            }
         }
     }
     function mouseOver() {
@@ -301,8 +306,8 @@
         position: relative;
         will-change: transform;
         background: white;
-        width: 135px;
-        height: 170px;
+        width: 150px;
+        height: 180px;
         font-size: 12px;
         z-index: 2;
         border: 1px solid #ccc;
@@ -313,9 +318,36 @@
         user-select: none;
         zoom: 96%;
     }
+    /* 带图片卡牌部分css */
     .card.image {
         overflow: hidden;
     }
+    .card-image-overlay > .card-name {
+        background: transparent;
+        color: black;
+        padding: 0;
+        margin: 5px 0 0 16px;
+        height: auto;
+    }
+    .card-image-overlay > .card-content {
+        color: black;
+        margin: 0;
+        margin-left: 30px;
+        padding: 0 8px;
+        height: 50px;
+        font-size: 10px;
+    }
+    .image > .card-bottom {
+        background: white;
+        color: #394950;
+    }
+    .image > .card-cost {
+        top: auto;
+        bottom: 55px;
+        background-color: #394950;
+        color: white;
+    }
+    /* 带图片部分卡牌css结束 */
 
     .card:active {
         transition: none;
@@ -351,9 +383,9 @@
         box-sizing: border-box;
         /* 从透明到白色的渐变 */
         background: linear-gradient(to bottom, 
-                                rgba(255, 255, 255, 0) 0%, 
+                                rgba(255, 255, 255, 0.2) 0%, 
                                 rgba(255, 255, 255, 0.8) 40%, 
-                                rgba(255, 255, 255, 0.9) 100%);
+                                rgba(255, 255, 255, 1) 60%);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -372,14 +404,6 @@
         text-align: center;
     }
 
-    .card-image-overlay > .card-name {
-        background: transparent;
-        color: black;
-        padding: 0;
-        margin: 0;
-        margin-left: 16px;
-        height: auto;
-    }
     .card-cost {
         position: absolute;
         background-color: white;
@@ -394,24 +418,9 @@
         align-items: center;
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
     }
-    .image > .card-cost {
-        top: auto;
-        bottom: 50px;
-        background-color: #394950;
-        color: white;
-    }
 
     .card-content {
         padding: 0 8px;
-    }
-
-    .card-image-overlay > .card-content {
-        color: black;
-        padding: 0;
-        margin: 0;
-        margin-left: 30px;
-        height: auto;
-        font-size: 10px;
     }
 
     .card-bottom {
@@ -427,10 +436,6 @@
         color: white;
         border-bottom-right-radius: 5px;
         border-bottom-left-radius: 5px;
-    }
-    .image > .card-bottom {
-        background: white;
-        color: #394950;
     }
 
     .card-attack, .card-life {
