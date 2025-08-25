@@ -1,0 +1,1163 @@
+{
+  "base": [
+    {
+      "id": 3,
+      "name": "被开除员工的妻子",
+      "cardType": 2,
+      "cost": 1,
+      "content": "存在时，则被开除的员工不会自动死亡",
+      "attack": 1,
+      "life": 1,
+      "attackBase": 1,
+      "lifeBase": 1,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 6,
+      "name": "开发助理",
+      "cardType": 2,
+      "cost": 1,
+      "content": "",
+      "attack": 1,
+      "life": 1,
+      "attackBase": 1,
+      "lifeBase": 1,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 8,
+      "name": "丑陋的开发鼓励师",
+      "cardType": 2,
+      "cost": 1,
+      "content": "精力充沛",
+      "attack": 1,
+      "life": 1,
+      "attackBase": 1,
+      "lifeBase": 1,
+      "type": [
+        ""
+      ],
+      "isFullOfEnergy": true
+    },
+    {
+      "id": 22,
+      "name": "电脑小白",
+      "cardType": 2,
+      "cost": 1,
+      "content": "",
+      "attack": 1,
+      "life": 1,
+      "attackBase": 1,
+      "lifeBase": 1,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 1,
+      "name": "励志的演说家",
+      "cardType": 2,
+      "cost": 2,
+      "content": "",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 11,
+      "name": "热爱分享的小哥",
+      "cardType": 2,
+      "cost": 2,
+      "content": "奉献",
+      "attack": 1,
+      "life": 3,
+      "attackBase": 1,
+      "lifeBase": 3,
+      "type": [
+        ""
+      ],
+      "isDedication": true
+    },
+    {
+      "id": 12,
+      "name": "热爱阅读的小哥",
+      "cardType": 2,
+      "cost": 2,
+      "content": "坚强",
+      "attack": 3,
+      "life": 1,
+      "attackBase": 3,
+      "lifeBase": 1,
+      "type": [
+        ""
+      ],
+      "isStrong": true
+    },
+    {
+      "id": 30,
+      "name": "颈椎病",
+      "cardType": 1,
+      "cost": 2,
+      "content": "对场上所有对方卡牌造成1点伤害",
+      "attack": "",
+      "life": "",
+      "attackBase": "",
+      "lifeBase": "",
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 2,
+      "name": "被开除的员工",
+      "cardType": 2,
+      "cost": 3,
+      "content": "每回合开始生命减少1",
+      "attack": 4,
+      "life": 4,
+      "attackBase": 4,
+      "lifeBase": 4,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 7,
+      "name": "开发鼓励师",
+      "cardType": 2,
+      "cost": 3,
+      "content": "",
+      "attack": 2,
+      "life": 2,
+      "attackBase": 2,
+      "lifeBase": 2,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 9,
+      "name": "男开发鼓励师",
+      "cardType": 2,
+      "cost": 3,
+      "content": "场上存在的女程序员获得+2/+2",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 13,
+      "name": "没毕业的天才程序员",
+      "cardType": 2,
+      "cost": 3,
+      "content": "每回合结束时，获得+1/+1",
+      "attack": 1,
+      "life": 1,
+      "attackBase": 1,
+      "lifeBase": 1,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 15,
+      "name": "女程序员",
+      "cardType": 2,
+      "cost": 3,
+      "content": "",
+      "attack": 2,
+      "life": 2,
+      "attackBase": 2,
+      "lifeBase": 2,
+      "type": [
+        "女程序员"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "断点调试",
+      "cardType": 1,
+      "cost": 3,
+      "content": "指定一个己方召唤物本回合（当前操作回合）不受伤害",
+      "type": [
+        "效果卡"
+      ],
+      "isTarget": true,
+      "targetType": 1
+    },
+    {
+      "id": 17,
+      "name": "热重启",
+      "cardType": 1,
+      "cost": 3,
+      "content": "指定一个己方召唤物本回合再次变为未行动状态",
+      "type": [
+        "效果卡"
+      ],
+      "isTarget": true,
+      "targetType": 1
+    },
+    {
+      "id": 18,
+      "name": "态度傲慢的程序员",
+      "cardType": 2,
+      "cost": 3,
+      "content": "",
+      "attack": 3,
+      "life": 1,
+      "attackBase": 3,
+      "lifeBase": 1,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 23,
+      "name": "计算机导论老师",
+      "cardType": 2,
+      "cost": 3,
+      "content": "出场：抽一张牌",
+      "attack": 2,
+      "life": 1,
+      "attackBase": 2,
+      "lifeBase": 1,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 24,
+      "name": "数据结构老师",
+      "cardType": 2,
+      "cost": 3,
+      "content": "退场：抽一张牌",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 25,
+      "name": "算法老师",
+      "cardType": 2,
+      "cost": 3,
+      "content": "出场：双方抽一张牌",
+      "attack": 2,
+      "life": 2,
+      "attackBase": 2,
+      "lifeBase": 2,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 4,
+      "name": "加班完的高级程序员",
+      "cardType": 2,
+      "cost": 4,
+      "content": "出场：扣除6点生命",
+      "attack": 5,
+      "life": 8,
+      "attackBase": 5,
+      "lifeBase": 8,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 10,
+      "name": "崇尚敏捷开发的小组长",
+      "cardType": 2,
+      "cost": 5,
+      "content": "精力充沛",
+      "attack": 4,
+      "life": 4,
+      "attackBase": 4,
+      "lifeBase": 4,
+      "type": [
+        ""
+      ],
+      "isFullOfEnergy": true
+    },
+    {
+      "id": 19,
+      "name": "态度傲慢的技术组长",
+      "cardType": 2,
+      "cost": 5,
+      "content": "",
+      "attack": 5,
+      "life": 1,
+      "attackBase": 5,
+      "lifeBase": 1,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 21,
+      "name": "马克·扎克伯格",
+      "cardType": 2,
+      "cost": 5,
+      "content": "出场：随机夺取对方一个场上单位的使用权",
+      "attack": 3,
+      "life": 3,
+      "attackBase": 3,
+      "lifeBase": 3,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 26,
+      "name": "《算法导论》",
+      "cardType": 1,
+      "cost": 5,
+      "content": "选择我方一张卡牌，攻击力+4",
+      "attack": "",
+      "life": "",
+      "attackBase": "",
+      "lifeBase": "",
+      "type": [
+        ""
+      ],
+      "isTarget": true,
+      "targetType": 1
+    },
+    {
+      "id": 27,
+      "name": "鹅厂小马哥",
+      "cardType": 2,
+      "cost": 5,
+      "content": "出场：复制对面所有手牌到自己的卡组中",
+      "attack": 3,
+      "life": 4,
+      "attackBase": 3,
+      "lifeBase": 4,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 28,
+      "name": "马爸爸",
+      "cardType": 2,
+      "cost": 5,
+      "content": "出场：双方费用直接升到10点",
+      "attack": 5,
+      "life": 6,
+      "attackBase": 5,
+      "lifeBase": 6,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 20,
+      "name": "比尔盖茨",
+      "cardType": 2,
+      "cost": 6,
+      "content": "召唤一个会自动升级的windows",
+      "attack": 3,
+      "life": 5,
+      "attackBase": 3,
+      "lifeBase": 5,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 5,
+      "name": "高级程序员",
+      "cardType": 2,
+      "cost": 7,
+      "content": "",
+      "attack": 7,
+      "life": 7,
+      "attackBase": 7,
+      "lifeBase": 7,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 14,
+      "name": "IDE大师",
+      "cardType": 2,
+      "targetType": 1,
+      "cost": 7,
+      "content": "出场：场上所有人员获得+1/+1",
+      "attack": 6,
+      "life": 4,
+      "attackBase": 6,
+      "lifeBase": 4,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": 29,
+      "name": "度厂李帅",
+      "cardType": 2,
+      "cost": 7,
+      "content": "出场：随机搜索出卡组中的3张卡牌并召唤",
+      "attack": 4,
+      "life": 5,
+      "attackBase": 4,
+      "lifeBase": 5,
+      "type": [
+        ""
+      ]
+    }
+  ],
+  "web": [
+    {
+      "id": "w1",
+      "name": "前端应届毕业生",
+      "cardType": 2,
+      "cost": 1,
+      "content": "精力充沛",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "type": [
+        "前端",
+        "程序员"
+      ],
+      "isFullOfEnergy": true
+    },
+    {
+      "id": "w13",
+      "name": "p标签",
+      "cardType": 2,
+      "cost": 1,
+      "content": "",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "type": [
+        "前端",
+        "标签"
+      ]
+    },
+    {
+      "id": "w19",
+      "name": "background样式",
+      "cardType": 1,
+      "cost": 1,
+      "content": "为<span style=\"color: blue\">标签</span>加上背景，三个背景中选择一个（坚强，奉献，精力充沛）",
+      "type": [
+        "样式"
+      ],
+      "isTarget": true,
+      "targetType": 10,
+      "filter": [
+        "标签"
+      ],
+      "isNeedToChoose": true,
+      "chooseList": [
+        [
+          {
+            "name": "坚强",
+            "content": "为<span style=\"color: blue\">标签</span>加上坚强背景"
+          },
+          {
+            "name": "奉献",
+            "content": "为<span style=\"color: blue\">标签</span>加上奉献背景"
+          },
+          {
+            "name": "精力充沛",
+            "content": "为<span style=\"color: blue\">标签</span>加上精力充沛背景"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "w12",
+      "name": "span标签",
+      "cardType": 2,
+      "cost": 2,
+      "content": "",
+      "attack": 3,
+      "life": 2,
+      "attackBase": 3,
+      "lifeBase": 2,
+      "type": [
+        "前端",
+        "标签"
+      ]
+    },
+    {
+      "id": "w15",
+      "name": "宽高样式",
+      "cardType": 1,
+      "cost": 2,
+      "content": "使一个伙伴获得+1/+1，如果是<span style=\"color: blue\">标签</span>则获得+2/+2",
+      "type": [
+        "样式"
+      ],
+      "isTarget": true,
+      "targetType": 1
+    },
+    {
+      "id": "w18",
+      "name": "a标签",
+      "cardType": 2,
+      "cost": 2,
+      "content": "奉献，可通过css美化",
+      "attack": 0,
+      "life": 3,
+      "attackBase": 0,
+      "lifeBase": 3,
+      "type": [
+        "前端",
+        "标签"
+      ],
+      "isDedication": true
+    },
+    {
+      "id": "w20",
+      "name": "边框样式",
+      "cardType": 1,
+      "cost": 2,
+      "content": "为伙伴增加生命值2点，如果是<span style=\"color: blue\">标签</span>则增加4点生命值",
+      "type": [
+        "样式"
+      ],
+      "isTarget": true,
+      "targetType": 1
+    },
+    {
+      "id": "w21",
+      "name": "字体样式",
+      "cardType": 1,
+      "cost": 2,
+      "content": "为伙伴增加攻击2点，如果是<span style=\"color: blue\">标签</span>则增加4点攻击",
+      "type": [
+        "样式"
+      ],
+      "isTarget": true,
+      "targetType": 1
+    },
+    {
+      "id": "w22",
+      "name": "不可见样式",
+      "cardType": 1,
+      "cost": 2,
+      "content": "为伙伴增加潜行效果，如果是<span style=\"color: blue\">标签</span>则附加 +1/+1",
+      "type": [
+        "样式"
+      ],
+      "isTarget": true,
+      "targetType": 1
+    },
+    {
+      "id": "w5",
+      "name": "精通设计的前端人员",
+      "cardType": 2,
+      "cost": 3,
+      "content": "出场：为一个伙伴增加1点攻击",
+      "attack": 3,
+      "life": 3,
+      "attackBase": 3,
+      "lifeBase": 3,
+      "type": [
+        "前端",
+        "程序员"
+      ],
+      "isTarget": true,
+      "targetType": 1
+    },
+    {
+      "id": "w14",
+      "name": "div标签",
+      "cardType": 2,
+      "cost": 3,
+      "content": "奉献",
+      "attack": 2,
+      "life": 4,
+      "attackBase": 2,
+      "lifeBase": 4,
+      "type": [
+        "前端",
+        "标签"
+      ],
+      "isDedication": true
+    },
+    {
+      "id": "w17",
+      "name": "圆角样式",
+      "cardType": 1,
+      "cost": 3,
+      "content": "为一个伙伴增加生命值3点，如果是<span style=\"color: blue\">标签</span>则增加6点",
+      "type": [
+        "样式"
+      ],
+      "isTarget": true,
+      "targetType": 1
+    },
+    {
+      "id": "w23",
+      "name": "复制dom",
+      "cardType": 1,
+      "cost": 3,
+      "content": "复制一个伙伴，如果是<span style=\"color: blue\">标签</span>则保留所有的强化",
+      "type": [
+        "脚本"
+      ],
+      "isTarget": true,
+      "targetType": 1
+    },
+    {
+      "id": "w2",
+      "name": "时尚的前端小哥",
+      "cardType": 2,
+      "cost": 4,
+      "content": "出场：为一个伙伴增加3点攻击",
+      "attack": 3,
+      "life": 3,
+      "attackBase": 3,
+      "lifeBase": 3,
+      "type": [
+        "前端",
+        "程序员"
+      ],
+      "isTarget": true,
+      "targetType": 1
+    },
+    {
+      "id": "w4",
+      "name": "精通算法的前端人员",
+      "cardType": 2,
+      "cost": 4,
+      "content": "",
+      "attack": 6,
+      "life": 2,
+      "attackBase": 6,
+      "lifeBase": 2,
+      "type": [
+        "前端",
+        "程序员"
+      ]
+    },
+    {
+      "id": "w11",
+      "name": "《ECMAScript 6入门》",
+      "cardType": 1,
+      "cost": 4,
+      "content": "使场上的所有伙伴获得+1/+1，如果是<span style=\"color: blue\">前端</span>则获得+2/+2",
+      "attack": "",
+      "life": "",
+      "attackBase": "",
+      "lifeBase": "",
+      "type": [
+        "效果卡"
+      ]
+    },
+    {
+      "id": "w6",
+      "name": "做菜好吃的前端人员",
+      "cardType": 2,
+      "cost": 5,
+      "content": "所有伙伴每开始回合回复1点血量",
+      "attack": 3,
+      "life": 3,
+      "attackBase": 3,
+      "lifeBase": 3,
+      "type": [
+        "前端",
+        "程序员"
+      ]
+    },
+    {
+      "id": "w10",
+      "name": "浏览器显示差异",
+      "cardType": 1,
+      "cost": 5,
+      "content": "对场上所有的对方卡片造成3点伤害",
+      "attack": "",
+      "life": "",
+      "attackBase": "",
+      "lifeBase": "",
+      "type": [
+        "效果卡"
+      ]
+    },
+    {
+      "id": "w25",
+      "name": "批量复制dom",
+      "cardType": 1,
+      "cost": 5,
+      "content": "复制两个伙伴，如果是<span style=\"color: blue\">标签</span>则保留所有的强化",
+      "type": [
+        "脚本"
+      ],
+      "isTarget": true,
+      "targetType": 1,
+      "filter": [
+        "标签"
+      ]
+    },
+    {
+      "id": "w3",
+      "name": "前端组组长",
+      "cardType": 2,
+      "cost": 6,
+      "content": "出场：己方场上每存在一个<span style=\"color: blue\">前端</span>人员，攻击力+1",
+      "attack": 3,
+      "life": 4,
+      "attackBase": 3,
+      "lifeBase": 4,
+      "type": [
+        "前端",
+        "程序员"
+      ]
+    },
+    {
+      "id": "w16",
+      "name": "阴影样式",
+      "cardType": 1,
+      "cost": 6,
+      "content": "为一个伙伴增加生命值4点，并且附加奉献，如果是<span style=\"color: blue\">标签</span>，获得8点生命",
+      "type": [
+        "样式"
+      ],
+      "isTarget": true,
+      "targetType": 1
+    },
+    {
+      "id": "w24",
+      "name": "清空dom",
+      "cardType": 1,
+      "cost": 6,
+      "content": "消灭己方的一个<span style=\"color: blue\">标签</span>，对双方桌面上所有卡牌造成等同于卡牌攻击的伤害",
+      "type": [
+        "脚本"
+      ],
+      "isTarget": true,
+      "targetType": 6,
+      "filter": [
+        "标签"
+      ]
+    },
+    {
+      "id": "w7",
+      "name": "阮大神",
+      "cardType": 2,
+      "cost": 8,
+      "content": "出场：带来两个前端应届毕业生",
+      "attack": 8,
+      "life": 8,
+      "attackBase": 8,
+      "lifeBase": 8,
+      "type": [
+        "前端",
+        "程序员"
+      ]
+    },
+    {
+      "id": "w9",
+      "name": "IE6",
+      "cardType": 2,
+      "cost": 8,
+      "content": "退出：召唤一个IE7在场上",
+      "attack": 3,
+      "life": 3,
+      "attackBase": 3,
+      "lifeBase": 3,
+      "type": [
+        "前端",
+        "工具"
+      ]
+    },
+    {
+      "id": "w8",
+      "name": "Chrome",
+      "cardType": 2,
+      "cost": 10,
+      "content": "己方场上每存在一个<span style=\"color: blue\">前端</span>，花费减少1",
+      "attack": 6,
+      "life": 8,
+      "attackBase": 6,
+      "lifeBase": 8,
+      "type": [
+        "前端",
+        "工具"
+      ]
+    }
+  ],
+  "server": [
+    {
+      "id": "s8",
+      "name": "服务端应届毕业生",
+      "cardType": 2,
+      "cost": 1,
+      "content": "",
+      "attack": 1,
+      "life": 1,
+      "attackBase": 1,
+      "lifeBase": 1,
+      "type": [
+        "服务端"
+      ]
+    },
+    {
+      "id": "s20",
+      "name": "安装数据库",
+      "cardType": 1,
+      "cost": 1,
+      "content": "从剩余牌中抽出一张数据库卡牌到手牌中",
+      "attack": "",
+      "life": "",
+      "attackBase": "",
+      "lifeBase": "",
+      "type": [
+        "效果卡"
+      ]
+    },
+    {
+      "id": "s1",
+      "name": "SQL Lite",
+      "cardType": 2,
+      "cost": 2,
+      "content": "奉献",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "type": [
+        "数据库"
+      ],
+      "isDedication": true
+    },
+    {
+      "id": "s17",
+      "name": "推送技术研究员",
+      "cardType": 2,
+      "cost": 2,
+      "content": "",
+      "attack": 2,
+      "life": 1,
+      "attackBase": 2,
+      "lifeBase": 1,
+      "type": [
+        "服务端"
+      ]
+    },
+    {
+      "id": "s18",
+      "name": "JDBC",
+      "cardType": 1,
+      "cost": 2,
+      "content": "出场：手中数据库牌费用减少1点",
+      "attack": "",
+      "life": "",
+      "attackBase": "",
+      "lifeBase": "",
+      "type": [
+        "效果卡"
+      ]
+    },
+    {
+      "id": "s2",
+      "name": "高并发",
+      "cardType": 1,
+      "cost": 3,
+      "content": "本回合再增加一个可用费用",
+      "attack": "",
+      "life": "",
+      "attackBase": "",
+      "lifeBase": "",
+      "type": [
+        "效果卡"
+      ]
+    },
+    {
+      "id": "s3",
+      "name": "启用微服务",
+      "cardType": 1,
+      "cost": 3,
+      "content": "召唤3个1/1且带有精力充沛的基础服务",
+      "attack": "",
+      "life": "",
+      "attackBase": "",
+      "lifeBase": "",
+      "type": [
+        "效果卡"
+      ]
+    },
+    {
+      "id": "s5",
+      "name": "SQL入门程序员",
+      "cardType": 2,
+      "cost": 3,
+      "content": "出场：如果场上有数据库，从卡组中抽一张卡",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "type": [
+        "服务端"
+      ]
+    },
+    {
+      "id": "s7",
+      "name": "热爱开源的服务端程序员",
+      "cardType": 2,
+      "cost": 3,
+      "content": "",
+      "attack": 1,
+      "life": 3,
+      "attackBase": 1,
+      "lifeBase": 3,
+      "type": [
+        "服务端"
+      ]
+    },
+    {
+      "id": "s22",
+      "name": "大并发架构师",
+      "cardType": 2,
+      "cost": 3,
+      "content": "出场：获得一个用过的费用",
+      "attack": 2,
+      "life": 3,
+      "attackBase": 2,
+      "lifeBase": 3,
+      "type": [
+        "服务端"
+      ]
+    },
+    {
+      "id": "s23",
+      "name": "小型系统后台人员",
+      "cardType": 2,
+      "cost": 3,
+      "content": "",
+      "attack": 2,
+      "life": 4,
+      "attackBase": 2,
+      "lifeBase": 4,
+      "type": [
+        "服务端"
+      ]
+    },
+    {
+      "id": "s24",
+      "name": "Flask",
+      "cardType": 2,
+      "cost": 3,
+      "content": "精力充沛",
+      "attack": 4,
+      "life": 1,
+      "attackBase": 4,
+      "lifeBase": 1,
+      "type": [
+        ""
+      ],
+      "isFullOfEnergy": true
+    },
+    {
+      "id": "s6",
+      "name": "精通数据库的程序员",
+      "cardType": 2,
+      "cost": 4,
+      "content": "出场：场上每有一个数据库，从卡组中抽一张牌",
+      "attack": 2,
+      "life": 3,
+      "attackBase": 2,
+      "lifeBase": 3,
+      "type": [
+        "服务端"
+      ]
+    },
+    {
+      "id": "s15",
+      "name": "天才架构师",
+      "cardType": 2,
+      "cost": 4,
+      "content": "出场：场上每有一个数据库，和对方交换一张手牌（可能重复）",
+      "attack": 2,
+      "life": 4,
+      "attackBase": 2,
+      "lifeBase": 4,
+      "type": [
+        "服务端"
+      ]
+    },
+    {
+      "id": "s16",
+      "name": "老迈的架构师",
+      "cardType": 2,
+      "cost": 4,
+      "content": "出场：和对方交换一张手牌（可能重复）",
+      "attack": 2,
+      "life": 4,
+      "attackBase": 2,
+      "lifeBase": 4,
+      "type": [
+        "服务端"
+      ]
+    },
+    {
+      "id": "s19",
+      "name": "MyBatis",
+      "cardType": 1,
+      "cost": 4,
+      "content": "出场：手中数据库牌费用减少2点",
+      "attack": "",
+      "life": "",
+      "attackBase": "",
+      "lifeBase": "",
+      "type": [
+        "效果卡"
+      ]
+    },
+    {
+      "id": "s25",
+      "name": "主从备份",
+      "cardType": 1,
+      "cost": 4,
+      "content": "场上所有数据库攻击和生命数值调换",
+      "attack": "",
+      "life": "",
+      "attackBase": "",
+      "lifeBase": "",
+      "type": [
+        "效果卡"
+      ]
+    },
+    {
+      "id": "s10",
+      "name": "邪恶的后端程序员",
+      "cardType": 2,
+      "cost": 5,
+      "content": "出场：场上每有一个数据库，从对方的卡组中抽一张牌",
+      "attack": 2,
+      "life": 3,
+      "attackBase": 2,
+      "lifeBase": 3,
+      "type": [
+        "服务端"
+      ]
+    },
+    {
+      "id": "s11",
+      "name": "无私奉献的后端程序员",
+      "cardType": 2,
+      "cost": 5,
+      "content": "奉献，出场：场上每有一个数据库，获得1点生命",
+      "attack": 1,
+      "life": 3,
+      "attackBase": 1,
+      "lifeBase": 3,
+      "isDedication": true,
+      "type": [
+        "服务端"
+      ]
+    },
+    {
+      "id": "s12",
+      "name": "Hibernate",
+      "cardType": 1,
+      "cost": 6,
+      "content": "手中数据库牌费用减少3点",
+      "attack": "",
+      "life": "",
+      "attackBase": "",
+      "lifeBase": "",
+      "type": [
+        "效果卡"
+      ]
+    },
+    {
+      "id": "s14",
+      "name": "经验丰富的架构师",
+      "cardType": 2,
+      "cost": 6,
+      "content": "出场：场上每有一个数据库，和对方交换一张手牌（不会重复）",
+      "attack": 4,
+      "life": 4,
+      "attackBase": 4,
+      "lifeBase": 4,
+      "type": [
+        "服务端"
+      ]
+    },
+    {
+      "id": "s21",
+      "name": "Spring",
+      "cardType": 2,
+      "cost": 6,
+      "content": "每回合开始产生一个Spring产品，随机作用在场上",
+      "attack": 3,
+      "life": 4,
+      "attackBase": 3,
+      "lifeBase": 4,
+      "type": [
+        ""
+      ]
+    },
+    {
+      "id": "s4",
+      "name": "MySQL",
+      "cardType": 2,
+      "cost": 7,
+      "content": "奉献",
+      "attack": 1,
+      "life": 6,
+      "attackBase": 1,
+      "lifeBase": 6,
+      "type": [
+        "数据库"
+      ],
+      "isDedication": true
+    },
+    {
+      "id": "s13",
+      "name": "SQL Server",
+      "cardType": 2,
+      "cost": 9,
+      "content": "奉献",
+      "attack": 1,
+      "life": 10,
+      "attackBase": 1,
+      "lifeBase": 10,
+      "type": [
+        "数据库"
+      ],
+      "isDedication": true
+    },
+    {
+      "id": "s9",
+      "name": "Oracle",
+      "cardType": 2,
+      "cost": 16,
+      "content": "奉献",
+      "attack": 8,
+      "life": 12,
+      "attackBase": 8,
+      "lifeBase": 12,
+      "type": [
+        "数据库"
+      ],
+      "isDedication": true
+    }
+  ]
+}

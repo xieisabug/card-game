@@ -46,10 +46,9 @@ let ServerCards = [];
 
 // Load cards immediately when the module is imported
 const cardsPromise = loadCardsFromDatabase().then(result => {
-    // Update arrays by pushing elements (to maintain reference)
-    Cards.push(...result.Cards);
-    WebCards.push(...result.WebCards);
-    ServerCards.push(...result.ServerCards);
+    Cards = result.Cards;
+    WebCards = result.WebCards;
+    ServerCards = result.ServerCards;
     cardsCache = result;
     console.log(`Loaded ${Cards.length} base cards, ${WebCards.length} web cards, ${ServerCards.length} server cards from database`);
     return result;
