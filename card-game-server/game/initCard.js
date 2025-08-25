@@ -6,7 +6,8 @@ const {sendCards} = require("./sendCards");
 const {getNextCard} = require("./utils");
 const {findCardsById, findUserById} = require("../db");
 const {shuffle} = require("../utils");
-const {CardMap, MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, MAX_THINK_TIME_NUMBER} = require("../constants");
+const {MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, MAX_THINK_TIME_NUMBER} = require("../constants");
+const {CardMap} = require("../cards");
 const {endMyTurn} = require("./endMyTurn");
 const {giveUp} = require("./giveUp");
 

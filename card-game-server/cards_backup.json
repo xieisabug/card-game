@@ -422,6 +422,20 @@
       "type": [
         ""
       ]
+    },
+    {
+      "id": "custom1",
+      "name": "示例新卡牌",
+      "cardType": 2,
+      "cost": 3,
+      "content": "这是一个示例卡牌",
+      "attack": 2,
+      "life": 3,
+      "attackBase": 2,
+      "lifeBase": 3,
+      "type": [
+        "示例"
+      ]
     }
   ],
   "web": [
