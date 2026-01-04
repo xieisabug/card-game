@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {saveCards, findUserAllCards} = require('../db');
+const {saveCards, findUserAllCards} = require('../db/index');
 
 router.post('/', function (req, res) {
     const {cardsName, chooseIdList, careerId} = req.body;

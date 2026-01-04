@@ -3,7 +3,7 @@ const router = express.Router();
 const {
     login, register, findUserAllCards, userInfo, userOwnCard, userGameProcess, 
     updateUserGameProcess, saveInfo, saveUserOperator, findUserOperator
-} = require('../db');
+} = require('../db/index');
 const crypto = require('crypto');
 const jwt = require("jsonwebtoken");
 const {CharacterIdMap, UserOperatorType, JWTSecret} = require('../constants');

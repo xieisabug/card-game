@@ -9,6 +9,17 @@ const cors = require('cors');
 const log4js = require('log4js');
 log4js.configure(process.env.NODE_ENV === "production" ? './config/log4js.json': './config/log4js-dev.json')
 
+// 初始化数据库
+const db = require('./db');
+(async () => {
+    try {
+        const result = await db.initDB();
+        console.log('Database initialized:', result ? Object.keys(result).join(', ') : 'null');
+    } catch (err) {
+        console.error('Database init failed:', err);
+    }
+})();
+
 
 let users = require('./routes/users');
 let careers = require('./routes/careers');
