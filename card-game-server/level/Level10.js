@@ -1,8 +1,168 @@
 let {
     MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType
 } = require('../constants');
-const cardEffectFactory = require('../card-effect-factory');
 const LevelBase = require('./LevelBase');
+const { effectEngine } = require('../effect-system');
+
+// Level10 卡牌配置
+const Level10Cards = {
+    // 玩家手牌
+    handCards: [
+        {
+            id: "l10-microservice",
+            name: "启用微服务",
+            cardType: CardType.EFFECT,
+            cost: 3,
+            content: "召唤3个1/1且带有精力充沛的基础服务",
+            types: ["效果卡"],
+            tags: [],
+            effects: {
+                onStart: [{
+                    type: "SummonWithEffects",
+                    params: {
+                        count: 3,
+                        cardTemplate: {
+                            id: "l10-base-service",
+                            name: "基础微服务",
+                            cardType: CardType.CHARACTER,
+                            cost: 1,
+                            attack: 1,
+                            life: 1,
+                            content: "精力充沛",
+                            types: [],
+                            tags: ["Status.Buff.FullOfEnergy", "Status.Action.CanAct"]
+                        }
+                    }
+                }]
+            }
+        },
+        {
+            id: "l10-neck-pain-1",
+            name: "颈椎病",
+            cardType: CardType.EFFECT,
+            cost: 2,
+            content: "对场上所有对方卡牌造成1点伤害",
+            types: ["效果卡"],
+            tags: [],
+            effects: {
+                onStart: [{
+                    type: "DamageAll",
+                    target: { type: "otherTable" },
+                    params: {
+                        amount: 1
+                    }
+                }]
+            }
+        },
+        {
+            id: "l10-neck-pain-2",
+            name: "颈椎病",
+            cardType: CardType.EFFECT,
+            cost: 2,
+            content: "对场上所有对方卡牌造成1点伤害",
+            types: ["效果卡"],
+            tags: [],
+            effects: {
+                onStart: [{
+                    type: "DamageAll",
+                    target: { type: "otherTable" },
+                    params: {
+                        amount: 1
+                    }
+                }]
+            }
+        }
+    ],
+    // 敌方手牌
+    enemyHandCards: [
+        {
+            id: "l10-news1",
+            name: "源源不断的资讯",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 1,
+            life: 1,
+            content: "强壮，退场：随机召唤手牌中的一个伙伴",
+            types: [],
+            tags: ["Status.Action.CanAct", "Status.Buff.Strong"],
+            effects: {
+                onEnd: [{
+                    type: "SummonFromHand",
+                    params: {
+                        count: 1,
+                        filter: {
+                            cardType: CardType.CHARACTER
+                        },
+                        side: "my",
+                        random: true
+                    }
+                }]
+            }
+        },
+        {
+            id: "l10-news2",
+            name: "源头的资讯",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 1,
+            life: 1,
+            content: "",
+            types: [],
+            tags: ["Status.Action.CanAct"]
+        }
+    ],
+    // 敌方随从
+    enemyTableCards: [
+        {
+            id: "l10-news3",
+            name: "源源不断的资讯",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 1,
+            life: 1,
+            content: "强壮，退场：随机召唤手牌中的一个伙伴",
+            types: [],
+            tags: ["Status.Action.CanAct", "Status.Buff.Strong"],
+            effects: {
+                onEnd: [{
+                    type: "SummonFromHand",
+                    params: {
+                        count: 1,
+                        filter: {
+                            cardType: CardType.CHARACTER
+                        },
+                        side: "my",
+                        random: true
+                    }
+                }]
+            }
+        },
+        {
+            id: "l10-news4",
+            name: "源源不断的资讯",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 1,
+            life: 1,
+            content: "强壮，退场：随机召唤手牌中的一个伙伴",
+            types: [],
+            tags: ["Status.Action.CanAct", "Status.Buff.Strong"],
+            effects: {
+                onEnd: [{
+                    type: "SummonFromHand",
+                    params: {
+                        count: 1,
+                        filter: {
+                            cardType: CardType.CHARACTER
+                        },
+                        side: "my",
+                        random: true
+                    }
+                }]
+            }
+        }
+    ]
+};
 
 class Level10 extends LevelBase {
 
@@ -21,169 +181,46 @@ class Level10 extends LevelBase {
         this.gameData["one"]["remainingCards"] = [];
         this.gameData["two"]["remainingCards"] = [];
 
+        // 创建卡牌实例
+        const createCard = (config, k) => {
+            const card = {
+                ...config,
+                k,
+                attackBase: config.attack,
+                lifeBase: config.life,
+                type: config.types || []
+            };
+            effectEngine.createCardHooks(card);
+            return card;
+        };
+
+        // 创建玩家手牌
+        const handCards = Level10Cards.handCards.map((card, idx) =>
+            createCard(card, String(idx + 1))
+        );
+
+        // 创建敌方手牌
+        const enemyHandCards = Level10Cards.enemyHandCards.map((card, idx) =>
+            createCard(card, String(idx + 4))
+        );
+
+        // 创建敌方随从
+        const enemyTableCards = Level10Cards.enemyTableCards.map((card, idx) =>
+            createCard(card, String(idx + 6))
+        );
+
         Object.assign(this.gameData[first], {
-            cards: [
-                {
-                    k: "1",
-                    id: 1,
-                    name: "启用微服务",
-                    cardType: CardType.EFFECT,
-                    cost: 3,
-                    content: "召唤3个1/1且带有精力充沛的基础服务",
-                    attack: '',
-                    life: '',
-                    attackBase: '',
-                    lifeBase: '',
-                    type: "效果卡",
-                    onStart: function({myGameData, specialMethod}) {
-                        for(let i = 1; i < 4; i++) {
-                            let card = {
-                                k: specialMethod.getGameCardKForMe(),
-                                id: "s3-" + i,
-                                name: "基础微服务",
-                                cardType: CardType.CHARACTER,
-                                cost: 1,
-                                content: "精力充沛",
-                                attack: 1,
-                                life: 1,
-                                attackBase: 1,
-                                lifeBase: 1,
-                                type: [""],
-                                isFullOfEnergy: true,
-                                isActionable: true
-                            };
-                            myGameData.tableCards.push(card);
-                            specialMethod.outCardAnimation(true, card);
-                        }
-                    }
-                },
-                {
-                    k: "2",
-                    id: 2,
-                    name: "颈椎病",
-                    cardType: CardType.EFFECT,
-                    cost: 2,
-                    content: "对场上所有对方卡牌造成1点伤害",
-                    attack: "",
-                    life: "",
-                    attackBase: "",
-                    lifeBase: "",
-                    type: "",
-                    animationName: "normalAoe",
-                    onStart: cardEffectFactory.allOtherCardDamage(1)
-                },
-                {
-                    k: "3",
-                    id: 2,
-                    name: "颈椎病",
-                    cardType: CardType.EFFECT,
-                    cost: 2,
-                    content: "对场上所有对方卡牌造成1点伤害",
-                    attack: "",
-                    life: "",
-                    attackBase: "",
-                    lifeBase: "",
-                    type: "",
-                    animationName: "normalAoe",
-                    onStart: cardEffectFactory.allOtherCardDamage(1)
-                }
-            ],
+            useCards: [],
+            cards: handCards,
             tableCards: [],
             life: 1,
             fee: 10,
             maxFee: 10
         });
         Object.assign(this.gameData[second], {
-            cards: [
-                {
-                    k: "4",
-                    id: 4,
-                    name: "源源不断的资讯",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "强壮，退场：随机召唤手牌中的一个伙伴",
-                    attack: 1,
-                    life: 1,
-                    attackBase: 1,
-                    lifeBase: 1,
-                    type: "",
-                    isActionable: true,
-                    isStrong: true,
-                    onEnd: function({ myGameData, specialMethod }) {
-                        if (myGameData.cards.length > 0) {
-                            let randomIndex = Math.floor(specialMethod.rand() * myGameData.cards.length);
-                            let randomCard = myGameData.cards.splice(randomIndex, 1)[0];
-                            randomCard.k = specialMethod.getGameCardKForMe();
-                            myGameData.tableCards.push(randomCard);
-                            specialMethod.outCardAnimation(true, randomCard);
-                        }
-                    }
-                },
-                {
-                    k: "5",
-                    id: 4,
-                    name: "源头的资讯",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "",
-                    attack: 1,
-                    life: 1,
-                    attackBase: 1,
-                    lifeBase: 1,
-                    type: "",
-                    isActionable: true,
-                }
-            ],
-            tableCards: [
-                {
-                    k: "6",
-                    id: 4,
-                    name: "源源不断的资讯",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "强壮，退场：随机召唤手牌中的一个伙伴",
-                    attack: 1,
-                    life: 1,
-                    attackBase: 1,
-                    lifeBase: 1,
-                    type: "",
-                    isActionable: true,
-                    isStrong: true,
-                    onEnd: function({ myGameData, specialMethod }) {
-                        if (myGameData.cards.length > 0) {
-                            let randomIndex = Math.floor(specialMethod.rand() * myGameData.cards.length);
-                            let randomCard = myGameData.cards.splice(randomIndex, 1)[0];
-                            randomCard.k = specialMethod.getGameCardKForMe();
-                            myGameData.tableCards.push(randomCard);
-                            specialMethod.outCardAnimation(true, randomCard);
-                        }
-                    }
-                },
-                {
-                    k: "7",
-                    id: 4,
-                    name: "源源不断的资讯",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "强壮，退场：随机召唤手牌中的一个伙伴",
-                    attack: 1,
-                    life: 1,
-                    attackBase: 1,
-                    lifeBase: 1,
-                    type: "",
-                    isActionable: true,
-                    isStrong: true,
-                    onEnd: function({ myGameData, specialMethod }) {
-                        if (myGameData.cards.length > 0) {
-                            let randomIndex = Math.floor(specialMethod.rand() * myGameData.cards.length);
-                            let randomCard = myGameData.cards.splice(randomIndex, 1)[0];
-                            randomCard.k = specialMethod.getGameCardKForMe();
-                            myGameData.tableCards.push(randomCard);
-                            specialMethod.outCardAnimation(true, randomCard);
-                        }
-                    }
-                }
-            ],
+            useCards: [],
+            cards: enemyHandCards,
+            tableCards: enemyTableCards,
             life: 99,
             fee: 1,
             maxFee: 1

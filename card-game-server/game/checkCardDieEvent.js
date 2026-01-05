@@ -1,5 +1,37 @@
 const {getSpecialMethod} = require("./getSpecialMethod");
 const {getRoomData} = require("../cache");
+const cards = require("../cards");
+
+/**
+ * 触发卡牌效果（兼容新旧格式）
+ */
+function triggerCardEffect(hookName, card, myGameData, otherGameData, specialMethod, extraContext = {}) {
+    const isEffectHook = card._effectHookNames && card._effectHookNames[hookName];
+
+    // 触发旧版函数式钩子
+    if (card[hookName] && typeof card[hookName] === 'function') {
+        card[hookName]({
+            myGameData,
+            otherGameData,
+            thisCard: card,
+            specialMethod,
+            ...extraContext
+        });
+    }
+
+    // 触发新版 Effect 系统钩子
+    const effectEngine = cards.effectEngine;
+    if (!isEffectHook && effectEngine && card.effects && card.effects[hookName]) {
+        const context = {
+            myGameData,
+            otherGameData,
+            thisCard: card,
+            specialMethod,
+            ...extraContext
+        };
+        effectEngine.executeCardEffects(card, hookName, context);
+    }
+}
 
 /**
  * 检查卡片是否有死亡
@@ -23,34 +55,18 @@ function checkCardDieEvent(roomNumber, level, myKList, otherKList) {
         for (let i = memoryData["one"]["tableCards"].length - 1; i >= 0; i--) {
             let c = memoryData["one"]["tableCards"][i];
             if (c.life <= 0) {
-                if (c.onEnd) {
-                    c.onEnd({
-                        myGameData: memoryData["one"],
-                        otherGameData: memoryData["two"],
-                        thisCard: c,
-                        specialMethod: oneSpecialMethod
-                    });
-                }
+                triggerCardEffect('onEnd', c, memoryData["one"], memoryData["two"], oneSpecialMethod);
                 memoryData["one"]["tableCards"].splice(i, 1);
                 myKList.push(c.k);
-                // oneSpecialMethod.dieCardAnimation(true, c);
             }
         }
 
         for (let i = memoryData["two"]["tableCards"].length - 1; i >= 0; i--) {
             let c = memoryData["two"]["tableCards"][i];
             if (c.life <= 0) {
-                if (c.onEnd) {
-                    c.onEnd({
-                        myGameData: memoryData["two"],
-                        otherGameData: memoryData["one"],
-                        thisCard: c,
-                        specialMethod: twoSpecialMethod
-                    });
-                }
+                triggerCardEffect('onEnd', c, memoryData["two"], memoryData["one"], twoSpecialMethod);
                 memoryData["two"]["tableCards"].splice(i, 1);
                 otherKList.push(c.k);
-                // twoSpecialMethod.dieCardAnimation(true, c);
             }
         }
         checkCardDieEvent(roomNumber, level + 1, myKList, otherKList);

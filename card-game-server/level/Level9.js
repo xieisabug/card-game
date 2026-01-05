@@ -2,6 +2,60 @@ let {
     MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType
 } = require('../constants');
 const LevelBase = require('./LevelBase');
+const { effectEngine } = require('../effect-system');
+
+// Level9 卡牌配置
+const Level9Cards = {
+    // 玩家手牌
+    handCards: [
+        {
+            id: "l9-zuckerberg",
+            name: "马克·扎克伯格",
+            cardType: CardType.CHARACTER,
+            cost: 5,
+            attack: 3,
+            life: 3,
+            content: "出场：随机夺取对方一个场上单位的使用权",
+            types: [],
+            tags: [],
+            effects: {
+                onStart: [{
+                    type: "StealCard",
+                    params: {
+                        source: "otherTable",
+                        count: 1,
+                        random: true
+                    }
+                }]
+            }
+        }
+    ],
+    // 敌方随从
+    enemyCards: [
+        {
+            id: "l9-idea1",
+            name: "奇妙想法",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 3,
+            life: 3,
+            content: "",
+            types: [],
+            tags: ["Status.Action.CanAct"]
+        },
+        {
+            id: "l9-idea2",
+            name: "奇妙想法",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 3,
+            life: 3,
+            content: "",
+            types: [],
+            tags: ["Status.Action.CanAct"]
+        }
+    ]
+};
 
 class Level9 extends LevelBase {
 
@@ -20,68 +74,41 @@ class Level9 extends LevelBase {
         this.gameData["one"]["remainingCards"] = [];
         this.gameData["two"]["remainingCards"] = [];
 
+        // 创建卡牌实例
+        const createCard = (config, k) => {
+            const card = {
+                ...config,
+                k,
+                attackBase: config.attack,
+                lifeBase: config.life,
+                type: config.types || []
+            };
+            effectEngine.createCardHooks(card);
+            return card;
+        };
+
+        // 创建玩家手牌
+        const handCards = Level9Cards.handCards.map((card, idx) =>
+            createCard(card, String(idx + 21))
+        );
+
+        // 创建敌方随从
+        const enemyCards = Level9Cards.enemyCards.map((card, idx) =>
+            createCard(card, String(idx + 2))
+        );
+
         Object.assign(this.gameData[first], {
-            cards: [
-                {
-                    k: "21",
-                    id: 21,
-                    name: "马克·扎克伯格",
-                    cardType: CardType.CHARACTER,
-                    cost: 5,
-                    content: "出场：随机夺取对方一个场上单位的使用权",
-                    attack: 3,
-                    life: 3,
-                    attackBase: 3,
-                    lifeBase: 3,
-                    type: "",
-                    onStart: function ({myGameData, otherGameData, specialMethod}) {
-                        if (otherGameData.tableCards.length !== 0) {
-                            let randomIndex = Math.floor(specialMethod.rand() * otherGameData.tableCards.length);
-                            let card = otherGameData.tableCards.splice(randomIndex, 1)[0];
-                            myGameData.tableCards.push(card);
-                            specialMethod.outCardAnimation(true, card);
-                            specialMethod.refreshGameData();
-                        }
-                    }
-                }
-            ],
+            useCards: [],
+            cards: handCards,
             tableCards: [],
             life: 1,
             fee: 5,
             maxFee: 5
         });
         Object.assign(this.gameData[second], {
+            useCards: [],
             cards: [],
-            tableCards: [
-                {
-                    k: "2",
-                    id: 2,
-                    name: "奇妙想法",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "",
-                    attack: 3,
-                    life: 3,
-                    attackBase: 3,
-                    lifeBase: 3,
-                    type: "",
-                    isActionable: true
-                },
-                {
-                    k: "3",
-                    id: 3,
-                    name: "奇妙想法",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "",
-                    attack: 3,
-                    life: 3,
-                    attackBase: 3,
-                    lifeBase: 3,
-                    type: "",
-                    isActionable: true
-                }
-            ],
+            tableCards: enemyCards,
             life: 99,
             fee: 1,
             maxFee: 1

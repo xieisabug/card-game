@@ -21,6 +21,7 @@ class Level6 extends LevelBase {
         this.gameData["two"]["remainingCards"] = [];
 
         Object.assign(this.gameData[first], {
+            useCards: [],
             cards: [
                 {
                     k: "1",
@@ -58,6 +59,7 @@ class Level6 extends LevelBase {
             maxFee: 1
         });
         Object.assign(this.gameData[second], {
+            useCards: [],
             cards: [],
             tableCards: [
                 {

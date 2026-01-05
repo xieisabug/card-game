@@ -1,10 +1,16 @@
 const {GameMode} = require('../constants');
 const {userWinPve} = require('../db');
-const {MAX_THINK_TIME_NUMBER} = require("../constants")
+const {MAX_THINK_TIME_NUMBER} = require("../constants");
+const {outCard} = require("../game/outCard");
+const {useSkill} = require("../game/useSkill");
+const {attackCard} = require("../game/attackCard");
+const {attackHero} = require("../game/attackHero");
+const {endMyTurn} = require("../game/endMyTurn");
 
 class LevelBase {
     constructor(gameData, socketFunction) {
         this.gameData = gameData;
+        const fallbackSocketFunction = { outCard, useSkill, attackCard, attackHero, endMyTurn };
 
         this.socket = {
             id: "two",
@@ -72,7 +78,7 @@ class LevelBase {
         this.remainingCards = [];
         this.levelId = -1;
         this.taskList = [];
-        this.socketFunction = socketFunction;
+        this.socketFunction = { ...fallbackSocketFunction, ...(socketFunction || {}) };
         this.roomNumber = this.gameData['one'].roomNumber;
         this.ruleScriptList = [];
 

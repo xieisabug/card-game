@@ -4,6 +4,7 @@ const {getRoomData, getSocket} = require("../cache");
 const {sendCards} = require("./sendCards");
 const {getNextCard, getRandomCard, getFilterCardTypeRandomCard} = require("./utils");
 const {checkPvpWin} = require("./checkWin");
+const {sanitizeCard} = require("./sanitizeCard");
 
 function getSpecialMethod(identity, roomNumber) {
     const otherIdentity = identity === "one" ? "two" : "one";
@@ -60,10 +61,11 @@ function getSpecialMethod(identity, roomNumber) {
             return ret;
         },
         outCardAnimation(isMine, card) {
+            const safeCard = sanitizeCard(card);
             getSocket(roomNumber, identity).emit("OUT_CARD", {
                 index: -1,
                 toIndex: -1,
-                card,
+                card: safeCard,
                 isMine: isMine,
                 myHero: extractHeroInfo(memoryData[identity]),
                 otherHero: extractHeroInfo(memoryData[otherIdentity])
@@ -72,18 +74,20 @@ function getSpecialMethod(identity, roomNumber) {
             getSocket(roomNumber, otherIdentity).emit("OUT_CARD", {
                 index: -1,
                 toIndex: -1,
-                card,
+                card: safeCard,
                 isMine: !isMine,
                 myHero: extractHeroInfo(memoryData[otherIdentity]),
                 otherHero: extractHeroInfo(memoryData[identity])
             })
         },
         buffCardAnimation(isMine, fromIndex, toIndex, fromCard, toCard) {
+            const safeFromCard = sanitizeCard(fromCard);
+            const safeToCard = sanitizeCard(toCard);
             getSocket(roomNumber, identity).emit("BUFF_CARD", {
                 fromIndex,
                 toIndex,
-                fromCard,
-                toCard,
+                fromCard: safeFromCard,
+                toCard: safeToCard,
                 isMine,
                 myHero: extractHeroInfo(memoryData[identity]),
                 otherHero: extractHeroInfo(memoryData[otherIdentity])
@@ -92,24 +96,25 @@ function getSpecialMethod(identity, roomNumber) {
             getSocket(roomNumber, otherIdentity).emit("BUFF_CARD", {
                 fromIndex,
                 toIndex,
-                fromCard,
-                toCard,
+                fromCard: safeFromCard,
+                toCard: safeToCard,
                 isMine: !isMine,
                 myHero: extractHeroInfo(memoryData[otherIdentity]),
                 otherHero: extractHeroInfo(memoryData[identity])
             })
         },
         getCardAnimation(isMine, card) {
+            const safeCard = sanitizeCard(card);
             getSocket(roomNumber, identity).emit("GET_CARD", {
                 isMine,
-                card: isMine ? card : null,
+                card: isMine ? safeCard : null,
                 myHero: extractHeroInfo(memoryData[identity]),
                 otherHero: extractHeroInfo(memoryData[otherIdentity])
             });
 
             getSocket(roomNumber, otherIdentity).emit("GET_CARD", {
                 isMine: !isMine,
-                card: !isMine ? card : null,
+                card: !isMine ? safeCard : null,
                 myHero: extractHeroInfo(memoryData[identity]),
                 otherHero: extractHeroInfo(memoryData[otherIdentity])
             });
@@ -132,21 +137,23 @@ function getSpecialMethod(identity, roomNumber) {
             });
         },
         attackCardAnimation(index, attackIndex, card, attackCard) {
+            const safeCard = sanitizeCard(card);
+            const safeAttackCard = sanitizeCard(attackCard);
             getSocket(roomNumber, identity).emit("ATTACK_CARD", {
                 index,
                 attackIndex,
                 attackType: AttackType.ATTACK,
                 animationType: AttackAnimationType.NORMAL,
-                card,
-                attackCard
+                card: safeCard,
+                attackCard: safeAttackCard
             });
             getSocket(roomNumber, otherIdentity).emit("ATTACK_CARD", {
                 index,
                 attackIndex,
                 attackType: AttackType.BE_ATTACKED,
                 animationType: AttackAnimationType.NORMAL,
-                card,
-                attackCard
+                card: safeCard,
+                attackCard: safeAttackCard
             });
         },
         checkWin() {

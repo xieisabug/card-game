@@ -2,6 +2,23 @@ const cardEffectFactory = require("./card-effect-factory");
 const {getTypeText, range} = require("./utils");
 const comboCards = require("./config/comboCards.json");
 const {CardType, CardPosition, BuffType, TargetType} = require("./constants");
+const path = require("path");
+const fs = require("fs");
+
+// Effect/Tag 系统集成
+const effectSystem = require("./effect-system");
+const { effectEngine, cardLoader } = effectSystem;
+
+// 尝试加载 JSON 配置的卡牌
+try {
+    const configPath = path.join(__dirname, 'config/cards');
+    if (fs.existsSync(configPath)) {
+        cardLoader.loadFromDirectory(configPath);
+        console.log(`[EffectSystem] 已加载 ${cardLoader.getAllCards().length} 张 JSON 配置的卡牌`);
+    }
+} catch (e) {
+    console.log('[EffectSystem] JSON 卡牌配置加载跳过');
+}
 
 const CardList = [
     {
@@ -2422,4 +2439,8 @@ module.exports = {
     CardMap: CardMap,
     ComboCards: comboCards,
     ComboCardsMap,
+    // Effect/Tag 系统导出
+    effectSystem,
+    effectEngine,
+    cardLoader,
 }

@@ -1,4 +1,5 @@
 const {getSocket, getRoomData} = require("../cache");
+const {sanitizeCards} = require("./sanitizeCard");
 
 /**
  * 发送最新的牌局信息
@@ -11,10 +12,14 @@ function sendCards(roomNumber, identity) {
         let otherIdentity = identity === "one" ? "two" : "one";
         const memoryData = getRoomData(roomNumber)
 
+        const myCard = sanitizeCards(memoryData[identity]["cards"]);
+        const myTableCard = sanitizeCards(memoryData[identity]["tableCards"]);
+        const otherTableCard = sanitizeCards(memoryData[otherIdentity]["tableCards"]);
+
         getSocket(roomNumber, identity).emit("SEND_CARD", {
-            myCard: memoryData[identity]["cards"],
-            myTableCard: memoryData[identity]["tableCards"],
-            otherTableCard: memoryData[otherIdentity]["tableCards"],
+            myCard,
+            myTableCard,
+            otherTableCard,
             mySkillList: memoryData[identity]["skillList"],
             otherSkillList: memoryData[otherIdentity]["skillList"],
             myLife: memoryData[identity]["life"],

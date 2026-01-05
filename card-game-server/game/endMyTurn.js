@@ -6,7 +6,39 @@ const {sendCards} = require("./sendCards");
 const {error} = require("./log");
 const log4js = require("log4js");
 const {giveUp} = require("./giveUp");
+const cards = require("../cards");
 const logger = log4js.getLogger('play');
+
+/**
+ * 触发卡牌效果（兼容新旧格式）
+ */
+function triggerCardEffect(hookName, card, myGameData, otherGameData, specialMethod, extraContext = {}) {
+    const isEffectHook = card._effectHookNames && card._effectHookNames[hookName];
+
+    // 触发旧版函数式钩子
+    if (card[hookName] && typeof card[hookName] === 'function') {
+        card[hookName]({
+            myGameData,
+            otherGameData,
+            thisCard: card,
+            specialMethod,
+            ...extraContext
+        });
+    }
+
+    // 触发新版 Effect 系统钩子
+    const effectEngine = cards.effectEngine;
+    if (!isEffectHook && effectEngine && card.effects && card.effects[hookName]) {
+        const context = {
+            myGameData,
+            otherGameData,
+            thisCard: card,
+            specialMethod,
+            ...extraContext
+        };
+        effectEngine.executeCardEffects(card, hookName, context);
+    }
+}
 
 /**
  * 结束当前回合
@@ -28,28 +60,16 @@ function endMyTurn(args, socket) {
     }
     let mySpecialMethod = getSpecialMethod(belong, roomNumber);
     memoryData[belong]["cards"].forEach((c, index) => {
-        if (c.onMyTurnStart) {
-            c.onMyTurnStart({
-                myGameData: memoryData[belong],
-                otherGameData: memoryData[other],
-                thisCard: c,
-                thisCardIndex: index,
-                position: CardPosition.HANDS,
-                specialMethod: mySpecialMethod
-            });
-        }
+        triggerCardEffect('onMyTurnStart', c, memoryData[belong], memoryData[other], mySpecialMethod, {
+            thisCardIndex: index,
+            position: CardPosition.HANDS
+        });
     });
     memoryData[belong].tableCards.forEach((c, index) => {
-        if (c.onMyTurnEnd) {
-            c.onMyTurnEnd({
-                myGameData: memoryData[belong],
-                otherGameData: memoryData[other],
-                thisCard: c,
-                thisCardIndex: index,
-                position: CardPosition.TABLE,
-                specialMethod: mySpecialMethod
-            })
-        }
+        triggerCardEffect('onMyTurnEnd', c, memoryData[belong], memoryData[other], mySpecialMethod, {
+            thisCardIndex: index,
+            position: CardPosition.TABLE
+        });
 
         if (c.isShortInvincible) {
             c.shortInvincibleRound -= 1;
@@ -106,28 +126,16 @@ function endMyTurn(args, socket) {
     let otherSpecialMethod = getSpecialMethod(other, roomNumber);
 
     memoryData[other]["cards"].forEach((c, index) => {
-        if (c.onMyTurnStart) {
-            c.onMyTurnStart({
-                myGameData: memoryData[other],
-                otherGameData: memoryData[belong],
-                thisCard: c,
-                thisCardIndex: index,
-                position: CardPosition.HANDS,
-                specialMethod: otherSpecialMethod
-            });
-        }
+        triggerCardEffect('onMyTurnStart', c, memoryData[other], memoryData[belong], otherSpecialMethod, {
+            thisCardIndex: index,
+            position: CardPosition.HANDS
+        });
     });
     memoryData[other]["tableCards"].forEach((c, index) => {
-        if (c.onMyTurnStart) {
-            c.onMyTurnStart({
-                myGameData: memoryData[other],
-                otherGameData: memoryData[belong],
-                thisCard: c,
-                thisCardIndex: index,
-                position: CardPosition.TABLE,
-                specialMethod: otherSpecialMethod
-            });
-        }
+        triggerCardEffect('onMyTurnStart', c, memoryData[other], memoryData[belong], otherSpecialMethod, {
+            thisCardIndex: index,
+            position: CardPosition.TABLE
+        });
 
         if (c.isShortInvincible) {
             c.shortInvincibleRound -= 1;

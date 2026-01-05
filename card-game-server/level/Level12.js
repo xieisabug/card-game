@@ -1,9 +1,86 @@
 let {
-    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType, GameMode, TargetType, CardPosition
+    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType, GameMode, TargetType
 } = require('../constants');
 const cardEffectFactory = require('../card-effect-factory');
 const LevelBase = require('./LevelBase');
 const WebBot1 = require("../bot/webBot1");
+const { effectEngine } = require('../effect-system');
+
+// Level12 卡牌配置
+const Level12Cards = {
+    // 我方随从
+    myTableCards: [
+        {
+            id: "l12-assistant1",
+            name: "开发助理",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 1,
+            life: 1,
+            content: "",
+            types: [],
+            tags: ["Status.Action.CanAct"]
+        },
+        {
+            id: "l12-assistant2",
+            name: "开发助理",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 1,
+            life: 1,
+            content: "",
+            types: [],
+            tags: ["Status.Action.CanAct"]
+        },
+        {
+            id: "l12-assistant3",
+            name: "开发助理",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 1,
+            life: 1,
+            content: "",
+            types: [],
+            tags: ["Status.Action.CanAct"]
+        }
+    ],
+    // 敌方随从
+    enemyTableCards: [
+        {
+            id: "l12-chaser1",
+            name: "恶毒追兵",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 1,
+            life: 1,
+            content: "",
+            types: [],
+            tags: []
+        },
+        {
+            id: "l12-chaser-leader",
+            name: "恶毒追兵头子",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 1,
+            life: 2,
+            content: "",
+            types: [],
+            tags: []
+        },
+        {
+            id: "l12-chaser2",
+            name: "恶毒追兵",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 1,
+            life: 1,
+            content: "",
+            types: [],
+            tags: []
+        }
+    ]
+};
 
 class Level12 extends LevelBase {
 
@@ -24,52 +101,32 @@ class Level12 extends LevelBase {
         this.gameData["one"]["remainingCards"] = [];
         this.gameData["two"]["remainingCards"] = [];
 
+        // 创建卡牌实例
+        const createCard = (config, k) => {
+            const card = {
+                ...config,
+                k,
+                attackBase: config.attack,
+                lifeBase: config.life,
+                type: config.types || []
+            };
+            effectEngine.createCardHooks(card);
+            return card;
+        };
+
+        // 创建我方随从
+        const myTableCards = Level12Cards.myTableCards.map((card, idx) =>
+            createCard(card, String(idx + 1))
+        );
+
+        // 创建敌方随从
+        const enemyTableCards = Level12Cards.enemyTableCards.map((card, idx) =>
+            createCard(card, String(idx + 4))
+        );
+
         Object.assign(this.gameData[first], {
             cards: [],
-            tableCards: [
-                {
-                    k: "1",
-                    id: 1,
-                    name: "开发助理",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: ``,
-                    attack: 1,
-                    life: 1,
-                    attackBase: 1,
-                    lifeBase: 1,
-                    type: [""],
-                    isActionable: true
-                },
-                {
-                    k: "2",
-                    id: 1,
-                    name: "开发助理",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: ``,
-                    attack: 1,
-                    life: 1,
-                    attackBase: 1,
-                    lifeBase: 1,
-                    type: [""],
-                    isActionable: true
-                },
-                {
-                    k: "3",
-                    id: 1,
-                    name: "开发助理",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: ``,
-                    attack: 1,
-                    life: 1,
-                    attackBase: 1,
-                    lifeBase: 1,
-                    type: [""],
-                    isActionable: true
-                }
-            ],
+            tableCards: myTableCards,
             useCards: [],
             life: 1,
             fee: 2,
@@ -78,47 +135,7 @@ class Level12 extends LevelBase {
         });
         Object.assign(this.gameData[second], {
             cards: [],
-            tableCards: [
-                {
-                    k: "4",
-                    id: 2,
-                    name: "恶毒追兵",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "",
-                    attack: 1,
-                    life: 1,
-                    attackBase: 1,
-                    lifeBase: 1,
-                    type: ""
-                },
-                {
-                    k: "5",
-                    id: 3,
-                    name: "恶毒追兵头子",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "",
-                    attack: 1,
-                    life: 2,
-                    attackBase: 1,
-                    lifeBase: 2,
-                    type: ""
-                },
-                {
-                    k: "6",
-                    id: 2,
-                    name: "恶毒追兵",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "",
-                    attack: 1,
-                    life: 1,
-                    attackBase: 1,
-                    lifeBase: 1,
-                    type: ""
-                }
-            ],
+            tableCards: enemyTableCards,
             useCards: [],
             life: 99,
             fee: 1,
@@ -137,7 +154,7 @@ class Level12 extends LevelBase {
                 description: '通过阅读书籍提高自己，选择提高牌桌上1张卡牌1点攻击力',
                 onChooseTarget: cardEffectFactory.oneChooseCardAddAttack(1)
             }
-        ]
+        ];
 
         this.gameData[first]['maxHandCardNumber'] = MAX_HAND_CARD_NUMBER;
         this.gameData[second]['maxHandCardNumber'] = MAX_HAND_CARD_NUMBER;

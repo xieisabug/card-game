@@ -4,8 +4,41 @@ const {checkPvpWin, checkPveWin} = require("./checkWin");
 const {error} = require("./log");
 const {getRoomData} = require("../cache");
 const {checkCardDieEvent} = require("./checkCardDieEvent");
+const cards = require("../cards");
 const log4js = require("log4js");
 const logger = log4js.getLogger('play');
+const {sanitizeCard} = require("./sanitizeCard");
+
+/**
+ * 触发卡牌效果（兼容新旧格式）
+ */
+function triggerCardEffect(hookName, card, myGameData, otherGameData, specialMethod, extraContext = {}) {
+    const isEffectHook = card._effectHookNames && card._effectHookNames[hookName];
+
+    // 触发旧版函数式钩子
+    if (card[hookName] && typeof card[hookName] === 'function') {
+        card[hookName]({
+            myGameData,
+            otherGameData,
+            thisCard: card,
+            specialMethod,
+            ...extraContext
+        });
+    }
+
+    // 触发新版 Effect 系统钩子
+    const effectEngine = cards.effectEngine;
+    if (!isEffectHook && effectEngine && card.effects && card.effects[hookName]) {
+        const context = {
+            myGameData,
+            otherGameData,
+            thisCard: card,
+            specialMethod,
+            ...extraContext
+        };
+        effectEngine.executeCardEffects(card, hookName, context);
+    }
+}
 /**
  * 攻击某个卡牌
  * @param args index: 攻击牌, attackIndex: 被攻击牌
@@ -55,65 +88,50 @@ function attackCard(args, socket) {
                 card.isHide = false;
             }
 
+            const safeCard = sanitizeCard(card);
+            const safeAttackCard = sanitizeCard(attackCard);
             memoryData[belong].socket.emit("ATTACK_CARD", {
                 index,
                 attackIndex,
                 attackType: AttackType.ATTACK,
                 animationType: AttackAnimationType.NORMAL,
-                card,
-                attackCard
+                card: safeCard,
+                attackCard: safeAttackCard
             });
             memoryData[other].socket.emit("ATTACK_CARD", {
                 index,
                 attackIndex,
                 attackType: AttackType.BE_ATTACKED,
                 animationType: AttackAnimationType.NORMAL,
-                card,
-                attackCard
+                card: safeCard,
+                attackCard: safeAttackCard
             });
 
-            if (card.onAttack) {
-                card.onAttack({
-                    myGameData: memoryData[belong],
-                    otherGameData: memoryData[other],
-                    thisCard: card,
-                    beAttackedCard: attackCard,
-                    specialMethod: getSpecialMethod(belong, roomNumber),
-                })
-            }
-            if (attackCard.onBeAttacked) {
-                attackCard.onBeAttacked({
-                    myGameData: memoryData[other],
-                    otherGameData: memoryData[belong],
-                    thisCard: attackCard,
-                    attackCard: card,
-                    specialMethod: getSpecialMethod(other, roomNumber),
-                })
-            }
+            let mySpecialMethod = getSpecialMethod(belong, roomNumber);
+            let otherSpecialMethod = getSpecialMethod(other, roomNumber);
+
+            triggerCardEffect('onAttack', card, memoryData[belong], memoryData[other], mySpecialMethod, {
+                beAttackedCard: attackCard
+            });
+            triggerCardEffect('onBeAttacked', attackCard, memoryData[other], memoryData[belong], otherSpecialMethod, {
+                attackCard: card
+            });
 
             memoryData[belong]["tableCards"].forEach(c => {
-                if (c.onOtherCardAttack && c.k !== card.k) {
-                    c.onOtherCardAttack({
-                        myGameData: memoryData[belong],
-                        otherGameData: memoryData[other],
+                if (c.k !== card.k) {
+                    triggerCardEffect('onOtherCardAttack', c, memoryData[belong], memoryData[other], mySpecialMethod, {
                         attackCard: card,
-                        beAttackedCard: attackCard,
-                        thisCard: c,
-                        specialMethod: getSpecialMethod(belong, roomNumber),
-                    })
+                        beAttackedCard: attackCard
+                    });
                 }
             });
 
             memoryData[other]["tableCards"].forEach(c => {
-                if (c.onOtherCardBeAttacked && c.k !== attackCard.k) {
-                    c.onOtherCardBeAttacked({
-                        myGameData: memoryData[other],
-                        otherGameData: memoryData[belong],
+                if (c.k !== attackCard.k) {
+                    triggerCardEffect('onOtherCardBeAttacked', c, memoryData[other], memoryData[belong], otherSpecialMethod, {
                         attackCard: card,
-                        beAttackedCard: attackCard,
-                        thisCard: c,
-                        specialMethod: getSpecialMethod(other, roomNumber),
-                    })
+                        beAttackedCard: attackCard
+                    });
                 }
             });
 

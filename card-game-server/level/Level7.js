@@ -2,6 +2,105 @@ let {
     MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType
 } = require('../constants');
 const LevelBase = require('./LevelBase');
+const { effectEngine } = require('../effect-system');
+
+// Level7 卡牌配置
+const Level7Cards = {
+    // 玩家手牌
+    handCards: [
+        {
+            id: "l7-student1",
+            name: "精力充沛的同学",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 1,
+            life: 1,
+            content: "精力充沛",
+            types: [],
+            tags: ["Status.Buff.FullOfEnergy"]
+        },
+        {
+            id: "l7-student2",
+            name: "精力充沛的同学",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 1,
+            life: 1,
+            content: "精力充沛",
+            types: [],
+            tags: ["Status.Buff.FullOfEnergy"]
+        },
+        {
+            id: "l7-leader1",
+            name: "精力充沛的小组长",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 2,
+            life: 2,
+            content: "精力充沛",
+            types: [],
+            tags: ["Status.Buff.FullOfEnergy"]
+        },
+        {
+            id: "l7-leader2",
+            name: "精力充沛的小组长",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 2,
+            life: 2,
+            content: "精力充沛",
+            types: [],
+            tags: ["Status.Buff.FullOfEnergy"]
+        },
+        {
+            id: "l7-representative",
+            name: "精力充沛的课代表",
+            cardType: CardType.CHARACTER,
+            cost: 3,
+            attack: 5,
+            life: 1,
+            content: "精力充沛",
+            types: [],
+            tags: ["Status.Buff.FullOfEnergy"]
+        }
+    ],
+    // 敌方随从
+    enemyCards: [
+        {
+            id: "l7-exam1",
+            name: "考题",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 10,
+            life: 2,
+            content: "奉献，强壮",
+            types: [],
+            tags: ["Status.Buff.Dedication", "Status.Buff.Strong"]
+        },
+        {
+            id: "l7-exam2",
+            name: "考题",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 10,
+            life: 2,
+            content: "奉献，强壮",
+            types: [],
+            tags: ["Status.Buff.Dedication", "Status.Buff.Strong"]
+        },
+        {
+            id: "l7-gift",
+            name: "送分题",
+            cardType: CardType.CHARACTER,
+            cost: 1,
+            attack: 0,
+            life: 5,
+            content: "",
+            types: [],
+            tags: []
+        }
+    ]
+};
 
 class Level7 extends LevelBase {
 
@@ -20,131 +119,41 @@ class Level7 extends LevelBase {
         this.gameData["one"]["remainingCards"] = [];
         this.gameData["two"]["remainingCards"] = [];
 
+        // 创建卡牌实例
+        const createCard = (config, k) => {
+            const card = {
+                ...config,
+                k,
+                attackBase: config.attack,
+                lifeBase: config.life,
+                type: config.types || []
+            };
+            effectEngine.createCardHooks(card);
+            return card;
+        };
+
+        // 创建玩家手牌
+        const handCards = Level7Cards.handCards.map((card, idx) =>
+            createCard(card, String(idx + 1))
+        );
+
+        // 创建敌方随从
+        const enemyCards = Level7Cards.enemyCards.map((card, idx) =>
+            createCard(card, String(idx + 6))
+        );
+
         Object.assign(this.gameData[first], {
-            cards: [
-                {
-                    k: "1",
-                    id: 1,
-                    name: "精力充沛的同学",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "精力充沛",
-                    attack: 1,
-                    life: 1,
-                    attackBase: 1,
-                    lifeBase: 1,
-                    type: "",
-                    isFullOfEnergy: true
-                },
-                {
-                    k: "2",
-                    id: 2,
-                    name: "精力充沛的同学",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "精力充沛",
-                    attack: 1,
-                    life: 1,
-                    attackBase: 1,
-                    lifeBase: 1,
-                    type: "",
-                    isFullOfEnergy: true
-                },
-                {
-                    k: "3",
-                    id: 3,
-                    name: "精力充沛的小组长",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "精力充沛",
-                    attack: 2,
-                    life: 2,
-                    attackBase: 2,
-                    lifeBase: 2,
-                    type: "",
-                    isFullOfEnergy: true
-                },
-                {
-                    k: "4",
-                    id: 4,
-                    name: "精力充沛的小组长",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "精力充沛",
-                    attack: 2,
-                    life: 2,
-                    attackBase: 2,
-                    lifeBase: 2,
-                    type: "",
-                    isFullOfEnergy: true
-                },
-                {
-                    k: "5",
-                    id: 5,
-                    name: "精力充沛的课代表",
-                    cardType: CardType.CHARACTER,
-                    cost: 3,
-                    content: "精力充沛",
-                    attack: 5,
-                    life: 1,
-                    attackBase: 5,
-                    lifeBase: 1,
-                    type: "",
-                    isFullOfEnergy: true
-                },
-            ],
+            useCards: [],
+            cards: handCards,
             tableCards: [],
             life: 1,
             fee: 7,
             maxFee: 7
         });
         Object.assign(this.gameData[second], {
+            useCards: [],
             cards: [],
-            tableCards: [
-                {
-                    k: "6",
-                    id: 6,
-                    name: "考题",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "奉献，强壮",
-                    attack: 10,
-                    life: 2,
-                    attackBase: 10,
-                    lifeBase: 2,
-                    type: "",
-                    isDedication: true,
-                    isStrong: true
-                },
-                {
-                    k: "7",
-                    id: 7,
-                    name: "考题",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "奉献，强壮",
-                    attack: 10,
-                    life: 2,
-                    attackBase: 10,
-                    lifeBase: 2,
-                    type: "",
-                    isDedication: true,
-                    isStrong: true
-                },
-                {
-                    k: "8",
-                    id: 8,
-                    name: "送分题",
-                    cardType: CardType.CHARACTER,
-                    cost: 1,
-                    content: "",
-                    attack: 0,
-                    life: 5,
-                    attackBase: 0,
-                    lifeBase: 5,
-                    type: ""
-                },
-            ],
+            tableCards: enemyCards,
             life: 99,
             fee: 1,
             maxFee: 1
