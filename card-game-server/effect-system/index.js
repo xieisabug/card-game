@@ -13,6 +13,7 @@ const tagRegistry = new TagRegistry();
 const effectRegistry = new EffectRegistry();
 const effectEngine = new EffectEngine({ tagRegistry, effectRegistry });
 const cardLoader = new EffectCardLoader(effectEngine);
+effectEngine.cardRegistry = cardLoader;
 
 // 导出实例（供 cards.js 使用）
 module.exports = {
@@ -41,9 +42,11 @@ module.exports = {
     },
 
     createEngine: (options = {}) => {
-        return new EffectEngine({
+        const engine = new EffectEngine({
             tagRegistry: options.tagRegistry || new TagRegistry(),
-            effectRegistry: options.effectRegistry || new EffectRegistry()
+            effectRegistry: options.effectRegistry || new EffectRegistry(),
+            cardRegistry: options.cardRegistry
         });
+        return engine;
     }
 };

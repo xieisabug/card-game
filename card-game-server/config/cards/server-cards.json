@@ -1,0 +1,796 @@
+{
+  "cards": [
+    {
+      "id": "s8",
+      "name": "服务端应届毕业生",
+      "cardType": "CHARACTER",
+      "cost": 1,
+      "content": "",
+      "attack": 1,
+      "life": 1,
+      "attackBase": 1,
+      "lifeBase": 1,
+      "types": [
+        "服务端"
+      ],
+      "tags": []
+    },
+    {
+      "id": "s20",
+      "name": "安装数据库",
+      "cardType": "EFFECT",
+      "cost": 1,
+      "content": "从剩余牌中抽出一张数据库卡牌到手牌中",
+      "attack": "",
+      "life": "",
+      "attackBase": 0,
+      "lifeBase": 0,
+      "types": [
+        "效果卡"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "DrawCard",
+            "params": {
+              "count": 1,
+              "source": "filter",
+              "filter": {
+                "type": "数据库"
+              },
+              "target": "self"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s1",
+      "name": "SQL Lite",
+      "cardType": "CHARACTER",
+      "cost": 2,
+      "content": "奉献",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "isDedication": true,
+      "types": [
+        "数据库"
+      ],
+      "tags": [
+        "Status.Buff.Dedication"
+      ]
+    },
+    {
+      "id": "s17",
+      "name": "推送技术研究员",
+      "cardType": "CHARACTER",
+      "cost": 2,
+      "content": "",
+      "attack": 2,
+      "life": 1,
+      "attackBase": 2,
+      "lifeBase": 1,
+      "types": [
+        "服务端"
+      ],
+      "tags": []
+    },
+    {
+      "id": "s18",
+      "name": "JDBC",
+      "cardType": "EFFECT",
+      "cost": 2,
+      "content": "出场：手中数据库牌费用减少1点",
+      "attack": "",
+      "life": "",
+      "attackBase": 0,
+      "lifeBase": 0,
+      "types": [
+        "效果卡"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "ModifyAttribute",
+            "target": {
+              "type": "myHand",
+              "filter": {
+                "type": "数据库"
+              }
+            },
+            "params": {
+              "attribute": "cost",
+              "value": -1,
+              "operation": "add",
+              "minValue": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s2",
+      "name": "高并发",
+      "cardType": "EFFECT",
+      "cost": 3,
+      "content": "本回合再增加一个可用费用",
+      "attack": "",
+      "life": "",
+      "attackBase": 0,
+      "lifeBase": 0,
+      "types": [
+        "效果卡"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "ModifyResource",
+            "params": {
+              "resource": "maxFee",
+              "operation": "add",
+              "value": 1,
+              "target": "my"
+            }
+          },
+          {
+            "type": "ModifyResource",
+            "params": {
+              "resource": "fee",
+              "operation": "add",
+              "value": 1,
+              "target": "my"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s3",
+      "name": "启用微服务",
+      "cardType": "EFFECT",
+      "cost": 3,
+      "content": "召唤3个1/1且带有精力充沛的基础服务",
+      "attack": "",
+      "life": "",
+      "attackBase": 0,
+      "lifeBase": 0,
+      "types": [
+        "效果卡"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "Summon",
+            "params": {
+              "count": 3,
+              "side": "my",
+              "cardTemplate": {
+                "id": "s3-token",
+                "name": "基础微服务",
+                "cardType": "CHARACTER",
+                "cost": 1,
+                "content": "精力充沛",
+                "attack": 1,
+                "life": 1,
+                "types": [
+                  ""
+                ],
+                "isFullOfEnergy": true
+              },
+              "applyTags": [
+                "Status.Buff.FullOfEnergy"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s5",
+      "name": "SQL入门程序员",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "出场：如果场上有数据库，从卡组中抽一张卡",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "types": [
+        "服务端"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "ConditionalEffect",
+            "conditions": [
+              {
+                "type": "tableHasType",
+                "params": {
+                  "type": "数据库",
+                  "target": "my"
+                }
+              }
+            ],
+            "params": {
+              "ifTrue": [
+                {
+                  "type": "DrawCard",
+                  "params": {
+                    "count": 1,
+                    "source": "random",
+                    "target": "self"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s7",
+      "name": "热爱开源的服务端程序员",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "",
+      "attack": 1,
+      "life": 3,
+      "attackBase": 1,
+      "lifeBase": 3,
+      "types": [
+        "服务端"
+      ],
+      "tags": []
+    },
+    {
+      "id": "s22",
+      "name": "大并发架构师",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "出场：获得一个用过的费用",
+      "attack": 2,
+      "life": 3,
+      "attackBase": 2,
+      "lifeBase": 3,
+      "types": [
+        "服务端"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "ModifyResource",
+            "params": {
+              "resource": "maxFee",
+              "operation": "add",
+              "value": 1,
+              "target": "my"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s23",
+      "name": "小型系统后台人员",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "",
+      "attack": 2,
+      "life": 4,
+      "attackBase": 2,
+      "lifeBase": 4,
+      "types": [
+        "服务端"
+      ],
+      "tags": []
+    },
+    {
+      "id": "s24",
+      "name": "Flask",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "精力充沛",
+      "attack": 4,
+      "life": 1,
+      "attackBase": 4,
+      "lifeBase": 1,
+      "isFullOfEnergy": true,
+      "types": [],
+      "tags": [
+        "Status.Buff.FullOfEnergy"
+      ]
+    },
+    {
+      "id": "s6",
+      "name": "精通数据库的程序员",
+      "cardType": "CHARACTER",
+      "cost": 4,
+      "content": "出场：场上每有一个数据库，从卡组中抽一张牌",
+      "attack": 2,
+      "life": 3,
+      "attackBase": 2,
+      "lifeBase": 3,
+      "types": [
+        "服务端"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "RepeatEffect",
+            "params": {
+              "countSource": {
+                "type": "myTable",
+                "filter": {
+                  "type": "数据库"
+                }
+              },
+              "effect": {
+                "type": "DrawCard",
+                "params": {
+                  "count": 1,
+                  "source": "random",
+                  "target": "self"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s15",
+      "name": "天才架构师",
+      "cardType": "CHARACTER",
+      "cost": 4,
+      "content": "出场：场上每有一个数据库，和对方交换一张手牌（可能重复）",
+      "attack": 2,
+      "life": 4,
+      "attackBase": 2,
+      "lifeBase": 4,
+      "types": [
+        "服务端"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "RepeatEffect",
+            "params": {
+              "countSource": {
+                "type": "myTable",
+                "filter": {
+                  "type": "数据库"
+                }
+              },
+              "effect": {
+                "type": "SwapCards",
+                "params": {
+                  "source": "myHand",
+                  "target": "otherHand",
+                  "count": 1,
+                  "random": true,
+                  "unique": false,
+                  "respectShorter": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s16",
+      "name": "老迈的架构师",
+      "cardType": "CHARACTER",
+      "cost": 4,
+      "content": "出场：和对方交换一张手牌（可能重复）",
+      "attack": 2,
+      "life": 4,
+      "attackBase": 2,
+      "lifeBase": 4,
+      "types": [
+        "服务端"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "SwapCards",
+            "params": {
+              "source": "myHand",
+              "target": "otherHand",
+              "count": 1,
+              "random": true,
+              "unique": false,
+              "respectShorter": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s19",
+      "name": "MyBatis",
+      "cardType": "EFFECT",
+      "cost": 4,
+      "content": "出场：手中数据库牌费用减少2点",
+      "attack": "",
+      "life": "",
+      "attackBase": 0,
+      "lifeBase": 0,
+      "types": [
+        "效果卡"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "ModifyAttribute",
+            "target": {
+              "type": "myHand",
+              "filter": {
+                "type": "数据库"
+              }
+            },
+            "params": {
+              "attribute": "cost",
+              "value": -2,
+              "operation": "add",
+              "minValue": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s25",
+      "name": "主从备份",
+      "cardType": "EFFECT",
+      "cost": 4,
+      "content": "场上所有数据库攻击和生命数值调换",
+      "attack": "",
+      "life": "",
+      "attackBase": 0,
+      "lifeBase": 0,
+      "types": [
+        "效果卡"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "SwapAttributes",
+            "target": {
+              "type": "myTable",
+              "filter": {
+                "type": "数据库"
+              }
+            },
+            "params": {
+              "attrA": "attack",
+              "attrB": "life"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s10",
+      "name": "邪恶的后端程序员",
+      "cardType": "CHARACTER",
+      "cost": 5,
+      "content": "出场：场上每有一个数据库，从对方的卡组中抽一张牌",
+      "attack": 2,
+      "life": 3,
+      "attackBase": 2,
+      "lifeBase": 3,
+      "types": [
+        "服务端"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "RepeatEffect",
+            "params": {
+              "countSource": {
+                "type": "myTable",
+                "filter": {
+                  "type": "数据库"
+                }
+              },
+              "effect": {
+                "type": "DrawCard",
+                "params": {
+                  "count": 1,
+                  "source": "otherRandom",
+                  "target": "self"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s11",
+      "name": "无私奉献的后端程序员",
+      "cardType": "CHARACTER",
+      "cost": 5,
+      "content": "奉献，出场：场上每有一个数据库，获得1点生命",
+      "attack": 1,
+      "life": 3,
+      "attackBase": 1,
+      "lifeBase": 3,
+      "isDedication": true,
+      "types": [
+        "服务端"
+      ],
+      "tags": [
+        "Status.Buff.Dedication"
+      ],
+      "effects": {
+        "onStart": [
+          {
+            "type": "ModifyAttributeByCount",
+            "target": {
+              "type": "self"
+            },
+            "params": {
+              "attribute": "life",
+              "countSource": {
+                "type": "myTable",
+                "filter": {
+                  "type": "数据库"
+                }
+              },
+              "valuePerCount": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s12",
+      "name": "Hibernate",
+      "cardType": "EFFECT",
+      "cost": 6,
+      "content": "手中数据库牌费用减少3点",
+      "attack": "",
+      "life": "",
+      "attackBase": 0,
+      "lifeBase": 0,
+      "types": [
+        "效果卡"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "ModifyAttribute",
+            "target": {
+              "type": "myHand",
+              "filter": {
+                "type": "数据库"
+              }
+            },
+            "params": {
+              "attribute": "cost",
+              "value": -3,
+              "operation": "add",
+              "minValue": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s14",
+      "name": "经验丰富的架构师",
+      "cardType": "CHARACTER",
+      "cost": 6,
+      "content": "出场：场上每有一个数据库，和对方交换一张手牌（不会重复）",
+      "attack": 4,
+      "life": 4,
+      "attackBase": 4,
+      "lifeBase": 4,
+      "types": [
+        "服务端"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "RepeatEffect",
+            "params": {
+              "countSource": {
+                "type": "myTable",
+                "filter": {
+                  "type": "数据库"
+                }
+              },
+              "effect": {
+                "type": "SwapCards",
+                "params": {
+                  "source": "myHand",
+                  "target": "otherHand",
+                  "count": 1,
+                  "random": true,
+                  "unique": true,
+                  "respectShorter": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s21",
+      "name": "Spring",
+      "cardType": "CHARACTER",
+      "cost": 6,
+      "content": "每回合开始产生一个Spring产品，随机作用在场上",
+      "attack": 3,
+      "life": 4,
+      "attackBase": 3,
+      "lifeBase": 4,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onMyTurnStart": [
+          {
+            "type": "ConditionalEffect",
+            "conditions": [
+              {
+                "type": "cardPosition",
+                "params": {
+                  "position": "TABLE"
+                }
+              },
+              {
+                "type": "tableCardCount",
+                "params": {
+                  "target": "my",
+                  "operator": ">",
+                  "value": 0
+                }
+              }
+            ],
+            "params": {
+              "ifTrue": [
+                {
+                  "type": "RandomEffect",
+                  "params": {
+                    "effects": [
+                      {
+                        "type": "ForEachEffect",
+                        "params": {
+                          "source": {
+                            "type": "myTable",
+                            "random": true,
+                            "count": 1
+                          },
+                          "effect": {
+                            "type": "ModifyAttribute",
+                            "target": {
+                              "type": "chooseCard"
+                            },
+                            "params": {
+                              "attribute": "attack",
+                              "value": 2,
+                              "operation": "add"
+                            },
+                            "then": [
+                              {
+                                "type": "ModifyAttribute",
+                                "target": {
+                                  "type": "chooseCard"
+                                },
+                                "params": {
+                                  "attribute": "life",
+                                  "value": 2,
+                                  "operation": "add"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "type": "ApplyTag",
+                        "target": {
+                          "type": "myTable",
+                          "random": true,
+                          "count": 1
+                        },
+                        "params": {
+                          "tag": "Status.Buff.Strong"
+                        }
+                      },
+                      {
+                        "type": "ApplyTag",
+                        "target": {
+                          "type": "myTable",
+                          "random": true,
+                          "count": 1
+                        },
+                        "params": {
+                          "tag": "Status.Buff.Dedication"
+                        }
+                      }
+                    ],
+                    "mode": "one"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "s4",
+      "name": "MySQL",
+      "cardType": "CHARACTER",
+      "cost": 7,
+      "content": "奉献",
+      "attack": 1,
+      "life": 6,
+      "attackBase": 1,
+      "lifeBase": 6,
+      "isDedication": true,
+      "types": [
+        "数据库"
+      ],
+      "tags": [
+        "Status.Buff.Dedication"
+      ]
+    },
+    {
+      "id": "s13",
+      "name": "SQL Server",
+      "cardType": "CHARACTER",
+      "cost": 9,
+      "content": "奉献",
+      "attack": 1,
+      "life": 10,
+      "attackBase": 1,
+      "lifeBase": 10,
+      "isDedication": true,
+      "types": [
+        "数据库"
+      ],
+      "tags": [
+        "Status.Buff.Dedication"
+      ]
+    },
+    {
+      "id": "s9",
+      "name": "Oracle",
+      "cardType": "CHARACTER",
+      "cost": 16,
+      "content": "奉献",
+      "attack": 8,
+      "life": 12,
+      "attackBase": 8,
+      "lifeBase": 12,
+      "isDedication": true,
+      "types": [
+        "数据库"
+      ],
+      "tags": [
+        "Status.Buff.Dedication"
+      ]
+    }
+  ]
+}

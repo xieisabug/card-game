@@ -1,0 +1,958 @@
+{
+  "cards": [
+    {
+      "id": 3,
+      "name": "被开除员工的妻子",
+      "cardType": "CHARACTER",
+      "cost": 1,
+      "content": "存在时，则被开除的员工不会自动死亡",
+      "attack": 1,
+      "life": 1,
+      "attackBase": 1,
+      "lifeBase": 1,
+      "types": [],
+      "tags": []
+    },
+    {
+      "id": 6,
+      "name": "开发助理",
+      "cardType": "CHARACTER",
+      "cost": 1,
+      "content": "",
+      "attack": 1,
+      "life": 1,
+      "attackBase": 1,
+      "lifeBase": 1,
+      "types": [],
+      "tags": []
+    },
+    {
+      "id": 8,
+      "name": "丑陋的开发鼓励师",
+      "cardType": "CHARACTER",
+      "cost": 1,
+      "content": "精力充沛",
+      "attack": 1,
+      "life": 1,
+      "attackBase": 1,
+      "lifeBase": 1,
+      "isFullOfEnergy": true,
+      "types": [],
+      "tags": [
+        "Status.Buff.FullOfEnergy"
+      ]
+    },
+    {
+      "id": 22,
+      "name": "电脑小白",
+      "cardType": "CHARACTER",
+      "cost": 1,
+      "content": "",
+      "attack": 1,
+      "life": 1,
+      "attackBase": 1,
+      "lifeBase": 1,
+      "types": [],
+      "tags": []
+    },
+    {
+      "id": 1,
+      "name": "励志的演说家",
+      "cardType": "CHARACTER",
+      "cost": 2,
+      "content": "",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "types": [],
+      "tags": []
+    },
+    {
+      "id": 11,
+      "name": "热爱分享的小哥",
+      "cardType": "CHARACTER",
+      "cost": 2,
+      "content": "奉献",
+      "attack": 1,
+      "life": 3,
+      "attackBase": 1,
+      "lifeBase": 3,
+      "isDedication": true,
+      "types": [],
+      "tags": [
+        "Status.Buff.Dedication"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "热爱阅读的小哥",
+      "cardType": "CHARACTER",
+      "cost": 2,
+      "content": "坚强",
+      "attack": 3,
+      "life": 1,
+      "attackBase": 3,
+      "lifeBase": 1,
+      "isStrong": true,
+      "types": [],
+      "tags": [
+        "Status.Buff.Strong"
+      ]
+    },
+    {
+      "id": 30,
+      "name": "颈椎病",
+      "cardType": "EFFECT",
+      "cost": 2,
+      "content": "对场上所有对方卡牌造成1点伤害",
+      "attack": "",
+      "life": "",
+      "attackBase": 0,
+      "lifeBase": 0,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "DamageAll",
+            "target": {
+              "type": "otherTable"
+            },
+            "params": {
+              "amount": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "name": "被开除的员工",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "每回合开始生命减少1",
+      "attack": 4,
+      "life": 4,
+      "attackBase": 4,
+      "lifeBase": 4,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onMyTurnStart": [
+          {
+            "type": "ModifyAttribute",
+            "target": {
+              "type": "self"
+            },
+            "params": {
+              "attribute": "life",
+              "value": -1,
+              "operation": "add"
+            },
+            "conditions": [
+              {
+                "type": "cardPosition",
+                "params": {
+                  "position": "TABLE"
+                }
+              }
+            ]
+          },
+          {
+            "type": "ConditionalEffect",
+            "conditions": [
+              {
+                "type": "cardPosition",
+                "params": {
+                  "position": "TABLE"
+                }
+              },
+              {
+                "type": "attributeCondition",
+                "params": {
+                  "attribute": "life",
+                  "operator": "<=",
+                  "value": 0,
+                  "target": "thisCard"
+                }
+              }
+            ],
+            "params": {
+              "ifTrue": [
+                {
+                  "type": "ConditionalEffect",
+                  "conditions": [
+                    {
+                      "type": "tableHasCard",
+                      "params": {
+                        "name": "被开除员工的妻子",
+                        "target": "my"
+                      }
+                    }
+                  ],
+                  "params": {
+                    "ifTrue": [
+                      {
+                        "type": "ModifyAttribute",
+                        "target": {
+                          "type": "self"
+                        },
+                        "params": {
+                          "attribute": "life",
+                          "value": 1,
+                          "operation": "set_minimum"
+                        }
+                      }
+                    ],
+                    "ifFalse": [
+                      {
+                        "type": "DestroyTarget",
+                        "target": {
+                          "type": "self"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "name": "开发鼓励师",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "",
+      "attack": 2,
+      "life": 2,
+      "attackBase": 2,
+      "lifeBase": 2,
+      "types": [],
+      "tags": []
+    },
+    {
+      "id": 9,
+      "name": "男开发鼓励师",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "场上存在的女程序员获得+2/+2",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "ConditionalEffect",
+            "conditions": [
+              {
+                "type": "tableHasType",
+                "params": {
+                  "type": "女程序员",
+                  "target": "my"
+                }
+              }
+            ],
+            "params": {
+              "ifTrue": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "self"
+                  },
+                  "params": {
+                    "attribute": "attack",
+                    "value": 3,
+                    "operation": "set"
+                  }
+                },
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "self"
+                  },
+                  "params": {
+                    "attribute": "life",
+                    "value": 4,
+                    "operation": "set"
+                  }
+                }
+              ],
+              "ifFalse": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "self"
+                  },
+                  "params": {
+                    "attribute": "attack",
+                    "value": 1,
+                    "operation": "set"
+                  }
+                },
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "self"
+                  },
+                  "params": {
+                    "attribute": "life",
+                    "value": 2,
+                    "operation": "set"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "onOtherCardStart": [
+          {
+            "type": "ConditionalEffect",
+            "conditions": [
+              {
+                "type": "cardPosition",
+                "params": {
+                  "position": "TABLE"
+                }
+              },
+              {
+                "type": "tableHasType",
+                "params": {
+                  "type": "女程序员",
+                  "target": "my"
+                }
+              }
+            ],
+            "params": {
+              "ifTrue": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "self"
+                  },
+                  "params": {
+                    "attribute": "attack",
+                    "value": 3,
+                    "operation": "set"
+                  }
+                },
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "self"
+                  },
+                  "params": {
+                    "attribute": "life",
+                    "value": 4,
+                    "operation": "set"
+                  }
+                }
+              ],
+              "ifFalse": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "self"
+                  },
+                  "params": {
+                    "attribute": "attack",
+                    "value": 1,
+                    "operation": "set"
+                  }
+                },
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "self"
+                  },
+                  "params": {
+                    "attribute": "life",
+                    "value": 2,
+                    "operation": "set"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "name": "没毕业的天才程序员",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "每回合结束时，获得+1/+1",
+      "attack": 1,
+      "life": 1,
+      "attackBase": 1,
+      "lifeBase": 1,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onMyTurnEnd": [
+          {
+            "type": "ModifyAttribute",
+            "target": {
+              "type": "self"
+            },
+            "params": {
+              "attribute": "attack",
+              "value": 1,
+              "operation": "add"
+            },
+            "conditions": [
+              {
+                "type": "cardPosition",
+                "params": {
+                  "position": "TABLE"
+                }
+              }
+            ]
+          },
+          {
+            "type": "ModifyAttribute",
+            "target": {
+              "type": "self"
+            },
+            "params": {
+              "attribute": "life",
+              "value": 1,
+              "operation": "add"
+            },
+            "conditions": [
+              {
+                "type": "cardPosition",
+                "params": {
+                  "position": "TABLE"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "name": "女程序员",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "",
+      "attack": 2,
+      "life": 2,
+      "attackBase": 2,
+      "lifeBase": 2,
+      "types": [
+        "女程序员"
+      ],
+      "tags": []
+    },
+    {
+      "id": 16,
+      "name": "断点调试",
+      "cardType": "EFFECT",
+      "cost": 3,
+      "content": "指定一个己方召唤物本回合（当前操作回合）不受伤害",
+      "isTarget": true,
+      "targetType": 1,
+      "types": [
+        "效果卡"
+      ],
+      "tags": [],
+      "attackBase": 0,
+      "lifeBase": 0,
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ApplyTag",
+            "target": {
+              "type": "chosen"
+            },
+            "params": {
+              "tag": "Status.Buff.Invincible.Short",
+              "duration": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "name": "热重启",
+      "cardType": "EFFECT",
+      "cost": 3,
+      "content": "指定一个己方召唤物本回合再次变为未行动状态",
+      "isTarget": true,
+      "targetType": 1,
+      "types": [
+        "效果卡"
+      ],
+      "tags": [],
+      "attackBase": 0,
+      "lifeBase": 0,
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ResetAction",
+            "target": {
+              "type": "chosen"
+            },
+            "params": {
+              "duration": 1,
+              "applyTag": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "name": "态度傲慢的程序员",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "",
+      "attack": 3,
+      "life": 1,
+      "attackBase": 3,
+      "lifeBase": 1,
+      "types": [],
+      "tags": []
+    },
+    {
+      "id": 23,
+      "name": "计算机导论老师",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "出场：抽一张牌",
+      "attack": 2,
+      "life": 1,
+      "attackBase": 2,
+      "lifeBase": 1,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "DrawCard",
+            "params": {
+              "count": 1,
+              "target": "self",
+              "source": "deck"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "name": "数据结构老师",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "退场：抽一张牌",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onEnd": [
+          {
+            "type": "DrawCard",
+            "params": {
+              "count": 1,
+              "target": "self",
+              "source": "deck"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 25,
+      "name": "算法老师",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "出场：双方抽一张牌",
+      "attack": 2,
+      "life": 2,
+      "attackBase": 2,
+      "lifeBase": 2,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "BothDraw",
+            "params": {
+              "count": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "name": "加班完的高级程序员",
+      "cardType": "CHARACTER",
+      "cost": 4,
+      "content": "出场：扣除6点生命",
+      "attack": 5,
+      "life": 8,
+      "attackBase": 5,
+      "lifeBase": 8,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "ModifyAttribute",
+            "target": {
+              "type": "self"
+            },
+            "params": {
+              "attribute": "life",
+              "value": -6,
+              "operation": "add"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "name": "崇尚敏捷开发的小组长",
+      "cardType": "CHARACTER",
+      "cost": 5,
+      "content": "精力充沛",
+      "attack": 4,
+      "life": 4,
+      "attackBase": 4,
+      "lifeBase": 4,
+      "isFullOfEnergy": true,
+      "types": [],
+      "tags": [
+        "Status.Buff.FullOfEnergy"
+      ]
+    },
+    {
+      "id": 19,
+      "name": "态度傲慢的技术组长",
+      "cardType": "CHARACTER",
+      "cost": 5,
+      "content": "",
+      "attack": 5,
+      "life": 1,
+      "attackBase": 5,
+      "lifeBase": 1,
+      "types": [],
+      "tags": []
+    },
+    {
+      "id": 21,
+      "name": "马克·扎克伯格",
+      "cardType": "CHARACTER",
+      "cost": 5,
+      "content": "出场：随机夺取对方一个场上单位的使用权",
+      "attack": 3,
+      "life": 3,
+      "attackBase": 3,
+      "lifeBase": 3,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "StealCard",
+            "params": {
+              "source": "otherTable",
+              "target": "myTable",
+              "count": 1,
+              "random": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 26,
+      "name": "《算法导论》",
+      "cardType": "EFFECT",
+      "cost": 5,
+      "content": "选择我方一张卡牌，攻击力+4",
+      "attack": "",
+      "life": "",
+      "attackBase": 0,
+      "lifeBase": 0,
+      "isTarget": true,
+      "targetType": 1,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ModifyAttribute",
+            "target": {
+              "type": "chosen"
+            },
+            "params": {
+              "attribute": "attack",
+              "value": 4,
+              "operation": "add"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 27,
+      "name": "鹅厂小马哥",
+      "cardType": "CHARACTER",
+      "cost": 5,
+      "content": "出场：复制对面所有手牌到自己的卡组中",
+      "attack": 3,
+      "life": 4,
+      "attackBase": 3,
+      "lifeBase": 4,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "GenerateCard",
+            "params": {
+              "poolType": "otherHand",
+              "count": "all",
+              "to": "deck",
+              "side": "my",
+              "keepBuffs": true,
+              "random": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 28,
+      "name": "马爸爸",
+      "cardType": "CHARACTER",
+      "cost": 5,
+      "content": "出场：双方费用直接升到10点",
+      "attack": 5,
+      "life": 6,
+      "attackBase": 5,
+      "lifeBase": 6,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "ModifyResource",
+            "params": {
+              "resource": "maxFee",
+              "operation": "set",
+              "value": 10,
+              "target": "both"
+            }
+          },
+          {
+            "type": "ModifyResource",
+            "params": {
+              "resource": "fee",
+              "operation": "set",
+              "value": 10,
+              "target": "both"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "name": "比尔盖茨",
+      "cardType": "CHARACTER",
+      "cost": 6,
+      "content": "召唤一个会自动升级的windows",
+      "attack": 3,
+      "life": 5,
+      "attackBase": 3,
+      "lifeBase": 5,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "SummonWithEffects",
+            "params": {
+              "count": 1,
+              "side": "my",
+              "cardTemplate": {
+                "id": "20-1",
+                "name": "windows 1",
+                "cardType": "CHARACTER",
+                "cost": 1,
+                "content": "每回合结束的时候，如果没有死亡，则自动升级到下个版本",
+                "attack": 2,
+                "life": 2,
+                "types": [
+                  ""
+                ],
+                "effects": {
+                  "onMyTurnEnd": [
+                    {
+                      "type": "TransformCard",
+                      "params": {
+                        "transformChain": [
+                          {
+                            "from": "windows 1",
+                            "to": "windows 95",
+                            "attack": 3,
+                            "life": 3
+                          },
+                          {
+                            "from": "windows 95",
+                            "to": "windows 98",
+                            "attack": 4,
+                            "life": 4
+                          },
+                          {
+                            "from": "windows 98",
+                            "to": "windows xp",
+                            "attack": 5,
+                            "life": 5
+                          },
+                          {
+                            "from": "windows xp",
+                            "to": "windows 7",
+                            "attack": 6,
+                            "life": 6
+                          },
+                          {
+                            "from": "windows 7",
+                            "to": "windows 8",
+                            "attack": 7,
+                            "life": 7
+                          },
+                          {
+                            "from": "windows 8",
+                            "to": "windows 10",
+                            "attack": 8,
+                            "life": 8
+                          }
+                        ],
+                        "keepBuffs": true
+                      },
+                      "conditions": [
+                        {
+                          "type": "cardPosition",
+                          "params": {
+                            "position": "TABLE"
+                          }
+                        },
+                        {
+                          "type": "attributeCondition",
+                          "params": {
+                            "attribute": "life",
+                            "operator": ">",
+                            "value": 0
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "name": "高级程序员",
+      "cardType": "CHARACTER",
+      "cost": 7,
+      "content": "",
+      "attack": 7,
+      "life": 7,
+      "attackBase": 7,
+      "lifeBase": 7,
+      "types": [],
+      "tags": []
+    },
+    {
+      "id": 14,
+      "name": "IDE大师",
+      "cardType": "CHARACTER",
+      "targetType": 1,
+      "cost": 7,
+      "content": "出场：场上所有人员获得+1/+1",
+      "attack": 6,
+      "life": 4,
+      "attackBase": 6,
+      "lifeBase": 4,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "ModifyAttribute",
+            "target": {
+              "type": "myTable"
+            },
+            "params": {
+              "attribute": "attack",
+              "value": 1,
+              "operation": "add"
+            }
+          },
+          {
+            "type": "ModifyAttribute",
+            "target": {
+              "type": "myTable"
+            },
+            "params": {
+              "attribute": "life",
+              "value": 1,
+              "operation": "add"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 29,
+      "name": "度厂李帅",
+      "cardType": "CHARACTER",
+      "cost": 7,
+      "content": "出场：随机搜索出卡组中的3张卡牌并召唤",
+      "attack": 4,
+      "life": 5,
+      "attackBase": 4,
+      "lifeBase": 5,
+      "types": [],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "SearchAndSummon",
+            "params": {
+              "count": 3,
+              "filter": {
+                "cardType": "CHARACTER"
+              },
+              "side": "my",
+              "random": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

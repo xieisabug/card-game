@@ -15,7 +15,9 @@ class ModifyAttributeEffect extends BaseEffect {
         const {
             attribute,          // 属性名: attack, life, cost
             value,              // 修改值
-            operation = "add"   // 操作: add, set, multiply, subtract
+            operation = "add",  // 操作: add, set, multiply, subtract
+            minValue = null,
+            maxValue = null
         } = this.params;
 
         targets.forEach(target => {
@@ -51,6 +53,9 @@ class ModifyAttributeEffect extends BaseEffect {
                 default:
                     newValue = oldValue + value;
             }
+
+            if (minValue !== null) newValue = Math.max(minValue, newValue);
+            if (maxValue !== null) newValue = Math.min(maxValue, newValue);
 
             target[attribute] = newValue;
 
@@ -95,7 +100,11 @@ class ModifyAttributeByCountEffect extends BaseEffect {
         const {
             attribute,          // 属性名
             countSource,        // 计数来源配置
-            valuePerCount       // 每个计数增加的值
+            valuePerCount,      // 每个计数增加的值
+            baseValue = null,   // 可选基准值（null 表示使用当前值）
+            operation = "add",  // add: 增量，set: 覆盖（基于 baseValue）
+            minValue = null,
+            maxValue = null
         } = this.params;
 
         // 计算数量
@@ -104,15 +113,24 @@ class ModifyAttributeByCountEffect extends BaseEffect {
         targets.forEach(target => {
             if (target._isHero) return;
 
-            const addValue = count * valuePerCount;
-            target[attribute] = (target[attribute] || 0) + addValue;
+            const current = target[attribute] || 0;
+            const base = baseValue !== null ? baseValue : current;
+            const computed = operation === "set"
+                ? base + count * valuePerCount
+                : current + count * valuePerCount;
+
+            let finalValue = computed;
+            if (minValue !== null) finalValue = Math.max(minValue, finalValue);
+            if (maxValue !== null) finalValue = Math.min(maxValue, finalValue);
+
+            target[attribute] = finalValue;
 
             const buffTypeMap = {
                 attack: BuffType.ADD_ATTACK,
                 life: BuffType.ADD_LIFE
             };
             if (buffTypeMap[attribute]) {
-                this._addBuff(target, buffTypeMap[attribute], addValue, context.thisCard);
+                this._addBuff(target, buffTypeMap[attribute], finalValue - current, context.thisCard);
             }
 
             this._playBuffAnimation(context, target);

@@ -15,7 +15,9 @@ class SwapCardsEffect extends BaseEffect {
             source = "myHand",      // 源位置
             target = "otherHand",    // 目标位置
             count = 1,
-            unique = true           // 是否不重复选择
+            unique = true,           // 是否不重复选择
+            random = false,          // 是否随机选择
+            respectShorter = true    // 当数量不足时，按较短长度
         } = this.params;
         const { myGameData, otherGameData, specialMethod } = context;
 
@@ -33,10 +35,23 @@ class SwapCardsEffect extends BaseEffect {
         let selectedSource = [];
         let selectedTarget = [];
 
-        if (unique) {
+        if (random) {
+            const pick = (arr) => {
+                if (arr.length === 0) return [];
+                const chooseCount = Math.min(count, arr.length);
+                const indices = new Set();
+                while (indices.size < chooseCount) {
+                    indices.add(Math.floor(specialMethod.rand() * arr.length));
+                }
+                return Array.from(indices).map(i => arr[i]);
+            };
+            selectedSource = pick(sourceCards);
+            selectedTarget = pick(targetCards);
+        } else if (unique) {
             // 不重复选择
-            selectedSource = sourceCards.slice(0, count);
-            selectedTarget = targetCards.slice(0, count);
+            const takeCount = respectShorter ? Math.min(count, sourceCards.length, targetCards.length) : count;
+            selectedSource = sourceCards.slice(0, takeCount);
+            selectedTarget = targetCards.slice(0, takeCount);
         } else {
             // 可重复选择
             const rand = () => Math.floor(specialMethod.rand() * sourceCards.length);
@@ -74,11 +89,6 @@ class SwapCardsEffect extends BaseEffect {
                 }
             }
         });
-
-        // 确保数量一致
-        while (myGameData.cards.length < count + otherGameData.cards.length - count) {
-            // 补充空位
-        }
 
         this._refreshGameData(context);
     }

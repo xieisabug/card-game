@@ -1,0 +1,1239 @@
+{
+  "cards": [
+    {
+      "id": "w1",
+      "name": "前端应届毕业生",
+      "cardType": "CHARACTER",
+      "cost": 1,
+      "content": "精力充沛",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "isFullOfEnergy": true,
+      "types": [
+        "前端",
+        "程序员"
+      ],
+      "tags": [
+        "Status.Buff.FullOfEnergy"
+      ]
+    },
+    {
+      "id": "w13",
+      "name": "p标签",
+      "cardType": "CHARACTER",
+      "cost": 1,
+      "content": "",
+      "attack": 1,
+      "life": 2,
+      "attackBase": 1,
+      "lifeBase": 2,
+      "types": [
+        "前端",
+        "标签"
+      ],
+      "tags": []
+    },
+    {
+      "id": "w19",
+      "name": "background样式",
+      "cardType": "EFFECT",
+      "cost": 1,
+      "content": "为<span style=\"color: blue\">标签</span>加上背景，三个背景中选择一个（坚强，奉献，精力充沛）",
+      "isTarget": true,
+      "targetType": 10,
+      "filter": [
+        "标签"
+      ],
+      "isNeedToChoose": true,
+      "chooseList": [
+        [
+          {
+            "name": "坚强",
+            "content": "为<span style=\"color: blue\">标签</span>加上坚强背景"
+          },
+          {
+            "name": "奉献",
+            "content": "为<span style=\"color: blue\">标签</span>加上奉献背景"
+          },
+          {
+            "name": "精力充沛",
+            "content": "为<span style=\"color: blue\">标签</span>加上精力充沛背景"
+          }
+        ]
+      ],
+      "types": [
+        "样式"
+      ],
+      "tags": [],
+      "attackBase": 0,
+      "lifeBase": 0,
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ChooseEffect",
+            "params": {
+              "options": [
+                [
+                  {
+                    "type": "ApplyTag",
+                    "target": {
+                      "type": "chosen"
+                    },
+                    "params": {
+                      "tag": "Status.Buff.Strong"
+                    }
+                  }
+                ],
+                [
+                  {
+                    "type": "ApplyTag",
+                    "target": {
+                      "type": "chosen"
+                    },
+                    "params": {
+                      "tag": "Status.Buff.Dedication"
+                    }
+                  }
+                ],
+                [
+                  {
+                    "type": "ApplyTag",
+                    "target": {
+                      "type": "chosen"
+                    },
+                    "params": {
+                      "tag": "Status.Buff.FullOfEnergy"
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w12",
+      "name": "span标签",
+      "cardType": "CHARACTER",
+      "cost": 2,
+      "content": "",
+      "attack": 3,
+      "life": 2,
+      "attackBase": 3,
+      "lifeBase": 2,
+      "types": [
+        "前端",
+        "标签"
+      ],
+      "tags": []
+    },
+    {
+      "id": "w15",
+      "name": "宽高样式",
+      "cardType": "EFFECT",
+      "cost": 2,
+      "content": "使一个伙伴获得+1/+1，如果是<span style=\"color: blue\">标签</span>则获得+2/+2",
+      "isTarget": true,
+      "targetType": 1,
+      "types": [
+        "样式"
+      ],
+      "tags": [],
+      "attackBase": 0,
+      "lifeBase": 0,
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ConditionalEffect",
+            "conditions": [
+              {
+                "type": "cardTypeMatch",
+                "params": {
+                  "types": [
+                    "标签"
+                  ],
+                  "target": "chooseCard",
+                  "mode": "any"
+                }
+              }
+            ],
+            "params": {
+              "ifTrue": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "attack",
+                    "value": 2,
+                    "operation": "add"
+                  }
+                },
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "life",
+                    "value": 2,
+                    "operation": "add"
+                  }
+                }
+              ],
+              "ifFalse": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "attack",
+                    "value": 1,
+                    "operation": "add"
+                  }
+                },
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "life",
+                    "value": 1,
+                    "operation": "add"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w18",
+      "name": "a标签",
+      "cardType": "CHARACTER",
+      "cost": 2,
+      "content": "奉献，可通过css美化",
+      "attack": 0,
+      "life": 3,
+      "attackBase": 0,
+      "lifeBase": 3,
+      "isDedication": true,
+      "types": [
+        "前端",
+        "标签"
+      ],
+      "tags": [
+        "Status.Buff.Dedication"
+      ]
+    },
+    {
+      "id": "w20",
+      "name": "边框样式",
+      "cardType": "EFFECT",
+      "cost": 2,
+      "content": "为伙伴增加生命值2点，如果是<span style=\"color: blue\">标签</span>则增加4点生命值",
+      "isTarget": true,
+      "targetType": 1,
+      "types": [
+        "样式"
+      ],
+      "tags": [],
+      "attackBase": 0,
+      "lifeBase": 0,
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ConditionalEffect",
+            "conditions": [
+              {
+                "type": "cardTypeMatch",
+                "params": {
+                  "types": [
+                    "标签"
+                  ],
+                  "target": "chooseCard",
+                  "mode": "any"
+                }
+              }
+            ],
+            "params": {
+              "ifTrue": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "life",
+                    "value": 4,
+                    "operation": "add"
+                  }
+                }
+              ],
+              "ifFalse": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "life",
+                    "value": 2,
+                    "operation": "add"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w21",
+      "name": "字体样式",
+      "cardType": "EFFECT",
+      "cost": 2,
+      "content": "为伙伴增加攻击2点，如果是<span style=\"color: blue\">标签</span>则增加4点攻击",
+      "isTarget": true,
+      "targetType": 1,
+      "types": [
+        "样式"
+      ],
+      "tags": [],
+      "attackBase": 0,
+      "lifeBase": 0,
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ConditionalEffect",
+            "conditions": [
+              {
+                "type": "cardTypeMatch",
+                "params": {
+                  "types": [
+                    "标签"
+                  ],
+                  "target": "chooseCard",
+                  "mode": "any"
+                }
+              }
+            ],
+            "params": {
+              "ifTrue": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "attack",
+                    "value": 4,
+                    "operation": "add"
+                  }
+                }
+              ],
+              "ifFalse": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "attack",
+                    "value": 2,
+                    "operation": "add"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w22",
+      "name": "不可见样式",
+      "cardType": "EFFECT",
+      "cost": 2,
+      "content": "为伙伴增加潜行效果，如果是<span style=\"color: blue\">标签</span>则附加 +1/+1",
+      "isTarget": true,
+      "targetType": 1,
+      "types": [
+        "样式"
+      ],
+      "tags": [],
+      "attackBase": 0,
+      "lifeBase": 0,
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ApplyTag",
+            "target": {
+              "type": "chosen"
+            },
+            "params": {
+              "tag": "Status.Buff.Hide"
+            }
+          },
+          {
+            "type": "ConditionalEffect",
+            "conditions": [
+              {
+                "type": "cardTypeMatch",
+                "params": {
+                  "types": [
+                    "标签"
+                  ],
+                  "target": "chooseCard",
+                  "mode": "any"
+                }
+              }
+            ],
+            "params": {
+              "ifTrue": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "attack",
+                    "value": 1,
+                    "operation": "add"
+                  }
+                },
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "life",
+                    "value": 1,
+                    "operation": "add"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w5",
+      "name": "精通设计的前端人员",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "出场：为一个伙伴增加1点攻击",
+      "attack": 3,
+      "life": 3,
+      "attackBase": 3,
+      "lifeBase": 3,
+      "isTarget": true,
+      "targetType": 1,
+      "types": [
+        "前端",
+        "程序员"
+      ],
+      "tags": [],
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ModifyAttribute",
+            "target": {
+              "type": "chosen"
+            },
+            "params": {
+              "attribute": "attack",
+              "value": 1,
+              "operation": "add"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w14",
+      "name": "div标签",
+      "cardType": "CHARACTER",
+      "cost": 3,
+      "content": "奉献",
+      "attack": 2,
+      "life": 4,
+      "attackBase": 2,
+      "lifeBase": 4,
+      "isDedication": true,
+      "types": [
+        "前端",
+        "标签"
+      ],
+      "tags": [
+        "Status.Buff.Dedication"
+      ]
+    },
+    {
+      "id": "w17",
+      "name": "圆角样式",
+      "cardType": "EFFECT",
+      "cost": 3,
+      "content": "为一个伙伴增加生命值3点，如果是<span style=\"color: blue\">标签</span>则增加6点",
+      "isTarget": true,
+      "targetType": 1,
+      "types": [
+        "样式"
+      ],
+      "tags": [],
+      "attackBase": 0,
+      "lifeBase": 0,
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ConditionalEffect",
+            "conditions": [
+              {
+                "type": "cardTypeMatch",
+                "params": {
+                  "types": [
+                    "标签"
+                  ],
+                  "target": "chooseCard",
+                  "mode": "any"
+                }
+              }
+            ],
+            "params": {
+              "ifTrue": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "life",
+                    "value": 6,
+                    "operation": "add"
+                  }
+                }
+              ],
+              "ifFalse": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "life",
+                    "value": 3,
+                    "operation": "add"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w23",
+      "name": "复制dom",
+      "cardType": "EFFECT",
+      "cost": 3,
+      "content": "复制一个伙伴，如果是<span style=\"color: blue\">标签</span>则保留所有的强化",
+      "isTarget": true,
+      "targetType": 1,
+      "types": [
+        "脚本"
+      ],
+      "tags": [],
+      "attackBase": 0,
+      "lifeBase": 0,
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ConditionalEffect",
+            "conditions": [
+              {
+                "type": "cardTypeMatch",
+                "params": {
+                  "types": [
+                    "标签"
+                  ],
+                  "target": "chooseCard",
+                  "mode": "any"
+                }
+              }
+            ],
+            "params": {
+              "ifTrue": [
+                {
+                  "type": "GenerateCard",
+                  "params": {
+                    "useCurrentTarget": true,
+                    "keepBuffs": true,
+                    "side": "my",
+                    "to": "table",
+                    "count": 2
+                  }
+                }
+              ],
+              "ifFalse": [
+                {
+                  "type": "GenerateCard",
+                  "params": {
+                    "useCurrentTarget": true,
+                    "keepBuffs": false,
+                    "side": "my",
+                    "to": "table",
+                    "count": 1
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w2",
+      "name": "时尚的前端小哥",
+      "cardType": "CHARACTER",
+      "cost": 4,
+      "content": "出场：为一个伙伴增加3点攻击",
+      "attack": 3,
+      "life": 3,
+      "attackBase": 3,
+      "lifeBase": 3,
+      "isTarget": true,
+      "targetType": 1,
+      "types": [
+        "前端",
+        "程序员"
+      ],
+      "tags": [],
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ModifyAttribute",
+            "target": {
+              "type": "chosen"
+            },
+            "params": {
+              "attribute": "attack",
+              "value": 3,
+              "operation": "add"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w4",
+      "name": "精通算法的前端人员",
+      "cardType": "CHARACTER",
+      "cost": 4,
+      "content": "",
+      "attack": 6,
+      "life": 2,
+      "attackBase": 6,
+      "lifeBase": 2,
+      "types": [
+        "前端",
+        "程序员"
+      ],
+      "tags": []
+    },
+    {
+      "id": "w11",
+      "name": "《ECMAScript 6入门》",
+      "cardType": "EFFECT",
+      "cost": 4,
+      "content": "使场上的所有伙伴获得+1/+1，如果是<span style=\"color: blue\">前端</span>则获得+2/+2",
+      "attack": "",
+      "life": "",
+      "attackBase": 0,
+      "lifeBase": 0,
+      "types": [
+        "效果卡"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "ForEachEffect",
+            "params": {
+              "source": {
+                "type": "myTable"
+              },
+              "effect": {
+                "type": "ConditionalEffect",
+                "conditions": [
+                  {
+                    "type": "cardTypeMatch",
+                    "params": {
+                      "types": [
+                        "前端"
+                      ],
+                      "target": "chooseCard",
+                      "mode": "any"
+                    }
+                  }
+                ],
+                "params": {
+                  "ifTrue": [
+                    {
+                      "type": "ModifyAttribute",
+                      "target": {
+                        "type": "chooseCard"
+                      },
+                      "params": {
+                        "attribute": "attack",
+                        "value": 2,
+                        "operation": "add"
+                      }
+                    },
+                    {
+                      "type": "ModifyAttribute",
+                      "target": {
+                        "type": "chooseCard"
+                      },
+                      "params": {
+                        "attribute": "life",
+                        "value": 2,
+                        "operation": "add"
+                      }
+                    }
+                  ],
+                  "ifFalse": [
+                    {
+                      "type": "ModifyAttribute",
+                      "target": {
+                        "type": "chooseCard"
+                      },
+                      "params": {
+                        "attribute": "attack",
+                        "value": 1,
+                        "operation": "add"
+                      }
+                    },
+                    {
+                      "type": "ModifyAttribute",
+                      "target": {
+                        "type": "chooseCard"
+                      },
+                      "params": {
+                        "attribute": "life",
+                        "value": 1,
+                        "operation": "add"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w6",
+      "name": "做菜好吃的前端人员",
+      "cardType": "CHARACTER",
+      "cost": 5,
+      "content": "所有伙伴每开始回合回复1点血量",
+      "attack": 3,
+      "life": 3,
+      "attackBase": 3,
+      "lifeBase": 3,
+      "types": [
+        "前端",
+        "程序员"
+      ],
+      "tags": [],
+      "effects": {
+        "onMyTurnStart": [
+          {
+            "type": "ModifyAttribute",
+            "target": {
+              "type": "myTable"
+            },
+            "params": {
+              "attribute": "life",
+              "value": 1,
+              "operation": "add"
+            },
+            "conditions": [
+              {
+                "type": "cardPosition",
+                "params": {
+                  "position": "TABLE"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "w10",
+      "name": "浏览器显示差异",
+      "cardType": "EFFECT",
+      "cost": 5,
+      "content": "对场上所有的对方卡片造成3点伤害",
+      "attack": "",
+      "life": "",
+      "attackBase": 0,
+      "lifeBase": 0,
+      "types": [
+        "效果卡"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "DamageAll",
+            "target": {
+              "type": "otherTable"
+            },
+            "params": {
+              "amount": 2
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w25",
+      "name": "批量复制dom",
+      "cardType": "EFFECT",
+      "cost": 5,
+      "content": "复制两个伙伴，如果是<span style=\"color: blue\">标签</span>则保留所有的强化",
+      "isTarget": true,
+      "targetType": 1,
+      "filter": [
+        "标签"
+      ],
+      "types": [
+        "脚本"
+      ],
+      "tags": [],
+      "attackBase": 0,
+      "lifeBase": 0,
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ConditionalEffect",
+            "conditions": [
+              {
+                "type": "cardTypeMatch",
+                "params": {
+                  "types": [
+                    "标签"
+                  ],
+                  "target": "chooseCard",
+                  "mode": "any"
+                }
+              }
+            ],
+            "params": {
+              "ifTrue": [
+                {
+                  "type": "GenerateCard",
+                  "params": {
+                    "useCurrentTarget": true,
+                    "keepBuffs": true,
+                    "side": "my",
+                    "to": "table",
+                    "count": 2
+                  }
+                }
+              ],
+              "ifFalse": [
+                {
+                  "type": "GenerateCard",
+                  "params": {
+                    "useCurrentTarget": true,
+                    "keepBuffs": false,
+                    "side": "my",
+                    "to": "table",
+                    "count": 2
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w3",
+      "name": "前端组组长",
+      "cardType": "CHARACTER",
+      "cost": 6,
+      "content": "出场：己方场上每存在一个<span style=\"color: blue\">前端</span>人员，攻击力+1",
+      "attack": 3,
+      "life": 4,
+      "attackBase": 3,
+      "lifeBase": 4,
+      "types": [
+        "前端",
+        "程序员"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "ModifyAttributeByCount",
+            "target": {
+              "type": "self"
+            },
+            "params": {
+              "attribute": "attack",
+              "countSource": {
+                "type": "myTable",
+                "filter": {
+                  "type": "前端"
+                }
+              },
+              "valuePerCount": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w16",
+      "name": "阴影样式",
+      "cardType": "EFFECT",
+      "cost": 6,
+      "content": "为一个伙伴增加生命值4点，并且附加奉献，如果是<span style=\"color: blue\">标签</span>，获得8点生命",
+      "isTarget": true,
+      "targetType": 1,
+      "types": [
+        "样式"
+      ],
+      "tags": [],
+      "attackBase": 0,
+      "lifeBase": 0,
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "ConditionalEffect",
+            "conditions": [
+              {
+                "type": "cardTypeMatch",
+                "params": {
+                  "types": [
+                    "标签"
+                  ],
+                  "target": "chooseCard",
+                  "mode": "any"
+                }
+              }
+            ],
+            "params": {
+              "ifTrue": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "life",
+                    "value": 8,
+                    "operation": "add"
+                  }
+                },
+                {
+                  "type": "ApplyTag",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "tag": "Status.Buff.Dedication"
+                  }
+                }
+              ],
+              "ifFalse": [
+                {
+                  "type": "ModifyAttribute",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "attribute": "life",
+                    "value": 4,
+                    "operation": "add"
+                  }
+                },
+                {
+                  "type": "ApplyTag",
+                  "target": {
+                    "type": "chosen"
+                  },
+                  "params": {
+                    "tag": "Status.Buff.Dedication"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w24",
+      "name": "清空dom",
+      "cardType": "EFFECT",
+      "cost": 6,
+      "content": "消灭己方的一个<span style=\"color: blue\">标签</span>，对双方桌面上所有卡牌造成等同于卡牌攻击的伤害",
+      "isTarget": true,
+      "targetType": 6,
+      "filter": [
+        "标签"
+      ],
+      "types": [
+        "脚本"
+      ],
+      "tags": [],
+      "attackBase": 0,
+      "lifeBase": 0,
+      "effects": {
+        "onChooseTarget": [
+          {
+            "type": "DamageByAttribute",
+            "target": {
+              "type": "allTable"
+            },
+            "params": {
+              "source": "chooseCard",
+              "attribute": "attack",
+              "multiplier": 1
+            }
+          },
+          {
+            "type": "DestroyTarget",
+            "target": {
+              "type": "chosen"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w7",
+      "name": "阮大神",
+      "cardType": "CHARACTER",
+      "cost": 8,
+      "content": "出场：带来两个前端应届毕业生",
+      "attack": 8,
+      "life": 8,
+      "attackBase": 8,
+      "lifeBase": 8,
+      "types": [
+        "前端",
+        "程序员"
+      ],
+      "tags": [],
+      "effects": {
+        "onStart": [
+          {
+            "type": "Summon",
+            "params": {
+              "count": 2,
+              "side": "my",
+              "cardTemplate": {
+                "id": "w7-token",
+                "name": "前端应届毕业生",
+                "cardType": "CHARACTER",
+                "cost": 1,
+                "content": "精力充沛",
+                "attack": 1,
+                "life": 2,
+                "types": [
+                  "前端",
+                  "程序员"
+                ],
+                "isFullOfEnergy": true
+              },
+              "applyTags": [
+                "Status.Buff.FullOfEnergy"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w9",
+      "name": "IE6",
+      "cardType": "CHARACTER",
+      "cost": 8,
+      "content": "退出：召唤一个IE7在场上",
+      "attack": 3,
+      "life": 3,
+      "attackBase": 3,
+      "lifeBase": 3,
+      "types": [
+        "前端",
+        "工具"
+      ],
+      "tags": [],
+      "effects": {
+        "onEnd": [
+          {
+            "type": "SummonWithEffects",
+            "params": {
+              "side": "my",
+              "count": 1,
+              "cardTemplate": {
+                "id": "w9-1",
+                "name": "IE7",
+                "cardType": "CHARACTER",
+                "cost": 8,
+                "content": "退出：召唤一个IE8在场上",
+                "attack": 5,
+                "life": 5,
+                "types": [
+                  "前端",
+                  "工具"
+                ],
+                "effects": {
+                  "onEnd": [
+                    {
+                      "type": "SummonWithEffects",
+                      "params": {
+                        "side": "my",
+                        "count": 1,
+                        "cardTemplate": {
+                          "id": "w9-2",
+                          "name": "IE8",
+                          "cardType": "CHARACTER",
+                          "cost": 10,
+                          "content": "退出：召唤一个IE9在场上",
+                          "attack": 5,
+                          "life": 8,
+                          "types": [
+                            "前端",
+                            "工具"
+                          ],
+                          "effects": {
+                            "onEnd": [
+                              {
+                                "type": "SummonWithEffects",
+                                "params": {
+                                  "side": "my",
+                                  "count": 1,
+                                  "cardTemplate": {
+                                    "id": "w9-3",
+                                    "name": "IE9",
+                                    "cardType": "CHARACTER",
+                                    "cost": 10,
+                                    "content": "退出：召唤一个IE10在场上",
+                                    "attack": 8,
+                                    "life": 8,
+                                    "types": [
+                                      "前端",
+                                      "工具"
+                                    ],
+                                    "effects": {
+                                      "onEnd": [
+                                        {
+                                          "type": "SummonWithEffects",
+                                          "params": {
+                                            "side": "my",
+                                            "count": 1,
+                                            "cardTemplate": {
+                                              "id": "w9-4",
+                                              "name": "IE10",
+                                              "cardType": "CHARACTER",
+                                              "cost": 10,
+                                              "content": "奉献，坚强",
+                                              "attack": 8,
+                                              "life": 8,
+                                              "types": [
+                                                "前端",
+                                                "工具"
+                                              ],
+                                              "tags": [
+                                                "Status.Buff.Dedication",
+                                                "Status.Buff.Strong"
+                                              ],
+                                              "isDedication": true,
+                                              "isStrong": true
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "w8",
+      "name": "Chrome",
+      "cardType": "CHARACTER",
+      "cost": 10,
+      "content": "己方场上每存在一个<span style=\"color: blue\">前端</span>，花费减少1",
+      "attack": 6,
+      "life": 8,
+      "attackBase": 6,
+      "lifeBase": 8,
+      "types": [
+        "前端",
+        "工具"
+      ],
+      "tags": [],
+      "effects": {
+        "onOtherCardStart": [
+          {
+            "type": "ModifyAttributeByCount",
+            "target": {
+              "type": "self"
+            },
+            "params": {
+              "attribute": "cost",
+              "countSource": {
+                "type": "myTable",
+                "filter": {
+                  "type": "前端"
+                }
+              },
+              "valuePerCount": -1,
+              "operation": "set",
+              "baseValue": 10,
+              "minValue": 0
+            },
+            "conditions": [
+              {
+                "type": "cardPosition",
+                "params": {
+                  "position": "HANDS"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

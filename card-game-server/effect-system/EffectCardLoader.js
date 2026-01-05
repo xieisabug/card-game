@@ -3,6 +3,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const { CardType } = require('../constants');
 
 class EffectCardLoader {
     constructor(effectEngine) {
@@ -98,8 +99,16 @@ class EffectCardLoader {
      * @returns {object}
      */
     _createCard(config) {
+        // 兼容字符串的 cardType 配置
+        let normalizedCardType = config.cardType;
+        if (typeof normalizedCardType === 'string') {
+            const key = normalizedCardType.toUpperCase();
+            normalizedCardType = CardType[key] || normalizedCardType;
+        }
+
         const card = {
             ...config,
+            cardType: normalizedCardType,
             // 确保基础属性存在
             cost: config.cost || 0,
             attack: config.attack || 0,

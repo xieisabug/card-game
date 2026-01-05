@@ -117,9 +117,15 @@ const Level11Cards = {
             isForceTarget: true,
             targetType: TargetType.MY_TABLE_CARD,
             effects: {
-                onChooseTarget: []
-            },
-            customOnChooseTarget: true
+                onChooseTarget: [{
+                    type: "ApplyTag",
+                    target: { type: "chosen" },
+                    params: {
+                        tag: "Status.Buff.Invincible.Short",
+                        duration: 1
+                    }
+                }]
+            }
         }
     ],
     enemyHandCards: [
@@ -290,16 +296,6 @@ class Level11 extends LevelBase {
                 type: config.types || []
             };
             effectEngine.createCardHooks(card);
-
-            // 断点调试的特殊逻辑
-            if (config.customOnChooseTarget) {
-                card.onChooseTarget = function({ chooseCard, toIndex, thisCard, specialMethod }) {
-                    chooseCard.isShortInvincible = true;
-                    chooseCard.shortInvincibleRound = 1;
-                    specialMethod.buffCardAnimation(true, -1, toIndex, thisCard, chooseCard);
-                };
-            }
-
             return card;
         };
 

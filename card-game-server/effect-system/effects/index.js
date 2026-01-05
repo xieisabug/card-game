@@ -15,6 +15,13 @@ const GrantRebornEffect = require('./GrantRebornEffect');
 const DestroyTargetEffect = require('./DestroyTargetEffect');
 const AddCardToHandEffect = require('./AddCardToHandEffect');
 const { ConditionalEffect, RandomEffect, RepeatEffect, ForEachEffect } = require('./ControlEffect');
+const LegacyHookEffect = require('./LegacyHookEffect');
+const ResetActionEffect = require('./ResetActionEffect');
+const ChooseEffect = require('./ChooseEffect');
+const GenerateCardEffect = require('./GenerateCardEffect');
+const DamageEachRandomEffect = require('./DamageEachRandomEffect');
+const SwapAttributesEffect = require('./SwapAttributesEffect');
+const DamageByAttributeEffect = require('./DamageByAttributeEffect');
 
 module.exports = {
     BaseEffect,
@@ -53,7 +60,14 @@ module.exports = {
     RandomEffect,
     RepeatEffect,
     ForEachEffect,
+    ChooseEffect,
     // 工具/定制
     GrantRebornEffect,
-    AddCardToHandEffect
+    AddCardToHandEffect,
+    LegacyHookEffect,
+    ResetActionEffect,
+    GenerateCardEffect,
+    DamageEachRandomEffect,
+    SwapAttributesEffect,
+    DamageByAttributeEffect
 };

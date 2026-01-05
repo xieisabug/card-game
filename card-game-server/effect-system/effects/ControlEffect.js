@@ -140,15 +140,29 @@ class RepeatEffect extends BaseEffect {
 
         const { type, filter } = countSource;
 
+        const applyFilter = (cards) => {
+            if (!filter) return cards;
+            if (!context.tagRegistry) return cards;
+            return cards.filter(c => {
+                const matchTag = context.tagRegistry.matchQuery(c, {
+                    require: filter.tags?.require || [],
+                    exclude: filter.tags?.exclude || [],
+                    any: filter.tags?.any || []
+                });
+                const matchType = !filter.type || (c.type || c.types || []).includes(filter.type);
+                return matchTag && matchType;
+            });
+        };
+
         if (type === "myTable") {
-            return context.myGameData.tableCards?.length || 0;
+            return applyFilter(context.myGameData.tableCards || []).length;
         } else if (type === "otherTable") {
-            return context.otherGameData.tableCards?.length || 0;
+            return applyFilter(context.otherGameData.tableCards || []).length;
         } else if (type === "tableCardCount") {
-            const allCards = [
+            const allCards = applyFilter([
                 ...(context.myGameData.tableCards || []),
                 ...(context.otherGameData.tableCards || [])
-            ];
+            ]);
             return allCards.length;
         }
 

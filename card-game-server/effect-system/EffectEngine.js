@@ -14,6 +14,8 @@ class EffectEngine {
         this.effectRegistry = options.effectRegistry || new EffectRegistry();
         this.conditionEvaluator = new ConditionEvaluator(this.tagRegistry);
         this.targetResolver = new TargetResolver(this.tagRegistry);
+        // 可选注入卡牌加载器/注册表
+        this.cardRegistry = options.cardRegistry;
 
         // 注册所有内置 Effect 类型
         this._registerBuiltinEffects();
@@ -66,10 +68,17 @@ class EffectEngine {
         this.effectRegistry.registerEffectType("RandomEffect", effects.RandomEffect);
         this.effectRegistry.registerEffectType("RepeatEffect", effects.RepeatEffect);
         this.effectRegistry.registerEffectType("ForEachEffect", effects.ForEachEffect);
+        this.effectRegistry.registerEffectType("ChooseEffect", effects.ChooseEffect);
 
         // 定制/工具
         this.effectRegistry.registerEffectType("GrantReborn", effects.GrantRebornEffect);
         this.effectRegistry.registerEffectType("AddCardToHand", effects.AddCardToHandEffect);
+        this.effectRegistry.registerEffectType("LegacyHook", effects.LegacyHookEffect);
+        this.effectRegistry.registerEffectType("ResetAction", effects.ResetActionEffect);
+        this.effectRegistry.registerEffectType("GenerateCard", effects.GenerateCardEffect);
+        this.effectRegistry.registerEffectType("DamageEachRandom", effects.DamageEachRandomEffect);
+        this.effectRegistry.registerEffectType("SwapAttributes", effects.SwapAttributesEffect);
+        this.effectRegistry.registerEffectType("DamageByAttribute", effects.DamageByAttributeEffect);
     }
 
     /**
@@ -92,6 +101,7 @@ class EffectEngine {
             effectRegistry: this.effectRegistry,
             conditionEvaluator: this.conditionEvaluator,
             targetResolver: this.targetResolver,
+            cardRegistry: this.cardRegistry,
             effectEngine: this
         };
 

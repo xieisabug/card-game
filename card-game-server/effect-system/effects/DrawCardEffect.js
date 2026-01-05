@@ -15,25 +15,33 @@ class DrawCardEffect extends BaseEffect {
         const {
             count = 1,
             target = "self",     // self, other
-            source = "deck",     // deck, random
-            filter = null
+            source = "deck",     // deck, random, otherDeck, otherRandom, filter
+            filter = null,
+            to = "hand"          // hand, deck, table
         } = this.params;
         const { myGameData, otherGameData, specialMethod } = context;
 
         const targetGameData = target === "self" ? myGameData : otherGameData;
+        const fromSelf = source === "deck" || source === "random" || source === "filter";
 
         for (let i = 0; i < count; i++) {
             let card = null;
 
             if (source === "deck") {
                 // 按顺序抽牌
-                card = specialMethod.getNextCardForMe(1)[0];
+                card = fromSelf ? specialMethod.getNextCardForMe(1)[0] : specialMethod.getNextCardForOther(1)[0];
             } else if (source === "random") {
                 // 随机抽牌
-                card = specialMethod.getRandomCardForMe(1)[0];
+                card = fromSelf ? specialMethod.getRandomCardForMe(1)[0] : specialMethod.getRandomCardForOther(1)[0];
+            } else if (source === "otherDeck") {
+                card = specialMethod.getNextCardForOther(1)[0];
+            } else if (source === "otherRandom") {
+                card = specialMethod.getRandomCardForOther(1)[0];
             } else if (source === "filter" && filter) {
                 // 过滤抽牌
-                const allCards = specialMethod.getRandomCardForMe(10); // 获取更多以供过滤
+                const allCards = fromSelf
+                    ? specialMethod.getRandomCardForMe(10)
+                    : specialMethod.getRandomCardForOther(10);
                 card = allCards.find(c => {
                     const cardTypes = c.type || c.types || [];
                     return filter.type ? cardTypes.includes(filter.type) : true;
@@ -49,8 +57,16 @@ class DrawCardEffect extends BaseEffect {
                     }
                 }
 
-                targetGameData.cards.push(card);
-                specialMethod.getCardAnimation(target === "self", card);
+                if (to === "deck") {
+                    targetGameData.remainingCards = targetGameData.remainingCards || [];
+                    targetGameData.remainingCards.unshift(card);
+                } else if (to === "table") {
+                    targetGameData.tableCards.push(card);
+                    specialMethod.outCardAnimation(target === "self", card);
+                } else {
+                    targetGameData.cards.push(card);
+                    specialMethod.getCardAnimation(target === "self", card);
+                }
             }
         }
     }
@@ -72,7 +88,8 @@ class BothDrawEffect extends BaseEffect {
     }
 
     execute(context, targets) {
-        const { count = 1, specialMethod, myGameData, otherGameData } = this.params;
+        const { count = 1 } = this.params;
+        const { specialMethod, myGameData, otherGameData } = context;
 
         // 己方抽牌
         for (let i = 0; i < count; i++) {
