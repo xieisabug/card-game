@@ -1,4 +1,20 @@
 const {BuffType} = require('./constants');
+const cards = require('./cards');
+
+/**
+ * 移除卡牌的 Tag（同时同步 legacy 属性）
+ */
+function removeCardTag(card, tagName) {
+    const effectEngine = cards.effectEngine;
+    if (effectEngine && effectEngine.tagRegistry) {
+        effectEngine.tagRegistry.removeTag(card, tagName);
+    } else {
+        // 降级处理：手动移除
+        if (card.tags && card.tags.includes(tagName)) {
+            card.tags.splice(card.tags.indexOf(tagName), 1);
+        }
+    }
+}
 
 module.exports = {
     haveTypeAddAttack: function(type, addAttack) {
@@ -61,7 +77,8 @@ module.exports = {
         return function ({otherGameData, specialMethod}) {
             otherGameData.tableCards.forEach(c => {
                 if (c.isStrong) {
-                    c.isStrong = false
+                    c.isStrong = false;
+                    removeCardTag(c, "Status.Buff.Strong");
                 } else {
                     c.life -= damage;
                 }

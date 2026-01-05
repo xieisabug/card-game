@@ -8,7 +8,7 @@
             </div>
             <div class="button-container">
                 <button class="button" @click="confirm">{{confirmText}}</button>
-                <button class="button next-button" @click="next">{{nextText}}</button>
+                <button class="button next-button" @click="next" v-if="nextText">{{nextText}}</button>
             </div>
         </div>
     </div>

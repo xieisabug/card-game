@@ -171,6 +171,7 @@
                 matchDialogShow: true,
                 tipDialogShow: false,
                 winDialogShow: false,
+                isWin: false,
                 errorDialogShow: false,
                 talkDialogShow: false,
                 levelUpDialogShow: false,
@@ -522,11 +523,13 @@
              * 显示是否获胜的dialog
              * @param text 是否获胜的信息
              * @param reward 获胜之后的奖励
+             * @param isWin 是否获胜
              */
-            showWin(text, reward) {
+            showWin(text, reward, isWin = false) {
                 this.winDialogShow = true;
                 this.winText = text;
                 this.reward = reward;
+                this.isWin = isWin;
             },
 
             /**
@@ -564,6 +567,10 @@
              * 获胜对话框下一步按钮的文字
              */
             getWinNextText() {
+                // 失败时不显示下一关按钮
+                if (!this.isWin) {
+                    return "";
+                }
                 switch (this.gameData.gameMode) {
                     case GameMode.PVP1:
                         return "继续匹配";
@@ -1059,6 +1066,8 @@
                                     case TargetType.ALL_TABLE_CARD:
                                     case TargetType.ALL_TABLE_CARD_FILTER_INCLUDE:
                                     case TargetType.ALL_TABLE_CARD_FILTER_EXCLUDE:
+                                    default:
+                                        // 默认处理：在所有牌中查找并更新
                                         tableIndex = myTableCard.findIndex(c => c.k === toCard.k);
                                         if (tableIndex !== -1) {
                                             myTableCard[tableIndex] = toCard
@@ -1113,9 +1122,9 @@
                         case "END_GAME":
                             (function(thiz) {
                                 if (param.win) {
-                                    thiz.showWin("您胜利了", param.reward)
+                                    thiz.showWin("您胜利了", param.reward, true)
                                 } else {
-                                    thiz.showWin("您失败了", param.reward)
+                                    thiz.showWin("您失败了", param.reward, false)
                                 }
                                 thiz.animationStart();
                             })(this);
