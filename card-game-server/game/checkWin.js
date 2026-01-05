@@ -8,6 +8,13 @@ const {checkLevelUp} = require("./checkLevelUp");
 function checkPveWin(roomNumber) {
     const memoryData = getRoomData(roomNumber)
     if (memoryData.isPve) {
+        // 检查玩家是否失败（HP <= 0）
+        if (memoryData['one'].life <= 0) {
+            clearTimeout(memoryData.timeoutId);
+            getSocket(roomNumber, "one").emit("END_GAME", {win: false});
+            return;
+        }
+        // 检查玩家是否获胜
         if (memoryData['two'].checkWin()) {
             clearTimeout(memoryData.timeoutId);
 

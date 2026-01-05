@@ -129,10 +129,8 @@ class EffectCardLoader {
         if (config.isStrong) card.tags.push("Status.Buff.Strong");
         if (config.isHide) card.tags.push("Status.Buff.Hide");
 
-        // 精力充沛卡牌自动可行动
-        if (card.isFullOfEnergy || card.tags.includes("Status.Buff.FullOfEnergy")) {
-            card.isActionable = true;
-        }
+        // 注意：isActionable 应该只在游戏场上时设置，而不是在加载卡牌配置时设置
+        // 精力充沛的行动逻辑在 outCard.js 中处理
 
         // 如果有 effects 配置，创建钩子函数
         if (card.effects && Object.keys(card.effects).length > 0) {

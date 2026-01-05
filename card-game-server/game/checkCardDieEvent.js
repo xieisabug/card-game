@@ -8,6 +8,10 @@ const cards = require("../cards");
 function triggerCardEffect(hookName, card, myGameData, otherGameData, specialMethod, extraContext = {}) {
     const isEffectHook = card._effectHookNames && card._effectHookNames[hookName];
 
+    // 获取 effectEngine 和 tagRegistry
+    const effectEngine = cards.effectEngine;
+    const tagRegistry = effectEngine ? effectEngine.tagRegistry : null;
+
     // 触发旧版函数式钩子
     if (card[hookName] && typeof card[hookName] === 'function') {
         card[hookName]({
@@ -15,18 +19,21 @@ function triggerCardEffect(hookName, card, myGameData, otherGameData, specialMet
             otherGameData,
             thisCard: card,
             specialMethod,
+            tagRegistry,
+            effectEngine,
             ...extraContext
         });
     }
 
     // 触发新版 Effect 系统钩子
-    const effectEngine = cards.effectEngine;
     if (!isEffectHook && effectEngine && card.effects && card.effects[hookName]) {
         const context = {
             myGameData,
             otherGameData,
             thisCard: card,
             specialMethod,
+            tagRegistry,
+            effectEngine,
             ...extraContext
         };
         effectEngine.executeCardEffects(card, hookName, context);
