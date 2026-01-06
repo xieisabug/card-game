@@ -50,7 +50,7 @@ class SummonEffect extends BaseEffect {
                 attackBase: cardData.attackBase || cardData.attack || 0,
                 lifeBase: cardData.lifeBase || cardData.life || 0,
                 // 精力充沛卡牌出场即可行动
-                isActionable: cardData.isFullOfEnergy || cardData.tags?.includes("Status.Buff.FullOfEnergy") || false
+                isActionable: cardData.tags?.includes("Status.Buff.FullOfEnergy") || false
             };
 
             // 应用附加 Tags
@@ -116,7 +116,7 @@ class SummonWithEffectsEffect extends BaseEffect {
                 life: template.life || 0,
                 attackBase: template.attackBase || template.attack || 0,
                 lifeBase: template.lifeBase || template.life || 0,
-                isActionable: template.isFullOfEnergy || template.tags?.includes("Status.Buff.FullOfEnergy") || false,
+                isActionable: template.tags?.includes("Status.Buff.FullOfEnergy") || false,
                 // 转换 types
                 types: template.types || template.type || []
             };
@@ -198,7 +198,7 @@ class SearchAndSummonEffect extends BaseEffect {
                 life: cardData.life || 0,
                 attackBase: cardData.attackBase || cardData.attack || 0,
                 lifeBase: cardData.lifeBase || cardData.life || 0,
-                isActionable: cardData.isFullOfEnergy || false,
+                isActionable: cardData.tags?.includes("Status.Buff.FullOfEnergy") || false,
                 types: cardData.types || cardData.type || []
             };
 

@@ -185,7 +185,7 @@
     import ChooseCardFrame from "../components/ChooseCardFrame";
     import TipDialog from "../components/TipDialog";
     import ErrorDialog from "../components/ErrorDialog";
-    import {AttackAnimationType, AttackType, CardType, TargetType} from "../utils";
+    import {AttackAnimationType, AttackType, CardType, TargetType, hasTag, Tags} from "../utils";
     import PlayerStatus from "../components/PlayerStatus";
     import Velocity from 'velocity-animate';
     import axios from "axios";
@@ -890,8 +890,9 @@
                                                 },
                                                 complete: () => {
                                                     thiz.gameData.otherTableCard.forEach(c => {
-                                                        if (c.isStrong) {
-                                                            c.isStrong = false
+                                                        if (hasTag(c, Tags.Strong)) {
+                                                            // 移除 Strong tag
+                                                            c.tags = c.tags.filter(t => t !== Tags.Strong);
                                                         } else {
                                                             c.life -= 1;
                                                         }

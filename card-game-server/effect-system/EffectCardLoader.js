@@ -123,12 +123,6 @@ class EffectCardLoader {
             effects: config.effects || {}
         };
 
-        // 处理 legacy 属性转换
-        if (config.isFullOfEnergy) card.tags.push("Status.Buff.FullOfEnergy");
-        if (config.isDedication) card.tags.push("Status.Buff.Dedication");
-        if (config.isStrong) card.tags.push("Status.Buff.Strong");
-        if (config.isHide) card.tags.push("Status.Buff.Hide");
-
         // 注意：isActionable 应该只在游戏场上时设置，而不是在加载卡牌配置时设置
         // 精力充沛的行动逻辑在 outCard.js 中处理
 

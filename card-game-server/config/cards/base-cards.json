@@ -36,7 +36,6 @@
       "life": 1,
       "attackBase": 1,
       "lifeBase": 1,
-      "isFullOfEnergy": true,
       "types": [],
       "tags": [
         "Status.Buff.FullOfEnergy"
@@ -78,7 +77,6 @@
       "life": 3,
       "attackBase": 1,
       "lifeBase": 3,
-      "isDedication": true,
       "types": [],
       "tags": [
         "Status.Buff.Dedication"
@@ -94,7 +92,6 @@
       "life": 1,
       "attackBase": 3,
       "lifeBase": 1,
-      "isStrong": true,
       "types": [],
       "tags": [
         "Status.Buff.Strong"
@@ -635,7 +632,6 @@
       "life": 4,
       "attackBase": 4,
       "lifeBase": 4,
-      "isFullOfEnergy": true,
       "types": [],
       "tags": [
         "Status.Buff.FullOfEnergy"

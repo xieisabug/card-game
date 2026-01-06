@@ -201,7 +201,7 @@ class TargetResolver {
 
             // 排除隐藏
             if (filter.excludeHidden) {
-                if (card.isHide || this.tagRegistry.hasTag(card, "Status.Buff.Hide")) {
+                if (this.tagRegistry.hasTag(card, "Status.Buff.Hide")) {
                     return false;
                 }
             }

@@ -35,7 +35,7 @@ class Level6 extends LevelBase {
                     attackBase: 1,
                     lifeBase: 2,
                     type: "",
-                    isFullOfEnergy: true
+                    tags: ["Status.Buff.FullOfEnergy"]
                 }
             ],
             tableCards: [
@@ -74,7 +74,7 @@ class Level6 extends LevelBase {
                     attackBase: 2,
                     lifeBase: 1,
                     type: "",
-                    isDedication: true
+                    tags: ["Status.Buff.Dedication"]
                 },
                 {
                     k: "4",

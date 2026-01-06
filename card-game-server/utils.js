@@ -75,6 +75,55 @@ function hashState({myTableCard, otherTableCard, myHandCard, myRemainingCard, fe
     return `${myTableCard.map(i => i.k).join("")}-${otherTableCard.map(i => i.k).join("")}-${myHandCard.map(i => i.k).join("")}-${myRemainingCard.length}-${fee}-${myLife}-${otherLife}`;
 }
 
+// ========== Tag 辅助函数 ==========
+
+/**
+ * 检查卡牌是否拥有某个 Tag
+ * @param {object} card - 卡牌对象
+ * @param {string} tagName - Tag 名称
+ * @returns {boolean}
+ */
+function hasTag(card, tagName) {
+    if (!card || !card.tags) return false;
+    return card.tags.includes(tagName);
+}
+
+/**
+ * 给卡牌添加 Tag
+ * @param {object} card - 卡牌对象
+ * @param {string} tagName - Tag 名称
+ */
+function addTag(card, tagName) {
+    if (!card) return;
+    if (!card.tags) card.tags = [];
+    if (!card.tags.includes(tagName)) {
+        card.tags.push(tagName);
+    }
+}
+
+/**
+ * 从卡牌移除 Tag
+ * @param {object} card - 卡牌对象
+ * @param {string} tagName - Tag 名称
+ */
+function removeTag(card, tagName) {
+    if (!card || !card.tags) return;
+    const index = card.tags.indexOf(tagName);
+    if (index !== -1) {
+        card.tags.splice(index, 1);
+    }
+}
+
+// 常用 Tag 常量
+const Tags = {
+    Strong: "Status.Buff.Strong",
+    Dedication: "Status.Buff.Dedication",
+    FullOfEnergy: "Status.Buff.FullOfEnergy",
+    Hide: "Status.Buff.Hide",
+    ShortInvincible: "Status.Buff.Invincible.Short",
+    CanAct: "Status.Action.CanAct"
+};
+
 function nextStateByAction(state, action) {
     switch(action.event) {
         case "OUT_CARD": {
@@ -144,5 +193,9 @@ module.exports = {
     extractUserCard,
     getTypeText,
     hashState,
-    nextStateByAction
+    nextStateByAction,
+    hasTag,
+    addTag,
+    removeTag,
+    Tags
 };

@@ -1,19 +1,12 @@
 const {BuffType} = require('./constants');
 const cards = require('./cards');
+const {hasTag, addTag, removeTag, Tags} = require('./utils');
 
 /**
- * 移除卡牌的 Tag（同时同步 legacy 属性）
+ * 移除卡牌的 Tag
  */
 function removeCardTag(card, tagName) {
-    const effectEngine = cards.effectEngine;
-    if (effectEngine && effectEngine.tagRegistry) {
-        effectEngine.tagRegistry.removeTag(card, tagName);
-    } else {
-        // 降级处理：手动移除
-        if (card.tags && card.tags.includes(tagName)) {
-            card.tags.splice(card.tags.indexOf(tagName), 1);
-        }
-    }
+    removeTag(card, tagName);
 }
 
 module.exports = {
@@ -65,7 +58,7 @@ module.exports = {
                 chooseCard.buffList = [];
             }
 
-            chooseCard.isDedication = true;
+            addTag(chooseCard, Tags.Dedication);
             chooseCard.buffList.push({
                 type: BuffType.ADD_DEDICATION,
                 from: thisCard
@@ -76,9 +69,8 @@ module.exports = {
     allOtherCardDamage: function (damage) {
         return function ({otherGameData, specialMethod}) {
             otherGameData.tableCards.forEach(c => {
-                if (c.isStrong) {
-                    c.isStrong = false;
-                    removeCardTag(c, "Status.Buff.Strong");
+                if (hasTag(c, Tags.Strong)) {
+                    removeTag(c, Tags.Strong);
                 } else {
                     c.life -= damage;
                 }

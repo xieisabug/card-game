@@ -194,9 +194,6 @@ class TagRegistry {
                 card.tagSources[tagName] = sourceRef;
             }
 
-            // 同步到旧属性
-            this._syncToLegacyProps(card, tagName, true);
-
             // 应用 Tag 自带的修改器
             const tagDef = this.tags.get(tagName);
             if (tagDef && tagDef.modifiers && tagDef.modifiers.length > 0) {
@@ -219,9 +216,6 @@ class TagRegistry {
             if (card.tagSources) {
                 delete card.tagSources[tagName];
             }
-
-            // 同步到旧属性
-            this._syncToLegacyProps(card, tagName, false);
 
             // 移除 Tag 自带的修改器
             const tagDef = this.tags.get(tagName);
@@ -296,35 +290,13 @@ class TagRegistry {
 
     /**
      * 从旧格式属性转换为 Tags
-     * @param {object} card - 旧格式卡牌
+     * @deprecated 已不再需要，所有卡牌数据现在都使用 tags 数组
+     * @param {object} card - 卡牌
      * @returns {string[]}
      */
     convertLegacyProps(card) {
-        const tags = [];
-
-        if (card.isFullOfEnergy) tags.push("Status.Buff.FullOfEnergy");
-        if (card.isDedication) tags.push("Status.Buff.Dedication");
-        if (card.isStrong) tags.push("Status.Buff.Strong");
-        if (card.isHide) tags.push("Status.Buff.Hide");
-        if (card.isShortInvincible) tags.push("Status.Buff.Invincible.Short");
-        if (card.isActionable) tags.push("Status.Action.CanAct");
-
-        return tags;
-    }
-
-    /**
-     * 同步 Tag 到旧版属性
-     */
-    _syncToLegacyProps(card, tagName, value) {
-        const tagDef = this.tags.get(tagName);
-        if (tagDef && tagDef.legacyProp) {
-            card[tagDef.legacyProp] = value;
-
-            // 特殊处理：精力充沛 -> 可行动
-            if (tagName === "Status.Buff.FullOfEnergy" && value) {
-                card.isActionable = true;
-            }
-        }
+        // 直接返回卡牌已有的 tags 数组，不再进行属性转换
+        return card.tags || [];
     }
 
     _applyModifiers(card, modifiers) {

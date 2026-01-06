@@ -8,6 +8,7 @@ const log4js = require("log4js");
 const {giveUp} = require("./giveUp");
 const cards = require("../cards");
 const logger = log4js.getLogger('play');
+const {hasTag, removeTag, Tags} = require("../utils");
 
 /**
  * 触发卡牌效果（兼容新旧格式）
@@ -71,10 +72,12 @@ function endMyTurn(args, socket) {
             position: CardPosition.TABLE
         });
 
-        if (c.isShortInvincible) {
+        // 处理短期无敌回合数
+        if (hasTag(c, Tags.ShortInvincible)) {
+            if (!c.shortInvincibleRound) c.shortInvincibleRound = 1;
             c.shortInvincibleRound -= 1;
-            if (c.shortInvincibleRound === 0) {
-                c.isShortInvincible = false;
+            if (c.shortInvincibleRound <= 0) {
+                removeTag(c, Tags.ShortInvincible);
             }
         }
 
@@ -137,10 +140,12 @@ function endMyTurn(args, socket) {
             position: CardPosition.TABLE
         });
 
-        if (c.isShortInvincible) {
+        // 处理短期无敌回合数
+        if (hasTag(c, Tags.ShortInvincible)) {
+            if (!c.shortInvincibleRound) c.shortInvincibleRound = 1;
             c.shortInvincibleRound -= 1;
-            if (c.shortInvincibleRound === 0) {
-                c.isShortInvincible = false;
+            if (c.shortInvincibleRound <= 0) {
+                removeTag(c, Tags.ShortInvincible);
             }
         }
     });

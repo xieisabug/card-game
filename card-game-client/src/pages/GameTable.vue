@@ -96,7 +96,7 @@
 <script>
     import Card from "../components/Card";
     import { io } from 'socket.io-client';
-    import {TargetType, AttackType, GameMode, PvpMode, ChooseDialogType} from "../utils";
+    import {TargetType, AttackType, GameMode, PvpMode, ChooseDialogType, hasTag, Tags} from "../utils";
     import {mapGetters} from "vuex";
     import {host, port} from "../config";
     import ErrorDialog from "../components/ErrorDialog";
@@ -316,13 +316,13 @@
                         } else if (card.targetType === TargetType.ALL_TABLE_CARD_FILTER_INCLUDE) { // 全桌面卡，过滤条件包含
                             this.chooseCardList =
                                 this.gameData.otherTableCard
-                                    .slice().filter(i => card.filter.every(t => i.type.indexOf(t) !== -1) && !i.isHide)
+                                    .slice().filter(i => card.filter.every(t => i.type.indexOf(t) !== -1) && !hasTag(i, Tags.Hide))
                                     .map(i => Object.assign({}, i, {name: i.name + "(敌方)"}))
                                     .concat(this.gameData.myTableCard.slice().filter(i => card.filter.every(t => i.type.indexOf(t) !== -1)));
                         } else if (card.targetType === TargetType.ALL_TABLE_CARD_FILTER_EXCLUDE) {
                             this.chooseCardList =
                                 this.gameData.otherTableCard
-                                    .slice().filter(i => card.filter.every(t => i.type.indexOf(t) === -1) && !i.isHide)
+                                    .slice().filter(i => card.filter.every(t => i.type.indexOf(t) === -1) && !hasTag(i, Tags.Hide))
                                     .concat(this.gameData.myTableCard
                                         .slice().filter(i => card.filter.every(t => i.type.indexOf(t) === -1)));
                         } else if (card.targetType === TargetType.MY_TABLE_CARD_FILTER_INCLUDE) {
@@ -379,13 +379,13 @@
                         } else if (skill.targetType === TargetType.ALL_TABLE_CARD_FILTER_INCLUDE) { // 全桌面卡，过滤条件包含
                             this.chooseCardList =
                                 this.gameData.otherTableCard
-                                    .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) !== -1) && !i.isHide)
+                                    .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) !== -1) && !hasTag(i, Tags.Hide))
                                     .map(i => Object.assign({}, i, {name: i.name + "(敌方)"}))
                                     .concat(this.gameData.myTableCard.slice().filter(i => skill.filter.every(t => i.type.indexOf(t) !== -1)));
                         } else if (skill.targetType === TargetType.ALL_TABLE_CARD_FILTER_EXCLUDE) {
                             this.chooseCardList =
                                 this.gameData.otherTableCard
-                                    .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) === -1) && !i.isHide)
+                                    .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) === -1) && !hasTag(i, Tags.Hide))
                                     .concat(this.gameData.myTableCard
                                         .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) === -1)));
                         } else if (skill.targetType === TargetType.MY_TABLE_CARD_FILTER_INCLUDE) {

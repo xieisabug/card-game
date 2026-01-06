@@ -119,7 +119,7 @@ class CopyCardEffect extends BaseEffect {
             attackBase: sourceCard.attackBase || sourceCard.attack,
             lifeBase: sourceCard.lifeBase || sourceCard.life,
             // 精力充沛需要重置
-            isActionable: sourceCard.isFullOfEnergy || false
+            isActionable: sourceCard.tags?.includes("Status.Buff.FullOfEnergy") || false
         };
 
         if (keepBuffs && sourceCard.buffList) {

@@ -10,7 +10,6 @@
       "life": 2,
       "attackBase": 1,
       "lifeBase": 2,
-      "isFullOfEnergy": true,
       "types": [
         "前端",
         "程序员"
@@ -224,7 +223,6 @@
       "life": 3,
       "attackBase": 0,
       "lifeBase": 3,
-      "isDedication": true,
       "types": [
         "前端",
         "标签"
@@ -469,7 +467,6 @@
       "life": 4,
       "attackBase": 2,
       "lifeBase": 4,
-      "isDedication": true,
       "types": [
         "前端",
         "标签"
@@ -1059,8 +1056,7 @@
                 "types": [
                   "前端",
                   "程序员"
-                ],
-                "isFullOfEnergy": true
+                ]
               },
               "applyTags": [
                 "Status.Buff.FullOfEnergy"
@@ -1164,9 +1160,7 @@
                                               "tags": [
                                                 "Status.Buff.Dedication",
                                                 "Status.Buff.Strong"
-                                              ],
-                                              "isDedication": true,
-                                              "isStrong": true
+                                              ]
                                             }
                                           }
                                         }

@@ -1,5 +1,5 @@
 const {CardType, TargetType, CardPosition} = require("../constants");
-const {extractHeroInfo} = require("../utils");
+const {extractHeroInfo, hasTag, Tags} = require("../utils");
 const {getRoomData, getSocket} = require("../cache");
 const {checkPvpWin, checkPveWin} = require("./checkWin");
 const {error} = require("./log");
@@ -47,13 +47,13 @@ function useSkill(args, socket) {
             } else if (skill.targetType === TargetType.ALL_TABLE_CARD_FILTER_INCLUDE) {
                 chooseCardList =
                     memoryData[other]["tableCards"]
-                        .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) !== -1) && !i.isHide)
+                        .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) !== -1) && !hasTag(i, Tags.Hide))
                         .concat(memoryData[belong]["tableCards"]
                             .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) !== -1)));
             } else if (skill.targetType === TargetType.ALL_TABLE_CARD_FILTER_EXCLUDE) {
                 chooseCardList =
                     memoryData[other]["tableCards"]
-                        .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) === -1) && !i.isHide)
+                        .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) === -1) && !hasTag(i, Tags.Hide))
                         .concat(memoryData[belong]["tableCards"]
                             .slice().filter(i => skill.filter.every(t => i.type.indexOf(t) === -1)));
             } else if (skill.targetType === TargetType.MY_TABLE_CARD_FILTER_INCLUDE) {

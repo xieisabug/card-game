@@ -30,7 +30,6 @@ class DamageEffect extends BaseEffect {
             if (!ignoreStrong && tagRegistry.hasTag(target, "Status.Buff.Strong")) {
                 // 移除坚强标记，不造成伤害
                 tagRegistry.removeTag(target, "Status.Buff.Strong");
-                target.isStrong = false;
 
                 // 播放被挡住动画
                 if (specialMethod) {
@@ -90,7 +89,6 @@ class DamageAllEffect extends BaseEffect {
 
             if (!ignoreStrong && tagRegistry.hasTag(target, "Status.Buff.Strong")) {
                 tagRegistry.removeTag(target, "Status.Buff.Strong");
-                target.isStrong = false;
             } else {
                 target.life = (target.life || 0) - amount;
             }
@@ -131,7 +129,6 @@ class DamageRandomEffect extends BaseEffect {
 
             if (!ignoreStrong && tagRegistry.hasTag(target, "Status.Buff.Strong")) {
                 tagRegistry.removeTag(target, "Status.Buff.Strong");
-                target.isStrong = false;
             } else {
                 target.life = (target.life || 0) - amount;
             }

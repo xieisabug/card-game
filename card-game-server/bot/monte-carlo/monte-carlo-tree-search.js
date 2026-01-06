@@ -1,5 +1,5 @@
 const MonteCarloTreeSearchNode = require("./monte-carlo-tree-search-node");
-const { hashState, nextStateByAction } = require("../../utils");
+const { hashState, nextStateByAction, hasTag, Tags } = require("../../utils");
 
 class MonteCarloTreeSearch {
     // debug标识，用于调试
@@ -252,9 +252,9 @@ class MonteCarloTreeSearch {
      */
     calSpecialValue(card) {
         let value = 0;
-        value += (card.isDedication ? 2 : 0);
-        value += (card.isStrong ? 1 : 0);
-        value += (card.isFullOfEnergy ? 1 : 0);
+        value += (hasTag(card, Tags.Dedication) ? 2 : 0);
+        value += (hasTag(card, Tags.Strong) ? 1 : 0);
+        value += (hasTag(card, Tags.FullOfEnergy) ? 1 : 0);
         value += (card.onEnd ? 1 : 0);
         value += (card.onMyTurnEnd ? 5 : 0);
         value += (card.onMyTurnStart ? 5 : 0);

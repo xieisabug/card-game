@@ -76,22 +76,18 @@ function convertCard(cardStr) {
         }
     }
 
-    // 处理特殊属性
+    // 处理特殊属性 - 只转换为 tags，不再使用旧属性
     if (cardStr.includes('isFullOfEnergy')) {
         card.tags.push("Status.Buff.FullOfEnergy");
-        card.isFullOfEnergy = true;
     }
     if (cardStr.includes('isDedication')) {
         card.tags.push("Status.Buff.Dedication");
-        card.isDedication = true;
     }
     if (cardStr.includes('isStrong')) {
         card.tags.push("Status.Buff.Strong");
-        card.isStrong = true;
     }
     if (cardStr.includes('isHide')) {
         card.tags.push("Status.Buff.Hide");
-        card.isHide = true;
     }
 
     // 提取 onStart 等钩子函数

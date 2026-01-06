@@ -25,7 +25,6 @@ class DamageEachRandomEffect extends BaseEffect {
             }
             if (!ignoreStrong && context.tagRegistry?.hasTag(target, "Status.Buff.Strong")) {
                 context.tagRegistry.removeTag(target, "Status.Buff.Strong");
-                target.isStrong = false;
                 return;
             }
             const dmg = Math.floor(rand() * (max - min + 1)) + min;

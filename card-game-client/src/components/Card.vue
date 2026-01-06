@@ -125,7 +125,7 @@
 
     // 卡牌相关样式
     const isHide = computed(() => {
-        return props.data.isHide;
+        return props.data.tags?.includes("Status.Buff.Hide") || false;
     });
     const isActionable = computed(() => {
         return props.data.isActionable;
@@ -185,17 +185,19 @@
 
     // 奉献相关样式
     const isDedicationClassName = computed(() => {
+        const hasDedication = props.data.tags?.includes("Status.Buff.Dedication") || false;
         return buildClassName({
             "dedication": true,
-            "hide": !props.data.isDedication || !props.isOut || props.isDisplay
+            "hide": !hasDedication || !props.isOut || props.isDisplay
         });
     });
 
     // 强壮相关样式
     const isStrongClassName = computed(() => {
+        const hasStrong = props.data.tags?.includes("Status.Buff.Strong") || false;
         return buildClassName({
             "strong": true,
-            "hide": !props.data.isStrong || !props.isOut || props.isDisplay
+            "hide": !hasStrong || !props.isOut || props.isDisplay
         })
     });
 

@@ -31,8 +31,7 @@ const Level8Cards = {
                                 attack: 1,
                                 life: 1,
                                 types: [],
-                                tags: ["Status.Buff.FullOfEnergy"],
-                                isFullOfEnergy: true
+                                tags: ["Status.Buff.FullOfEnergy"]
                             }
                         }
                     }

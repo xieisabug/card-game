@@ -2,6 +2,7 @@ const {AttackType, AttackAnimationType} = require("../constants");
 const {getRoomData, getSocket} = require("../cache");
 const {error} = require("./log");
 const {checkPvpWin, checkPveWin} = require("./checkWin");
+const {hasTag, Tags} = require("../utils");
 
 
 /**
@@ -18,7 +19,7 @@ function attackHero(args, socket) {
     let index = memoryData[belong]["tableCards"].findIndex(c => c.k === k);
 
     if (index !== -1) {
-        let hasDedication = memoryData[other]["tableCards"].some(c => c.isDedication);
+        let hasDedication = memoryData[other]["tableCards"].some(c => hasTag(c, Tags.Dedication));
 
         card = memoryData[belong]["tableCards"][index];
 

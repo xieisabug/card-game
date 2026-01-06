@@ -1,5 +1,5 @@
 const {CardType, TargetType, CardPosition} = require("../constants");
-const {extractHeroInfo} = require("../utils");
+const {extractHeroInfo, hasTag, Tags} = require("../utils");
 const {getRoomData, getSocket} = require("../cache");
 const {checkPvpWin, checkPveWin} = require("./checkWin");
 const {error} = require("./log");
@@ -92,7 +92,8 @@ function outCard(args, socket) {
 
         let mySpecialMethod = getSpecialMethod(belong, roomNumber);
 
-        if (card.isFullOfEnergy) {
+        // 精力充沛卡牌出场即可行动
+        if (hasTag(card, Tags.FullOfEnergy)) {
             card.isActionable = true;
         }
 

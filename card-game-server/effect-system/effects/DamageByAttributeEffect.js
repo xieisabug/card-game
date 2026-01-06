@@ -27,7 +27,6 @@ class DamageByAttributeEffect extends BaseEffect {
             }
             if (!ignoreStrong && context.tagRegistry?.hasTag(target, "Status.Buff.Strong")) {
                 context.tagRegistry.removeTag(target, "Status.Buff.Strong");
-                target.isStrong = false;
                 return;
             }
             target.life = (target.life || 0) - amount;

@@ -34,7 +34,7 @@ class Level5 extends LevelBase {
                     attackBase: 1,
                     lifeBase: 2,
                     type: "",
-                    isFullOfEnergy: true
+                    tags: ["Status.Buff.FullOfEnergy"]
                 }
             ],
             tableCards: [],

@@ -55,7 +55,6 @@
       "life": 2,
       "attackBase": 1,
       "lifeBase": 2,
-      "isDedication": true,
       "types": [
         "数据库"
       ],
@@ -180,8 +179,7 @@
                 "life": 1,
                 "types": [
                   ""
-                ],
-                "isFullOfEnergy": true
+                ]
               },
               "applyTags": [
                 "Status.Buff.FullOfEnergy"
@@ -302,7 +300,6 @@
       "life": 1,
       "attackBase": 4,
       "lifeBase": 1,
-      "isFullOfEnergy": true,
       "types": [],
       "tags": [
         "Status.Buff.FullOfEnergy"
@@ -531,7 +528,6 @@
       "life": 3,
       "attackBase": 1,
       "lifeBase": 3,
-      "isDedication": true,
       "types": [
         "服务端"
       ],
@@ -748,7 +744,6 @@
       "life": 6,
       "attackBase": 1,
       "lifeBase": 6,
-      "isDedication": true,
       "types": [
         "数据库"
       ],
@@ -766,7 +761,6 @@
       "life": 10,
       "attackBase": 1,
       "lifeBase": 10,
-      "isDedication": true,
       "types": [
         "数据库"
       ],
@@ -784,7 +778,6 @@
       "life": 12,
       "attackBase": 8,
       "lifeBase": 12,
-      "isDedication": true,
       "types": [
         "数据库"
       ],

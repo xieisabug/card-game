@@ -120,7 +120,6 @@ class DestroyCardEffect extends BaseEffect {
 
         // 过滤掉无敌的卡牌
         allCards = allCards.filter(card => {
-            if (card.isShortInvincible) return false;
             if (context.tagRegistry?.hasTag(card, "Status.Buff.Invincible.Short")) return false;
             return true;
         });

@@ -1,4 +1,4 @@
-const { range, hashState } = require('../../utils');
+const { range, hashState, hasTag, Tags } = require('../../utils');
 
 class MonteCarloTreeSearchNode {
     /**
@@ -67,7 +67,7 @@ class MonteCarloTreeSearchNode {
         let attackCardList = []; // 卡牌index对应的card元数据
         // 查找所有嘲讽
         otherTableCard.forEach((i, index) => {
-            if (i.isDedication) {
+            if (hasTag(i, Tags.Dedication)) {
                 dedicationIndexList.push(index);
                 attackCardList.push(i);
             }

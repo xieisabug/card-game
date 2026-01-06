@@ -8,20 +8,13 @@ const cards = require("../cards");
 const log4js = require("log4js");
 const logger = log4js.getLogger('play');
 const {sanitizeCard} = require("./sanitizeCard");
+const {hasTag, removeTag, Tags} = require("../utils");
 
 /**
- * 移除卡牌的 Tag（同时同步 legacy 属性）
+ * 移除卡牌的 Tag
  */
 function removeCardTag(card, tagName) {
-    const effectEngine = cards.effectEngine;
-    if (effectEngine && effectEngine.tagRegistry) {
-        effectEngine.tagRegistry.removeTag(card, tagName);
-    } else {
-        // 降级处理：手动移除
-        if (card.tags && card.tags.includes(tagName)) {
-            card.tags.splice(card.tags.indexOf(tagName), 1);
-        }
-    }
+    removeTag(card, tagName);
 }
 
 /**
@@ -79,31 +72,28 @@ function attackCard(args, socket) {
 
         card = memoryData[belong]["tableCards"][index];
         attackCard = memoryData[other]["tableCards"][attackIndex];
-        let hasDedication = memoryData[other]["tableCards"].some(c => c.isDedication);
+        let hasDedication = memoryData[other]["tableCards"].some(c => hasTag(c, Tags.Dedication));
 
-        if (attackCard.isDedication || !hasDedication) { // 如果有奉献，必须攻击奉献单位
-            if (attackCard.isStrong) { // 强壮
-                attackCard.isStrong = false;
-                removeCardTag(attackCard, "Status.Buff.Strong");
-            } else if (attackCard.isShortInvincible) { // 短时间无敌
+        if (hasTag(attackCard, Tags.Dedication) || !hasDedication) { // 如果有奉献，必须攻击奉献单位
+            if (hasTag(attackCard, Tags.Strong)) { // 强壮
+                removeCardTag(attackCard, Tags.Strong);
+            } else if (hasTag(attackCard, Tags.ShortInvincible)) { // 短时间无敌
 
             } else {
                 attackCard.life -= card.attack;
             }
 
-            if (card.isStrong) { // 强壮
-                card.isStrong = false;
-                removeCardTag(card, "Status.Buff.Strong");
-            } else if (card.isShortInvincible) { // 短时间无敌
+            if (hasTag(card, Tags.Strong)) { // 强壮
+                removeCardTag(card, Tags.Strong);
+            } else if (hasTag(card, Tags.ShortInvincible)) { // 短时间无敌
 
             } else {
                 card.life -= attackCard.attack;
             }
 
             card.isActionable = false;
-            if (card.isHide) {
-                card.isHide = false;
-                removeCardTag(card, "Status.Buff.Hide");
+            if (hasTag(card, Tags.Hide)) {
+                removeCardTag(card, Tags.Hide);
             }
 
             const safeCard = sanitizeCard(card);

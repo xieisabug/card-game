@@ -10,13 +10,14 @@ class DestroyTargetEffect extends BaseEffect {
     }
 
     execute(context, targets) {
-        const { myGameData, otherGameData, specialMethod } = context;
+        const { myGameData, otherGameData, specialMethod, tagRegistry } = context;
         const myList = [];
         const otherList = [];
 
         targets.forEach(card => {
             if (!card || card._isHero) return;
-            if (card.isShortInvincible || context.tagRegistry?.hasTag(card, "Status.Buff.Invincible.Short")) {
+            // 只使用 tag 检查短期无敌
+            if (tagRegistry?.hasTag(card, "Status.Buff.Invincible.Short")) {
                 return;
             }
 

@@ -6,6 +6,29 @@ export function buildClassName(obj) {
     return className.join(" ");
 }
 
+// ========== Tag 辅助函数 ==========
+
+/**
+ * 检查卡牌是否拥有某个 Tag
+ * @param {object} card - 卡牌对象
+ * @param {string} tagName - Tag 名称
+ * @returns {boolean}
+ */
+export function hasTag(card, tagName) {
+    if (!card || !card.tags) return false;
+    return card.tags.includes(tagName);
+}
+
+// 常用 Tag 常量
+export const Tags = {
+    Strong: "Status.Buff.Strong",
+    Dedication: "Status.Buff.Dedication",
+    FullOfEnergy: "Status.Buff.FullOfEnergy",
+    Hide: "Status.Buff.Hide",
+    ShortInvincible: "Status.Buff.Invincible.Short",
+    CanAct: "Status.Action.CanAct"
+};
+
 export const CardType = {
     EFFECT: 1,
     CHARACTER: 2,
