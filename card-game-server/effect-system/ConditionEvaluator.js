@@ -3,6 +3,7 @@
  * 支持复杂的条件组合和判断
  */
 const { CardPosition } = require('../constants');
+const { Tags } = require('../utils');
 
 class ConditionEvaluator {
     constructor(tagRegistry) {
@@ -259,9 +260,12 @@ class ConditionEvaluator {
             if (filter.tag && !this.tagRegistry.hasTag(card, filter.tag)) {
                 return false;
             }
-            // cardType 过滤 (CHARACTER/EFFECT)
-            if (filter.cardType && card.cardType !== filter.cardType) {
-                return false;
+            // cardType 过滤 (CHARACTER/EFFECT) - 使用 Tag 系统
+            if (filter.cardType) {
+                const expectedTag = filter.cardType === 'CHARACTER' ? Tags.Character : Tags.Effect;
+                if (!this.tagRegistry.hasTag(card, expectedTag)) {
+                    return false;
+                }
             }
             return true;
         });

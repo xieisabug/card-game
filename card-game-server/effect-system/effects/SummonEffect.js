@@ -3,7 +3,7 @@
  * 用于召唤随从到场上
  */
 const BaseEffect = require('./BaseEffect');
-const { CardType } = require('../../constants');
+const { Tags } = require('../../utils');
 
 class SummonEffect extends BaseEffect {
     constructor(config) {
@@ -173,7 +173,10 @@ class SearchAndSummonEffect extends BaseEffect {
                 const cardTypes = card.type || card.types || [];
                 if (!cardTypes.includes(filter.type)) return false;
             }
-            if (filter.cardType && card.cardType !== filter.cardType) return false;
+            if (filter.cardType) {
+                const expectedTag = filter.cardType === 'CHARACTER' ? Tags.Character : Tags.Effect;
+                if (!tagRegistry?.hasTag(card, expectedTag)) return false;
+            }
             if (filter.tag && !(tagRegistry?.hasTag(card, filter.tag))) return false;
             return true;
         });
@@ -245,8 +248,11 @@ class SummonFromHandEffect extends BaseEffect {
                 const cardTypes = card.type || card.types || [];
                 if (!cardTypes.includes(filter.type)) return false;
             }
-            // 卡牌类型过滤 (CHARACTER/EFFECT)
-            if (filter.cardType && card.cardType !== filter.cardType) return false;
+            // 卡牌类型过滤 (CHARACTER/EFFECT) - 使用 Tag 系统
+            if (filter.cardType) {
+                const expectedTag = filter.cardType === 'CHARACTER' ? Tags.Character : Tags.Effect;
+                if (!tagRegistry?.hasTag(card, expectedTag)) return false;
+            }
             // Tag 过滤
             if (filter.tag && !(tagRegistry?.hasTag(card, filter.tag))) return false;
             // 条件过滤 (自定义函数)

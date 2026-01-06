@@ -21,6 +21,10 @@ export function hasTag(card, tagName) {
 
 // 常用 Tag 常量
 export const Tags = {
+    // 卡牌类型
+    Character: "Card.Type.Character",
+    Effect: "Card.Type.Effect",
+    // Buff 状态
     Strong: "Status.Buff.Strong",
     Dedication: "Status.Buff.Dedication",
     FullOfEnergy: "Status.Buff.FullOfEnergy",
@@ -29,6 +33,7 @@ export const Tags = {
     CanAct: "Status.Action.CanAct"
 };
 
+// @deprecated 请使用 Tags.Character / Tags.Effect
 export const CardType = {
     EFFECT: 1,
     CHARACTER: 2,

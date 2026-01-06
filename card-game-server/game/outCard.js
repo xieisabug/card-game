@@ -1,4 +1,4 @@
-const {CardType, TargetType, CardPosition} = require("../constants");
+const {TargetType, CardPosition} = require("../constants");
 const {extractHeroInfo, hasTag, Tags} = require("../utils");
 const {getRoomData, getSocket} = require("../cache");
 const {checkPvpWin, checkPveWin} = require("./checkWin");
@@ -70,7 +70,7 @@ function outCard(args, socket) {
 
     if (index !== -1 && memoryData[belong]["cards"][index].cost <= memoryData[belong]["fee"]) {
         card = memoryData[belong]["cards"].splice(index, 1)[0];
-        if (card.cardType === CardType.CHARACTER && memoryData[belong]["tableCards"].length >= memoryData[belong]['maxTableCardNumber']) {
+        if (hasTag(card, Tags.Character) && memoryData[belong]["tableCards"].length >= memoryData[belong]['maxTableCardNumber']) {
             error(getSocket(roomNumber, belong), `您的基础卡牌只能有${memoryData[belong]['maxTableCardNumber']}张`);
             return;
         }
@@ -97,7 +97,7 @@ function outCard(args, socket) {
             card.isActionable = true;
         }
 
-        if (card.cardType === CardType.CHARACTER) {
+        if (hasTag(card, Tags.Character)) {
             memoryData[belong]["tableCards"].push(card);
             const safeCard = sanitizeCard(card);
             getSocket(roomNumber, belong).emit("OUT_CARD", {
@@ -116,7 +116,7 @@ function outCard(args, socket) {
                 myHero: extractHeroInfo(memoryData[other]),
                 otherHero: extractHeroInfo(memoryData[belong])
             })
-        } else if (card.cardType === CardType.EFFECT) {
+        } else if (hasTag(card, Tags.Effect)) {
             const safeCard = sanitizeCard(card);
             getSocket(roomNumber, belong).emit("OUT_EFFECT", {
                 index,

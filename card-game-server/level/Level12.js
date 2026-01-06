@@ -1,7 +1,8 @@
 let {
-    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType, GameMode, TargetType
+    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, GameMode, TargetType
 } = require('../constants');
 const cardEffectFactory = require('../card-effect-factory');
+const { Tags } = require('../utils');
 const LevelBase = require('./LevelBase');
 const WebBot1 = require("../bot/webBot1");
 const { effectEngine } = require('../effect-system');
@@ -13,7 +14,7 @@ const Level12Cards = {
         {
             id: "l12-assistant1",
             name: "开发助理",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 1,
             life: 1,
@@ -24,7 +25,7 @@ const Level12Cards = {
         {
             id: "l12-assistant2",
             name: "开发助理",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 1,
             life: 1,
@@ -35,7 +36,7 @@ const Level12Cards = {
         {
             id: "l12-assistant3",
             name: "开发助理",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 1,
             life: 1,
@@ -49,7 +50,7 @@ const Level12Cards = {
         {
             id: "l12-chaser1",
             name: "恶毒追兵",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 1,
             life: 1,
@@ -60,7 +61,7 @@ const Level12Cards = {
         {
             id: "l12-chaser-leader",
             name: "恶毒追兵头子",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 1,
             life: 2,
@@ -71,7 +72,7 @@ const Level12Cards = {
         {
             id: "l12-chaser2",
             name: "恶毒追兵",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 1,
             life: 1,

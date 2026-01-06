@@ -3,6 +3,7 @@
  * 解析效果的目标选择
  */
 const { TargetType } = require('../constants');
+const { Tags } = require('../utils');
 
 class TargetResolver {
     constructor(tagRegistry) {
@@ -206,9 +207,12 @@ class TargetResolver {
                 }
             }
 
-            // cardType 过滤 (CHARACTER/EFFECT)
-            if (filter.cardType && card.cardType !== filter.cardType) {
-                return false;
+            // cardType 过滤 (CHARACTER/EFFECT) - 使用 Tag 系统
+            if (filter.cardType) {
+                const expectedTag = filter.cardType === 'CHARACTER' ? Tags.Character : Tags.Effect;
+                if (!this.tagRegistry.hasTag(card, expectedTag)) {
+                    return false;
+                }
             }
 
             return true;

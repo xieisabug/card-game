@@ -1,6 +1,7 @@
 let {
-    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType
+    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER
 } = require('../constants');
+const { Tags } = require('../utils');
 const LevelBase = require('./LevelBase');
 const { effectEngine } = require('../effect-system');
 
@@ -11,7 +12,7 @@ const Level8Cards = {
         {
             id: "s3",
             name: "启用微服务",
-            cardType: CardType.EFFECT,
+            tags: [Tags.Effect],
             cost: 3,
             content: "召唤3个1/1且带有精力充沛的基础服务",
             types: ["效果卡"],
@@ -25,7 +26,7 @@ const Level8Cards = {
                             cardTemplate: {
                                 id: "s3-base",
                                 name: "基础微服务",
-                                cardType: CardType.CHARACTER,
+                                tags: [Tags.Character],
                                 cost: 1,
                                 content: "精力充沛",
                                 attack: 1,
@@ -92,7 +93,7 @@ class Level8 extends LevelBase {
             createCard({
                 id: `l8-enemy-${idx}`,
                 name: card.name,
-                cardType: CardType.CHARACTER,
+                tags: [Tags.Character],
                 cost: 1,
                 attack: card.attack,
                 life: card.life,

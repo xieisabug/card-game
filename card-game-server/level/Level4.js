@@ -1,6 +1,7 @@
 let {
-    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType, TargetType
+    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, TargetType
 } = require('../constants');
+const { Tags } = require('../utils');
 const LevelBase = require('./LevelBase');
 const { effectEngine } = require('../effect-system');
 
@@ -10,7 +11,7 @@ const Level4Cards = [
     {
         id: "l4-brain",
         name: "大脑",
-        cardType: CardType.CHARACTER,
+        tags: [Tags.Character],
         cost: 1,
         attack: 2,
         life: 5,
@@ -30,7 +31,7 @@ const Level4Cards = [
     {
         id: "l4-memory1",
         name: "记忆细胞1",
-        cardType: CardType.CHARACTER,
+        tags: [Tags.Character],
         cost: 1,
         attack: 2,
         life: 2,
@@ -41,7 +42,7 @@ const Level4Cards = [
     {
         id: "l4-memory2",
         name: "记忆细胞2",
-        cardType: CardType.CHARACTER,
+        tags: [Tags.Character],
         cost: 1,
         attack: 3,
         life: 4,
@@ -52,7 +53,7 @@ const Level4Cards = [
     {
         id: "l4-memory3",
         name: "记忆细胞3",
-        cardType: CardType.CHARACTER,
+        tags: [Tags.Character],
         cost: 1,
         attack: 2,
         life: 5,
@@ -63,7 +64,7 @@ const Level4Cards = [
     {
         id: "l4-memory4",
         name: "记忆细胞4",
-        cardType: CardType.CHARACTER,
+        tags: [Tags.Character],
         cost: 1,
         attack: 3,
         life: 6,
@@ -75,7 +76,7 @@ const Level4Cards = [
     {
         id: "l4-knowledge1",
         name: "知识点1",
-        cardType: CardType.CHARACTER,
+        tags: [Tags.Character],
         cost: 1,
         attack: 1,
         life: 2,
@@ -86,7 +87,7 @@ const Level4Cards = [
     {
         id: "l4-knowledge2",
         name: "知识点2",
-        cardType: CardType.CHARACTER,
+        tags: [Tags.Character],
         cost: 1,
         attack: 5,
         life: 3,
@@ -97,7 +98,7 @@ const Level4Cards = [
     {
         id: "l4-knowledge3",
         name: "知识点3",
-        cardType: CardType.CHARACTER,
+        tags: [Tags.Character],
         cost: 1,
         attack: 3,
         life: 2,
@@ -108,7 +109,7 @@ const Level4Cards = [
     {
         id: "l4-knowledge4",
         name: "知识点4",
-        cardType: CardType.CHARACTER,
+        tags: [Tags.Character],
         cost: 1,
         attack: 4,
         life: 1,
@@ -119,7 +120,7 @@ const Level4Cards = [
     {
         id: "l4-chapter",
         name: "课程章节",
-        cardType: CardType.CHARACTER,
+        tags: [Tags.Character],
         cost: 1,
         attack: 5,
         life: 6,

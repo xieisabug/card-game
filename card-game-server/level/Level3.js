@@ -1,6 +1,7 @@
 let {
-    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType
+    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER
 } = require('../constants');
+const { Tags } = require('../utils');
 const LevelBase = require('./LevelBase');
 
 class Level3 extends LevelBase {
@@ -28,7 +29,7 @@ class Level3 extends LevelBase {
                     k: "1",
                     id: 1,
                     name: "安装",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 2,
@@ -42,7 +43,7 @@ class Level3 extends LevelBase {
                     k: "2",
                     id: 2,
                     name: "安装",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 2,
@@ -56,7 +57,7 @@ class Level3 extends LevelBase {
                     k: "3",
                     id: 3,
                     name: "安装",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 2,
@@ -70,7 +71,7 @@ class Level3 extends LevelBase {
                     k: "4",
                     id: 4,
                     name: "安装",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 2,
@@ -84,7 +85,7 @@ class Level3 extends LevelBase {
                     k: "5",
                     id: 5,
                     name: "下载",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 3,
@@ -98,7 +99,7 @@ class Level3 extends LevelBase {
                     k: "6",
                     id: 6,
                     name: "下载",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 3,
@@ -121,7 +122,7 @@ class Level3 extends LevelBase {
                     k: "7",
                     id: 7,
                     name: "浏览器",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 5,
@@ -135,7 +136,7 @@ class Level3 extends LevelBase {
                     k: "8",
                     id: 8,
                     name: "编辑器",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 2,
@@ -149,7 +150,7 @@ class Level3 extends LevelBase {
                     k: "9",
                     id: 9,
                     name: "阅读器",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 5,
@@ -163,7 +164,7 @@ class Level3 extends LevelBase {
                     k: "10",
                     id: 10,
                     name: "编译器",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 1,

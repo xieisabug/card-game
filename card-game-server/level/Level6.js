@@ -1,6 +1,7 @@
 let {
-    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType
+    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER
 } = require('../constants');
+const { Tags } = require('../utils');
 const LevelBase = require('./LevelBase');
 
 class Level6 extends LevelBase {
@@ -27,7 +28,7 @@ class Level6 extends LevelBase {
                     k: "1",
                     id: 1,
                     name: "精力充沛的同学",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "精力充沛",
                     attack: 1,
@@ -43,7 +44,7 @@ class Level6 extends LevelBase {
                     k: "2",
                     id: 1,
                     name: "学霸笔记",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 2,
@@ -66,7 +67,7 @@ class Level6 extends LevelBase {
                     k: "3",
                     id: 3,
                     name: "预习题",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "奉献",
                     attack: 2,
@@ -80,7 +81,7 @@ class Level6 extends LevelBase {
                     k: "4",
                     id: 4,
                     name: "复习题",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 1,

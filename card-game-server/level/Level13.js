@@ -1,7 +1,8 @@
 let {
-    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType, GameMode, TargetType
+    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, GameMode, TargetType
 } = require('../constants');
 const cardEffectFactory = require('../card-effect-factory');
+const { Tags } = require('../utils');
 const LevelBase = require('./LevelBase');
 const WebBotBoss1 = require("../bot/webBot-boss1");
 const { effectEngine } = require('../effect-system');
@@ -10,7 +11,7 @@ const { effectEngine } = require('../effect-system');
 const HackerEliteTemplate = {
     id: "l13-hacker",
     name: "黑客精英",
-    cardType: CardType.CHARACTER,
+    tags: [Tags.Character],
     cost: 10,
     attack: 25,
     life: 25,
@@ -49,7 +50,7 @@ const Level13Cards = {
         {
             id: "l13-genius",
             name: "没毕业的天才程序员",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 3,
             attack: 1,
             life: 1,
@@ -72,7 +73,7 @@ const Level13Cards = {
         {
             id: "l13-drip",
             name: "打点滴",
-            cardType: CardType.EFFECT,
+            tags: [Tags.Effect],
             cost: 1,
             content: "为友方单位添加亡语：死亡后复活1次",
             types: ["效果卡"],
@@ -92,7 +93,7 @@ const Level13Cards = {
         {
             id: "l13-chicken",
             name: "吃鸡",
-            cardType: CardType.EFFECT,
+            tags: [Tags.Effect],
             cost: 4,
             content: "为场上所有单位添加 坚强 效果",
             types: ["效果卡"],
@@ -115,7 +116,7 @@ const Level13Cards = {
         {
             id: "l13-boss",
             name: "四大天王 神秘人",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 20,
             life: 99,
@@ -164,7 +165,7 @@ const Level13Cards = {
         {
             id: "l13-leader1",
             name: "无私的组长",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 2,
             attack: 2,
             life: 2,
@@ -184,7 +185,7 @@ const Level13Cards = {
         {
             id: "l13-leader2",
             name: "无私的组长",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 2,
             attack: 2,
             life: 2,
@@ -204,7 +205,7 @@ const Level13Cards = {
         {
             id: "l13-leader3",
             name: "无私的组长",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 2,
             attack: 2,
             life: 2,
@@ -224,7 +225,7 @@ const Level13Cards = {
         {
             id: "l13-leader4",
             name: "无私的组长",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 2,
             attack: 2,
             life: 2,
@@ -244,7 +245,7 @@ const Level13Cards = {
         {
             id: "l13-leader5",
             name: "无私的组长",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 2,
             attack: 2,
             life: 2,

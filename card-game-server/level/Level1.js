@@ -1,6 +1,7 @@
 let {
-    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType
+    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER
 } = require('../constants');
+const { Tags } = require('../utils');
 const LevelBase = require('./LevelBase');
 
 class Level1 extends LevelBase {
@@ -28,7 +29,7 @@ class Level1 extends LevelBase {
                     k: "1",
                     id: 1,
                     name: "手指",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 1,
@@ -51,7 +52,7 @@ class Level1 extends LevelBase {
                     k: "2",
                     id: 2,
                     name: "开机键",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 1,
                     content: "",
                     attack: 1,

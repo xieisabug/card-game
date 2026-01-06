@@ -7,7 +7,7 @@
         <div class="card-cost" v-if="cost !== -1">{{cost}}</div>
         <div class="card-content" v-html="content">
         </div>
-        <div class="card-bottom" v-if="data.cardType === 2">
+        <div class="card-bottom" v-if="isCharacter">
             <div>
                 <i class="iconfont icon-attack"></i>
                 <div :class="attackClassName">{{attack}}</div>
@@ -17,7 +17,7 @@
                 <div :class="lifeClassName" ref="cardLife">{{life}}</div>
             </div>
         </div>
-        <div class="card-bottom" style="justify-content: center" v-if="data.cardType === 1">
+        <div class="card-bottom" style="justify-content: center" v-if="isEffect">
             <i class="iconfont icon-flash"></i>
         </div>
 
@@ -44,7 +44,7 @@
         
         <div class="card-cost" v-if="cost !== -1">{{cost}}</div>
         
-        <div class="card-bottom" v-if="data.cardType === 2">
+        <div class="card-bottom" v-if="isCharacter">
             <div>
                 <i class="iconfont icon-attack"></i>
                 <div :class="attackClassName">{{attack}}</div>
@@ -54,7 +54,7 @@
                 <div :class="lifeClassName" ref="cardLife">{{life}}</div>
             </div>
         </div>
-        <div class="card-bottom" style="justify-content: center" v-if="data.cardType === 1">
+        <div class="card-bottom" style="justify-content: center" v-if="isEffect">
             <i class="iconfont icon-flash"></i>
         </div>
 
@@ -70,7 +70,7 @@
 </template>
 
 <script setup>
-    import {buildClassName} from "../utils.js";
+    import {buildClassName, hasTag, Tags} from "../utils.js";
     import Velocity from 'velocity-animate';
     import {ref, defineProps, computed, watch, reactive} from "vue";
 
@@ -126,6 +126,14 @@
     // 卡牌相关样式
     const isHide = computed(() => {
         return props.data.tags?.includes("Status.Buff.Hide") || false;
+    });
+    const isCharacter = computed(() => {
+        // 兼容旧的 cardType 和新的 tags
+        return hasTag(props.data, Tags.Character) || props.isCharacter;
+    });
+    const isEffect = computed(() => {
+        // 兼容旧的 cardType 和新的 tags
+        return hasTag(props.data, Tags.Effect) || props.isEffect;
     });
     const isActionable = computed(() => {
         return props.data.isActionable;
@@ -209,7 +217,7 @@
     const typeShow = ref(false); // 是否展示类型
 
     watch(life, (newVal, oldVal) => {
-        if (props.data.cardType === 2) {
+        if (props.isCharacter) {
             if (cardLife.value) {
                 Velocity(cardLife.value, {
                     scale: 1.8

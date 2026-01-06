@@ -1,6 +1,7 @@
 let {
-    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType
+    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER
 } = require('../constants');
+const { Tags } = require('../utils');
 const LevelBase = require('./LevelBase');
 const { effectEngine } = require('../effect-system');
 
@@ -11,7 +12,7 @@ const Level10Cards = {
         {
             id: "l10-microservice",
             name: "启用微服务",
-            cardType: CardType.EFFECT,
+            tags: [Tags.Effect],
             cost: 3,
             content: "召唤3个1/1且带有精力充沛的基础服务",
             types: ["效果卡"],
@@ -24,7 +25,7 @@ const Level10Cards = {
                         cardTemplate: {
                             id: "l10-base-service",
                             name: "基础微服务",
-                            cardType: CardType.CHARACTER,
+                            tags: [Tags.Character],
                             cost: 1,
                             attack: 1,
                             life: 1,
@@ -39,7 +40,7 @@ const Level10Cards = {
         {
             id: "l10-neck-pain-1",
             name: "颈椎病",
-            cardType: CardType.EFFECT,
+            tags: [Tags.Effect],
             cost: 2,
             content: "对场上所有对方卡牌造成1点伤害",
             types: ["效果卡"],
@@ -57,7 +58,7 @@ const Level10Cards = {
         {
             id: "l10-neck-pain-2",
             name: "颈椎病",
-            cardType: CardType.EFFECT,
+            tags: [Tags.Effect],
             cost: 2,
             content: "对场上所有对方卡牌造成1点伤害",
             types: ["效果卡"],
@@ -78,7 +79,7 @@ const Level10Cards = {
         {
             id: "l10-news1",
             name: "源源不断的资讯",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 1,
             life: 1,
@@ -91,7 +92,7 @@ const Level10Cards = {
                     params: {
                         count: 1,
                         filter: {
-                            cardType: CardType.CHARACTER
+                            tags: [Tags.Character]
                         },
                         side: "my",
                         random: true
@@ -102,7 +103,7 @@ const Level10Cards = {
         {
             id: "l10-news2",
             name: "源头的资讯",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 1,
             life: 1,
@@ -116,7 +117,7 @@ const Level10Cards = {
         {
             id: "l10-news3",
             name: "源源不断的资讯",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 1,
             life: 1,
@@ -129,7 +130,7 @@ const Level10Cards = {
                     params: {
                         count: 1,
                         filter: {
-                            cardType: CardType.CHARACTER
+                            tags: [Tags.Character]
                         },
                         side: "my",
                         random: true
@@ -140,7 +141,7 @@ const Level10Cards = {
         {
             id: "l10-news4",
             name: "源源不断的资讯",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 1,
             life: 1,
@@ -153,7 +154,7 @@ const Level10Cards = {
                     params: {
                         count: 1,
                         filter: {
-                            cardType: CardType.CHARACTER
+                            tags: [Tags.Character]
                         },
                         side: "my",
                         random: true

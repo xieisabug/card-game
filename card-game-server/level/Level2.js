@@ -1,6 +1,7 @@
 let {
-    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType
+    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER
 } = require('../constants');
+const { Tags } = require('../utils');
 const LevelBase = require('./LevelBase');
 
 class Level2 extends LevelBase {
@@ -28,7 +29,6 @@ class Level2 extends LevelBase {
                     k: "1",
                     id: 1,
                     name: "左眼",
-                    cardType: CardType.CHARACTER,
                     cost: 1,
                     content: "",
                     attack: 1,
@@ -36,13 +36,14 @@ class Level2 extends LevelBase {
                     attackBase: 1,
                     lifeBase: 2,
                     type: "",
+                    types: [],
+                    tags: [Tags.Character],
                     isActionable: true
                 },
                 {
                     k: "2",
                     id: 2,
                     name: "右眼",
-                    cardType: CardType.CHARACTER,
                     cost: 1,
                     content: "",
                     attack: 2,
@@ -50,6 +51,8 @@ class Level2 extends LevelBase {
                     attackBase: 2,
                     lifeBase: 1,
                     type: "",
+                    types: [],
+                    tags: [Tags.Character],
                     isActionable: true
                 }
             ],
@@ -65,7 +68,6 @@ class Level2 extends LevelBase {
                     k: "3",
                     id: 3,
                     name: "屏幕",
-                    cardType: CardType.CHARACTER,
                     cost: 1,
                     content: "",
                     attack: 1,
@@ -73,13 +75,14 @@ class Level2 extends LevelBase {
                     attackBase: 1,
                     lifeBase: 2,
                     type: "",
+                    types: [],
+                    tags: [Tags.Character],
                     isActionable: true
                 },
                 {
                     k: "4",
                     id: 4,
                     name: "黑板",
-                    cardType: CardType.CHARACTER,
                     cost: 1,
                     content: "",
                     attack: 2,
@@ -87,6 +90,8 @@ class Level2 extends LevelBase {
                     attackBase: 2,
                     lifeBase: 1,
                     type: "",
+                    types: [],
+                    tags: [Tags.Character],
                     isActionable: true
                 },
             ],

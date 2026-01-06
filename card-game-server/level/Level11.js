@@ -1,6 +1,7 @@
 let {
-    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType, GameMode, TargetType, CardPosition
+    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, GameMode, TargetType, CardPosition
 } = require('../constants');
+const { Tags } = require('../utils');
 const LevelBase = require('./LevelBase');
 const WebBot1 = require("../bot/webBot1");
 const { effectEngine } = require('../effect-system');
@@ -12,7 +13,7 @@ const Level11Cards = {
         {
             id: "l11-i-will",
             name: "我愿意",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 10,
             attack: 5,
             life: 10,
@@ -25,7 +26,7 @@ const Level11Cards = {
         {
             id: "l11-join",
             name: "加入！",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 1,
             life: 5,
@@ -40,7 +41,7 @@ const Level11Cards = {
         {
             id: "l11-genius1",
             name: "没毕业的天才程序员",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 3,
             attack: 1,
             life: 1,
@@ -60,7 +61,7 @@ const Level11Cards = {
         {
             id: "l11-genius2",
             name: "没毕业的天才程序员",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 3,
             attack: 1,
             life: 1,
@@ -80,7 +81,7 @@ const Level11Cards = {
         {
             id: "l11-ide-master",
             name: "IDE大师",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 7,
             attack: 6,
             life: 4,
@@ -108,7 +109,7 @@ const Level11Cards = {
         {
             id: "l11-debug",
             name: "断点调试",
-            cardType: CardType.EFFECT,
+            tags: [Tags.Effect],
             cost: 3,
             content: "指定一个己方召唤物本回合不受伤害",
             types: ["效果卡"],
@@ -132,7 +133,7 @@ const Level11Cards = {
         {
             id: "l11-genius3",
             name: "没毕业的天才程序员",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 3,
             attack: 1,
             life: 1,
@@ -152,7 +153,7 @@ const Level11Cards = {
         {
             id: "l11-genius4",
             name: "没毕业的天才程序员",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 3,
             attack: 1,
             life: 1,

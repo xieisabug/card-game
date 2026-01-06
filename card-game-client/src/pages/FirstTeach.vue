@@ -185,7 +185,7 @@
     import ChooseCardFrame from "../components/ChooseCardFrame";
     import TipDialog from "../components/TipDialog";
     import ErrorDialog from "../components/ErrorDialog";
-    import {AttackAnimationType, AttackType, CardType, TargetType, hasTag, Tags} from "../utils";
+    import {AttackAnimationType, AttackType, TargetType, hasTag, Tags} from "../utils";
     import PlayerStatus from "../components/PlayerStatus";
     import Velocity from 'velocity-animate';
     import axios from "axios";
@@ -242,7 +242,7 @@
                     k: 6666,
                     id: 25,
                     name: "算法老师",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 3,
                     content: "出场：双方抽一张牌",
                     attack: 2,
@@ -256,7 +256,7 @@
                     k: 6667,
                     id: 26,
                     name: "算法老师",
-                    cardType: CardType.CHARACTER,
+                    tags: [Tags.Character],
                     cost: 3,
                     content: "出场：双方抽一张牌",
                     attack: 2,
@@ -270,7 +270,7 @@
                     k: 6668,
                     id: 16,
                     name: "断点调试",
-                    cardType: CardType.EFFECT,
+                    tags: [Tags.Effect],
                     cost: 3,
                     content: "指定一个己方召唤物本回合（当前操作回合）不受伤害",
                     type: "效果卡",
@@ -376,7 +376,7 @@
                             id: 18,
                             k: "18",
                             name: "游戏导师",
-                            cardType: CardType.CHARACTER,
+                            tags: [Tags.Character],
                             cost: 1,
                             content: "",
                             attack: 9,
@@ -390,7 +390,7 @@
                             id: 19,
                             k: "19",
                             name: "态度傲慢的程序员",
-                            cardType: CardType.CHARACTER,
+                            tags: [Tags.Character],
                             cost: 3,
                             content: "",
                             attack: 3,
@@ -420,7 +420,7 @@
                                 id: i,
                                 k: "2" + i,
                                 name: "不听讲的大学生",
-                                cardType: CardType.CHARACTER,
+                                tags: [Tags.Character],
                                 cost: 3,
                                 content: "",
                                 attack: 1,
@@ -434,7 +434,7 @@
                             id: 19,
                             k: "1",
                             name: "教导",
-                            cardType: CardType.EFFECT,
+                            tags: [Tags.Effect],
                             cost: 2,
                             content: "对场上所有对方卡牌造成1点伤害",
                             attack: "",
@@ -448,7 +448,7 @@
                             id: 20,
                             k: "2",
                             name: "体罚",
-                            cardType: CardType.EFFECT,
+                            tags: [Tags.Effect],
                             cost: 10,
                             content: "对场上所有对方卡牌造成1点伤害",
                             attack: "",
@@ -462,7 +462,7 @@
                             id: 21,
                             k: "3",
                             name: "不闻不问",
-                            cardType: CardType.EFFECT,
+                            tags: [Tags.Effect],
                             cost: 10,
                             content: "对场上所有对方卡牌造成1点伤害",
                             attack: "",

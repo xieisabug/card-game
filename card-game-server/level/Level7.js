@@ -1,6 +1,7 @@
 let {
-    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType
+    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER
 } = require('../constants');
+const { Tags } = require('../utils');
 const LevelBase = require('./LevelBase');
 const { effectEngine } = require('../effect-system');
 
@@ -11,7 +12,7 @@ const Level7Cards = {
         {
             id: "l7-student1",
             name: "精力充沛的同学",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 1,
             life: 1,
@@ -22,7 +23,7 @@ const Level7Cards = {
         {
             id: "l7-student2",
             name: "精力充沛的同学",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 1,
             life: 1,
@@ -33,7 +34,7 @@ const Level7Cards = {
         {
             id: "l7-leader1",
             name: "精力充沛的小组长",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 2,
             life: 2,
@@ -44,7 +45,7 @@ const Level7Cards = {
         {
             id: "l7-leader2",
             name: "精力充沛的小组长",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 2,
             life: 2,
@@ -55,7 +56,7 @@ const Level7Cards = {
         {
             id: "l7-representative",
             name: "精力充沛的课代表",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 3,
             attack: 5,
             life: 1,
@@ -69,7 +70,7 @@ const Level7Cards = {
         {
             id: "l7-exam1",
             name: "考题",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 10,
             life: 2,
@@ -80,7 +81,7 @@ const Level7Cards = {
         {
             id: "l7-exam2",
             name: "考题",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 10,
             life: 2,
@@ -91,7 +92,7 @@ const Level7Cards = {
         {
             id: "l7-gift",
             name: "送分题",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 0,
             life: 5,

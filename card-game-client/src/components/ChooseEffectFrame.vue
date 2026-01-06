@@ -3,7 +3,7 @@
         <div class="choose-effect-container">
             <Card
                 :key="index"
-                :data="{ name: e.name, content: e.content, cardType: 1, cost: -1 }"
+                :data="{ name: e.name, content: e.content, tags: [Tags.Effect], cost: -1 }"
                 :index="index"
                 :is-my-turn="false"
                 :is-out="true"
@@ -18,7 +18,7 @@
 
 <script>
     import Card from "../components/Card";
-    import {buildClassName} from "../utils";
+    import {buildClassName, Tags} from "../utils";
 
     /**
      * 效果选择的浮层

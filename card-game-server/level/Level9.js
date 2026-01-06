@@ -1,6 +1,7 @@
 let {
-    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER, CardType
+    MAX_HAND_CARD_NUMBER, MAX_BASE_TABLE_CARD_NUMBER
 } = require('../constants');
+const { Tags } = require('../utils');
 const LevelBase = require('./LevelBase');
 const { effectEngine } = require('../effect-system');
 
@@ -11,7 +12,7 @@ const Level9Cards = {
         {
             id: "l9-zuckerberg",
             name: "马克·扎克伯格",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 5,
             attack: 3,
             life: 3,
@@ -35,7 +36,7 @@ const Level9Cards = {
         {
             id: "l9-idea1",
             name: "奇妙想法",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 3,
             life: 3,
@@ -46,7 +47,7 @@ const Level9Cards = {
         {
             id: "l9-idea2",
             name: "奇妙想法",
-            cardType: CardType.CHARACTER,
+            tags: [Tags.Character],
             cost: 1,
             attack: 3,
             life: 3,

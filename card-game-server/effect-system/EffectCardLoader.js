@@ -3,7 +3,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { CardType } = require('../constants');
+const { Tags, addTag } = require('../utils');
 
 class EffectCardLoader {
     constructor(effectEngine) {
@@ -99,16 +99,8 @@ class EffectCardLoader {
      * @returns {object}
      */
     _createCard(config) {
-        // 兼容字符串的 cardType 配置
-        let normalizedCardType = config.cardType;
-        if (typeof normalizedCardType === 'string') {
-            const key = normalizedCardType.toUpperCase();
-            normalizedCardType = CardType[key] || normalizedCardType;
-        }
-
         const card = {
             ...config,
-            cardType: normalizedCardType,
             // 确保基础属性存在
             cost: config.cost || 0,
             attack: config.attack || 0,
@@ -118,10 +110,20 @@ class EffectCardLoader {
             // 初始化 types
             types: config.types || config.type || [],
             // 初始化 tags
-            tags: config.tags || [],
+            tags: config.tags ? [...config.tags] : [],
             // 初始化 effects
             effects: config.effects || {}
         };
+
+        // 将 cardType 转换为 Tag
+        if (config.cardType) {
+            const cardTypeStr = typeof config.cardType === 'string' ? config.cardType.toUpperCase() : config.cardType;
+            if (cardTypeStr === 'CHARACTER' || cardTypeStr === 2) {
+                addTag(card, Tags.Character);
+            } else if (cardTypeStr === 'EFFECT' || cardTypeStr === 1) {
+                addTag(card, Tags.Effect);
+            }
+        }
 
         // 注意：isActionable 应该只在游戏场上时设置，而不是在加载卡牌配置时设置
         // 精力充沛的行动逻辑在 outCard.js 中处理

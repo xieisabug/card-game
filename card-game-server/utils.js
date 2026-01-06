@@ -116,6 +116,10 @@ function removeTag(card, tagName) {
 
 // 常用 Tag 常量
 const Tags = {
+    // 卡牌类型
+    Character: "Card.Type.Character",
+    Effect: "Card.Type.Effect",
+    // Buff 状态
     Strong: "Status.Buff.Strong",
     Dedication: "Status.Buff.Dedication",
     FullOfEnergy: "Status.Buff.FullOfEnergy",
